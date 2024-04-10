@@ -1,5 +1,8 @@
 {
   config = {
+    globals = {
+      #mapleader = ",";
+    };
     opts = {
       number = true;          # Show line numbers
       relativenumber = false; # Always start with this option off, but will add key binding to enable if needed
