@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 {
   # Import all your configuration modules here
   imports = [
@@ -7,6 +7,10 @@
   ];
 
   colorschemes.gruvbox.enable = true;
+
+  extraPackages = with pkgs; [
+    hello
+  ];
 
   plugins = {
     lualine.enable = true;
@@ -24,7 +28,11 @@
 
         lua-ls.enable = true;
 
-        rust-analyzer.enable = true;
+        rust-analyzer = {
+          enable = true;
+          installCargo = true;
+          installRustc = true;
+        };
       };
     };
 
