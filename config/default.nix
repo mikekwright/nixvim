@@ -4,9 +4,10 @@
   imports = [
     ./bufferline.nix
     ./settings.nix
+    ./colorschemes
   ];
 
-  colorschemes.gruvbox.enable = true;
+  #colorschemes.gruvbox.enable = true;
 
   extraPackages = with pkgs; [
     hello
