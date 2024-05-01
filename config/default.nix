@@ -52,7 +52,7 @@
     --nmap(",e", treeApi.tree.toggle)
     --vim.keymap.set("n", "<leader>e", treeApi.tree.toggle, {})
 
-    vim.keymap.set("n", ",e", treeApi.tree.toggle, {})
+    --vim.keymap.set("n", ",e", treeApi.tree.toggle, {})
     --vim.keymap.set("n", " e", treeApi.tree.toggle, {})
     --local map = vim.api.nvim_set_keymap
     --vim.keymap.set('n', '<leader>ff', 'NvimTreeToggle <CR>', {})
