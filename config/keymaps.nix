@@ -23,7 +23,8 @@ in
   globals.mapleader = ",";
 
   keymaps = [
-    (nkeymap "<leader>e" ":NvimTreeToggle <CR>")
+    (nkeymap "<leader>e" ":NvimTreeToggle<CR>")
+    (nkeymap "<leader>fm" "<cmd>Man<CR>")
   ];
 
   extraConfigLua = ''
@@ -34,6 +35,12 @@ in
     local function nkeymap(key, action)
       vim.keymap.set("n", key, action, { silent = true, noremap = true })
     end
+
+
+    -- Easily toggle between relative number showing
+    nkeymap("<leader>r", function()
+      vim.wo.relativenumber = not vim.wo.relativenumber
+    end)
 
     --
     -- This is just an example till a useful one emerges
