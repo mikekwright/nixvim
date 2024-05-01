@@ -23,8 +23,17 @@ in
   globals.mapleader = ",";
 
   keymaps = [
-    (nkeymap "<leader>e" ":NvimTreeToggle<CR>")
+    # General shortcuts
     (nkeymap "<leader>fm" "<cmd>Man<CR>")
+
+    # Tree keyboard shortcuts
+    (nkeymap "<leader>e" ":NvimTreeToggle<CR>")
+
+    # Window navigation shortcuts
+    (nkeymap "<C-h>" "<C-w>h")
+    (nkeymap "<C-j>" "<C-w>j")
+    (nkeymap "<C-k>" "<C-w>k")
+    (nkeymap "<C-l>" "<C-w>l")
   ];
 
   extraConfigLua = ''
