@@ -34,6 +34,12 @@ in
     (nkeymap "<C-j>" "<C-w>j")
     (nkeymap "<C-k>" "<C-w>k")
     (nkeymap "<C-l>" "<C-w>l")
+
+    # Window sizing helpders
+    #(nkeymap "<C-r>h" ":resize -2<CR>")
+    #(nkeymap "<C-r>l" ":resize +2<CR>")
+    #(nkeymap "<C-r>j" ":vertical resize -2<CR>")
+    #(nkeymap "<C-r>k" ":vertical resize +2<CR>")
   ];
 
   extraConfigLua = ''
