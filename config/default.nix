@@ -4,28 +4,62 @@
   imports = [
     ./bufferline.nix
     ./settings.nix
+    ./keymaps.nix
+
     ./colorschemes
+  ];
+
+  globals.mapleader = ",";
+
+  keymaps = [
+    {
+      key = "<leader>gg";
+      action = "<cmd>Man<CR>";
+      options = {
+        silent = true;
+        remap = false;
+      };
+    }
   ];
 
   #colorschemes.gruvbox.enable = true;
 
   extraPackages = with pkgs; [
-    hello
   ];
 
   extraConfigLua = ''
-    local map = vim.api.nvim_set_keymap
-local silent = { silent = true, noremap = true }
-map("", "<Space>", "<Nop>", silent)
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
+    local g = vim.g
+    local o = vim.o
 
-    vim.keymap.set('n', '<leader>ff', ':NvimTreeToggle <CR>', {})
+    local opts = { noremap = true, silent = true }
+    local term_opts = { silent = true }
 
+    local keymap = vim.keymap.set
 
-    vim.keymap.set('n', '<C-N>', function()
-      vim.wo.relativenumber = not vim.wo.relativenumber
-    end, {})
+    local function nmap(key, op)
+      keymap("n", key, op, { silent = true, noremap = true })
+    end
+
+    --g.mapleader = ","
+    --g.maplocalleader = " "
+
+    local treeApi = require("nvim-tree.api")
+
+    --keymap("", "<Space>", "<Nop>", opts)
+    --keymap("", ",", "<Nop>", opts)
+
+    --nmap("<leader>e", treeApi.tree.toggle)
+    --nmap(",e", treeApi.tree.toggle)
+    --vim.keymap.set("n", "<leader>e", treeApi.tree.toggle, {})
+
+    vim.keymap.set("n", ",e", treeApi.tree.toggle, {})
+    --vim.keymap.set("n", " e", treeApi.tree.toggle, {})
+    --local map = vim.api.nvim_set_keymap
+    --vim.keymap.set('n', '<leader>ff', 'NvimTreeToggle <CR>', {})
+
+    --keymap("n", "<leader>r", function()
+    --  vim.wo.relativenumber = not vim.wo.relativenumber
+    --end, {})
   '';
 
   plugins = {
@@ -52,26 +86,27 @@ vim.g.maplocalleader = " "
       };
     };
 
+    # Options: https://github.com/nix-community/nixvim/blob/main/plugins/filetrees/nvim-tree.nix
     nvim-tree = {
       enable = true;
       openOnSetup = true;
       autoClose = true;
 
-      onAttach = {
-        __raw = ''
-          function()
-            local api = require("nvim-tree.api")
+      #onAttach = {
+        #__raw = ''
+          #function()
+            #local api = require("nvim-tree.api")
 
-            vim.keymap.set("n", "<leader>e", api.tree.toggle, {})
-            vim.keymap.set("n", "<C-P>", api.tree.toggle, {})
-          end
-        '';
-      };
+            #vim.keymap.set("n", "<leader>e", api.tree.toggle, {})
+            #vim.keymap.set("n", "<C-P>", api.tree.toggle, {})
+          #end
+        #'';
+      #};
 
     };
 
     cmp.settings = {
-      enable = true;
+      enable = false;
       autoEnableSources = true;
       sources = [
         {name = "nvim_lsp";}

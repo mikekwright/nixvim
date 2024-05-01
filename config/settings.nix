@@ -78,8 +78,8 @@
       # Place a column line
       # colorcolumn = "80";
 
-      # Reduce which-key timeout to 10ms
-      timeoutlen = 10;
+      # Be careful, original config was 10ms which made custom keys not work (way to fast)
+      timeoutlen = 1000;
 
       # Set encoding type
       encoding = "utf-8";
