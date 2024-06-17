@@ -1,4 +1,7 @@
 { pkgs, ... }:
+let
+  luaConfig = (builtins.readFile ./lua/main.lua);
+in
 {
   # Import all your configuration modules here
   imports = [
@@ -7,9 +10,13 @@
     ./keymaps.nix
 
     ./colorschemes
+    ./plugins
   ];
 
+  extraConfigLua = luaConfig;
+
   extraPackages = with pkgs; [
+
   ];
 
   plugins = {
@@ -20,21 +27,21 @@
     treesitter.enable = true;
     luasnip.enable = true;
 
-    lsp = {
-      enable = true;
+    #lsp = {
+    #  enable = true;
 
-      servers = {
-        tsserver.enable = true;
+    #  servers = {
+    #    tsserver.enable = true;
 
-        lua-ls.enable = true;
+    #    lua-ls.enable = true;
 
-        rust-analyzer = {
-          enable = true;
-          installCargo = true;
-          installRustc = true;
-        };
-      };
-    };
+    #    rust-analyzer = {
+    #      enable = true;
+    #      installCargo = true;
+    #      installRustc = true;
+    #    };
+    #  };
+    #};
 
     # Options: https://github.com/nix-community/nixvim/blob/main/plugins/filetrees/nvim-tree.nix
     nvim-tree = {
