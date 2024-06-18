@@ -4,7 +4,7 @@
   # Review the list of available options for this plugin from nixvim
   # documentation: https://github.com/nix-community/nixvim/blob/main/plugins/lsp/language-servers/pylsp.nix
 
-  plugins.lsp.servers.pylsp = {
+  plugins.lsp.servers.pylsp.settings = {
     enable = true;
 
     plugins = {

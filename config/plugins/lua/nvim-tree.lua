@@ -1,3 +1,6 @@
+-- This was pulled from the nvim-tree documentation
+--   https://github.com/nvim-tree/nvim-tree.lua/blob/master/lua/nvim-tree/keymap.lua
+--
 function nvimTreeOnAttach(bufnr)
   local api = require('nvim-tree.api')
 

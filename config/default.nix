@@ -11,6 +11,7 @@ in
 
     ./colorschemes
     ./plugins
+    ./languages
   ];
 
   extraConfigLua = luaConfig;
