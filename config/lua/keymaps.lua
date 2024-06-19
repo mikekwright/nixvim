@@ -30,5 +30,5 @@ tkeymap("<C-w>k", "<C-\\><C-n><C-w>k")
 tkeymap("<C-w>l", "<C-\\><C-n><C-w>l")
 tkeymap("<C-t>", "<C-\\><C-n>")
 
-keymap("<C-t>", ":new<CR>:terminal<CR>")
+keymap("<C-t>", ":new<CR>:terminal<CR>i")  -- The extra i should put it in insert mode for the terminal
 
