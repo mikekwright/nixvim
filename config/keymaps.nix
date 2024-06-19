@@ -33,10 +33,10 @@ in
     (nkeymap "<leader>e" ":NvimTreeToggle<CR>")
 
     # Window navigation shortcuts
-    (nkeymap "<C-h>" "<C-w>h")
-    (nkeymap "<C-j>" "<C-w>j")
-    (nkeymap "<C-k>" "<C-w>k")
-    (nkeymap "<C-l>" "<C-w>l")
+    (nkeymap "<C-h>" ":help lua-guide<CR>")
+    #(nkeymap "<C-j>" "<C-w>j")
+    #(nkeymap "<C-k>" "<C-w>k")
+    #(nkeymap "<C-l>" "<C-w>l")
 
     # Window sizing helpders
     #(nkeymap "<C-r>h" ":resize -2<CR>")

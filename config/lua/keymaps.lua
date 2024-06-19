@@ -19,3 +19,16 @@ end)
 --local treeApi = require("nvim-tree.api")
 --nkeymap("<leader>e", treeApi.tree.toggle)
 
+-- Terminal Keys
+local function tkeymap(key, action)
+  vim.keymap.set("t", key, action, { silent = true, noremap = true })
+end
+
+tkeymap("<C-w>h", "<C-\\><C-n><C-w>h")
+tkeymap("<C-w>j", "<C-\\><C-n><C-w>j")
+tkeymap("<C-w>k", "<C-\\><C-n><C-w>k")
+tkeymap("<C-w>l", "<C-\\><C-n><C-w>l")
+tkeymap("<C-t>", "<C-\\><C-n>")
+
+keymap("<C-t>", ":new<CR>:terminal<CR>")
+

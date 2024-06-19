@@ -16,9 +16,11 @@ in
 
   extraConfigLua = luaConfig;
 
-  extraPackages = with pkgs; [
+  extraPackages = (with pkgs; [
 
-  ];
+  ]) ++ (with pkgs.vimPlugins; [
+    winshift-nvim
+  ]);
 
   plugins = {
     lualine.enable = true;
