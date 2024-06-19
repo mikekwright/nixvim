@@ -21,6 +21,8 @@ nix run .
 
 ## References
 
+* [Neovim Documentation](https://neovim.io/doc/user/builtin.html)
+
 * [Youtube - Setting up Neovim from scratch with tmux](https://www.youtube.com/watch?v=ZjMzBd1Dqz8)
 * [Github - Nixvim Repo](https://github.com/nix-community/nixvim/blob/main/plugins/filetrees/nvim-tree.nix)
 * [Github - Nvim-tree repo](https://github.com/nvim-tree/nvim-tree.lua/blob/master/doc/nvim-tree-lua.txt)
