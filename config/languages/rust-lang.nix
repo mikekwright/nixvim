@@ -1,12 +1,12 @@
 { ... }:
 
+let
+  luaConfig = (builtins.readFile ./lua/rust-lang.lua);
+in
 {
   plugins = {
-    # Rust Tools configuration (on nixvim)
-    #   https://github.com/nix-community/nixvim/blob/main/plugins/languages/rust/rust-tools.nix
-    rust-tools = {
-      enable = true;
-    };
+
+    #https://github.com/nix-community/nixvim/blob/main/plugins/languages/rust/rust-tools.nix
 
     lsp.servers.rust-analyzer = {
       enable = true;
@@ -14,5 +14,7 @@
       installRustc = true;
     };
   };
+
+  extraConfigLua = luaConfig;
 }
 
