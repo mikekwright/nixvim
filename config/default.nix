@@ -1,6 +1,9 @@
 { pkgs, ... }:
 let
-  luaConfig = (builtins.readFile ./lua/main.lua);
+  luaConfig = /*lua*/ ''
+    -- Option that lets copy and paste work with system without special clipboard named "+
+    vim.api.nvim_set_option("clipboard", "unnamedplus")
+  '';
 in
 {
   # Import all your configuration modules here
