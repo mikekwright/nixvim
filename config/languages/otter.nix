@@ -12,6 +12,8 @@ in
     #{
     #  plugin = otter-nvim;
     #  config = otterLua;
+    #    or
+    #  config = ''lua require(...)'';
     #}
     otter-nvim
   ];
