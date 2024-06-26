@@ -4,6 +4,7 @@
   imports = [
     ./rust-lang.nix
     ./python-lang.nix
+    ./otter.nix
   ];
 
   plugins = {
