@@ -1,11 +1,58 @@
 { ... }:
 
+# Get more help by :help lsp
+let
+  luaConfig = /*lua*/ ''
+
+    -- This is better as it will only set the keymap if the server supports it
+    --  (figure out current capabilities by running:
+    --     :lua =vim.lsp.get_active_clients()[1].server_capabilities
+    vim.api.nvim_create_autocmd('LspAttach', {
+      callback = function(args)
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+
+        if client.server_capabilities.hoverProvider then
+          vim.keymap.set('n', '<C-k>', vim.lsp.buf.hover, { buffer = args.buf })
+        end
+
+        if client.server_capabilities.document_formatting then
+          vim.keymap.set('n', '<leader>lf', vim.lsp.buf.formatting, { buffer = args.buf })
+        end
+
+        if client.server_capabilities.code_action_provider then
+          vim.keymap.set('n', '<leader>la', vim.lsp.buf.code_action, { buffer = args.buf })
+        end
+
+        if client.server_capabilities.signatureHelpProvider then
+          vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, { buffer = args.buf })
+        end
+
+        if client.server_capabilities.renameProvider then
+          vim.keymap.set('n', '<leader>lr', vim.lsp.buf.rename, { buffer = args.buf })
+        end
+
+        if client.server_capabilities.definitionProvider then
+          vim.keymap.set('n', '<C-b>', vim.lsp.buf.definition, { buffer = args.buf })
+        end
+      end,
+    })
+
+    --vim.api.nvim_create_autocmd('LspAttach', {
+    --  callback = function(args)
+    --    vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = args.buf })
+    --  end,
+    --})
+  '';
+in
 {
   imports = [
     ./rust-lang.nix
     ./python-lang.nix
     ./otter.nix
   ];
+
+  extraConfigLua = luaConfig;
+  #keymaps = [];
 
   plugins = {
     # Trying to use these as the defaults for nix
