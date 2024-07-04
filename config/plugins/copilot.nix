@@ -25,7 +25,7 @@ let
         hide_during_completion = true,
         debounce = 75,
         keymap = {
-          accept = "<Tab>",
+          accept = "<C-Space>",
           accept_word = false,
           accept_line = false,
           next = "<C-]>",
@@ -54,12 +54,11 @@ in
 
   extraConfigLua = luaConfig;
 
-  extraPackages = with pkgs; [
-    # Copilot plugin for neovim
-    #https://search.nixos.org/packages?show=vimPlugins.copilot-lua&from=0&size=50&sort=relevance&type=packages&query=copilot
-    # The plugin seems to be based on this lua package so we can ignore
-    #vimPlugins.copilot-lua
-  ];
-
+  # extraPackages = with pkgs; [
+  #   # Copilot plugin for neovim
+  #   #https://search.nixos.org/packages?show=vimPlugins.copilot-lua&from=0&size=50&sort=relevance&type=packages&query=copilot
+  #   # The plugin seems to be based on this lua package so we can ignore
+  #   vimPlugins.copilot-lua
+  # ];
 }
 

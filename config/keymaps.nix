@@ -34,6 +34,10 @@ let
     tkeymap("<C-t>", "<C-\\><C-n>")
 
     keymap("<C-t>", ":new<CR>:terminal<CR>i")  -- The extra i should put it in insert mode for the terminal
+
+    -- Tab is not supported in neovim by default, this maps to insert mode flow
+    --vim.keymap.set("n", "<TAB>", ">>")
+    --vim.keymap.set("n", "<S-TAB>", "<<")
   '';
 
   keymap = key: action: {
