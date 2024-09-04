@@ -18,7 +18,7 @@
         "type": "github"
       }
     },
-    "neovim": {
+    "neovim-nixpkgs": {
       "locked": {
         "lastModified": 1725099143,
         "narHash": "sha256-CHgumPZaC7z+WYx72WgaLt2XF0yUVzJS60rO4GZ7ytY=",
@@ -81,7 +81,7 @@
     "root": {
       "inputs": {
         "flake-parts": "flake-parts",
-        "neovim": "neovim",
+        "neovim-nixpkgs": "neovim-nixpkgs",
         "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable"
       }

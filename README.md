@@ -1,8 +1,9 @@
-# Nixvim template
+# Neovim config in nix
 
 Starting on this template to get my neovim configuration working with nix.
 
-This template gives you a good starting point for configuring nixvim standalone.
+This template gives you a good starting point and hopefully a more lua driven
+and simple/clear process for working with neovim.
 
 ## Configuring
 
