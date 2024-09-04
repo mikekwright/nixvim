@@ -2,20 +2,31 @@
 
 let
   loadImports = m: args: if builtins.hasAttr "imports" m
-    then (i: (i args)) m.imports  # This will call the function to load all the imports
+    then builtins.map (i: ((import i) args)) m.imports  # This will call the function to load all the imports
     else [];
 
   mergeModule = m: args: 
     let
-      childrenModules = (loadImports m args);
+      childrenModules = builtins.trace m (loadImports m args);
 
+      # TODO: Would be nice to create a config section that could just update itself into
+      #   the lua config (so more declarative), but that is a future piece of work.
       baseModule = {
         vimPackages = m.vimPackages or [];
         vimOptPackages = m.vimOptPackages or [];
         lua = m.lua or "";
         packages = m.packages or [];
       };
-    in baseModule;
+
+      loadedChildren = builtins.map (m: mergeModule m args) childrenModules;
+    in 
+      builtins.foldl' (b: m: {
+        vimPackages = b.vimPackages ++ m.vimPackages;
+        vimOptPackages = b.vimOptPackages ++ m.vimOptPackages;
+        lua = b.lua + m.lua;
+        packages = b.packages ++ m.packages;
+      }) baseModule loadedChildren;
+      #builtins.trace loadedChildren baseModule;
 
 in {
   makeModule = m: 
