@@ -34,8 +34,8 @@
       }: let
         pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
         neovim-pkgs = neovim.legacyPackages.${system};
-
-        nixvimLib = (import ./lib { inherit neovim-pkgs pkgs system pkgs-unstable; });
+        debug = (import ./lib/debug.nix { inherit pkgs pkgs-unstable system; });
+        nixvimLib = (import ./lib/importer.nix { inherit debug neovim-pkgs pkgs system pkgs-unstable; });
 
         nixvimModule = {
           inherit pkgs pkgs-unstable;

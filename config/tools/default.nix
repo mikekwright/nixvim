@@ -10,8 +10,14 @@ let
       sha256 = "36vs8tL4YMiBBWXaFO1ynEl82fg8ja/6kiSN44I3XQs=";
     };
   };
+
+  helloLua = /*lua*/ ''
+    require('hello-world').greet()
+  '';
 in
 {
   vimPackages = [ nvimHelloWorld ];
+
+  lua = helloLua;
 }
 

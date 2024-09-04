@@ -570,6 +570,6 @@ in
     ./tools
   ];
 
-  lua = luaConfig;
+  #lua = luaConfig;
 }
 

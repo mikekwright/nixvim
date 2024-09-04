@@ -1,32 +1,41 @@
-{ neovim-pkgs, pkgs, system, pkgs-unstable, ... }:
+{ neovim-pkgs, pkgs, system, pkgs-unstable, debug, ... }:
 
 let
   loadImports = m: args: if builtins.hasAttr "imports" m
-    then builtins.map (i: ((import i) args)) m.imports  # This will call the function to load all the imports
+    then builtins.map (i: ((import i) args) // { name=i; }) m.imports
     else [];
 
   mergeModule = m: args: 
     let
-      childrenModules = builtins.trace m (loadImports m args);
+      childrenModules = debug.trace m (loadImports m args);
 
       # TODO: Would be nice to create a config section that could just update itself into
       #   the lua config (so more declarative), but that is a future piece of work.
       baseModule = {
+        name = m.name or "default";
         vimPackages = m.vimPackages or [];
         vimOptPackages = m.vimOptPackages or [];
         lua = m.lua or "";
         packages = m.packages or [];
       };
 
+      # This is the recursive check to basically pull all the other modules that we
+      #   have.
       loadedChildren = builtins.map (m: mergeModule m args) childrenModules;
-    in 
-      builtins.foldl' (b: m: {
+
+      completedMerge = builtins.foldl' (b: m: {
         vimPackages = b.vimPackages ++ m.vimPackages;
         vimOptPackages = b.vimOptPackages ++ m.vimOptPackages;
-        lua = b.lua + m.lua;
+        lua = b.lua + 
+          /*lua*/ ''
+
+          ---- ${m.name} ----
+          '' + m.lua;
         packages = b.packages ++ m.packages;
       }) baseModule loadedChildren;
-      #builtins.trace loadedChildren baseModule;
+    in 
+      debug.trace completedMerge completedMerge;
+       
 
 in {
   makeModule = m: 
@@ -66,9 +75,17 @@ in {
     in (pkgs.writeShellApplication {
       name = "nvim";
       runtimeInputs = [ neovimPackage ] ++ modulePackages;
-      text = ''
-        echo "Hello, ${luaFile}!" 
-        ${neovimPackage}/bin/nvim -u ${luaFile} "$@"
+      text = /*shell*/ ''
+        set +u
+        if [[ -n $NVIM_DEBUG ]]; then
+          echo 'LUA CONFIG FILE: ${luaFile}'
+          cat ${luaFile}
+
+          echo '-------------------------'
+          echo "Neovim config file path: ${luaFile}" 
+        else
+          ${neovimPackage}/bin/nvim -u ${luaFile} "$@"
+        fi
       '';
     });
 }

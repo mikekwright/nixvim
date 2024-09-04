@@ -13,5 +13,9 @@ let
 in
 {
   vimPackages = [ jellybeans ];
+
+  lua = /*lua*/ ''
+    vim.cmd [[colorscheme jellybeans]]
+  '';
 }
 
