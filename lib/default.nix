@@ -1,35 +1,25 @@
 { neovim-pkgs, pkgs, system, pkgs-unstable, ... }:
 
 let
-  mergeModule = m: {
-    vimPackages = m.vimPackages or [];
-    lua = m.lua or "";
-    packages = m.packages or [];
-  };
+  loadImports = m: args: if builtins.hasAttr "imports" m
+    then (i: (i args)) m.imports  # This will call the function to load all the imports
+    else [];
 
-  jellybeans = pkgs.vimUtils.buildVimPlugin {
-    name = "vim-jellybeans";
-    src = pkgs.fetchFromGitHub {
-      owner = "mikekwright";
-      repo = "jellybeans.vim";
-      rev = "ef83bf4dc8b3eacffc97bf5c96ab2581b415c9fa";
-      sha256 = "X+37Mlyt6+ZwfYlt4ZtdHPXDgcKtiXlUoUPZVb58w/8=";
-    };
-  };
-
-  nvimHelloWorld = pkgs.vimUtils.buildVimPlugin {
-    name = "nvim-hello-world";
-    src = pkgs.fetchFromGitHub {
-      owner = "jw3126";
-      repo = "nvim-hello-world";
-      rev = "4128bd645bcac1d2e4bbbfca014f10e0b7f1b1b3";
-      sha256 = "36vs8tL4YMiBBWXaFO1ynEl82fg8ja/6kiSN44I3XQs=";
-    };
-  };
-in {
-  makeModule = module: 
+  mergeModule = m: args: 
     let
-      fullModule = mergeModule module;
+      childrenModules = (loadImports m args);
+
+      baseModule = {
+        vimPackages = m.vimPackages or [];
+        lua = m.lua or "";
+        packages = m.packages or [];
+      };
+    in baseModule;
+
+in {
+  makeModule = m: 
+    let
+      fullModule = mergeModule (m.module m.extraSpecialArgs) m.extraSpecialArgs;
 
       # This is where the key logic for setting up the package
       #   should go.
@@ -41,28 +31,29 @@ in {
         then fullModule.packages
         else [];
 
-      #luaFile = (pkgs.writeText "luaFile.lua" luaText);
-      luaFile = (pkgs.writeText "init.lua" ''require("hello-world").greet()'');
+      luaFile = (pkgs.writeText "init.lua" luaText);
 
       neovimPackage = neovim-pkgs.neovim.override {
         configure = {
-          #lua = luaFile;
+          #  This is trying to load as a vimscript file, not lua.  Need to
+          #     continue to investigate.
           #customRC = luaText;
+
+          #  Install all the needed plugins at this point.
           packages.myVimPackage = {
-            start = [ jellybeans nvimHelloWorld ];
+            start = fullModule.vimPackages;
             opt = [ ];
           };
         };
       };
-    #in neovimPackage;
-    in (pkgs.writeShellApplication {
-      name = "nvim";
-      #runtimeInputs = [ pkgs.neovim ] ++ modulePackages;
-      runtimeInputs = [ neovimPackage ] ++ modulePackages;
-      text = ''
-        echo "Hello, ${luaFile}!" 
-        ${neovimPackage}/bin/nvim -u ${luaFile} "$@"
-      '';
-    });
+    in neovimPackage;
+    # in (pkgs.writeShellApplication {
+    #   name = "nvim";
+    #   runtimeInputs = [ neovimPackage ] ++ modulePackages;
+    #   text = ''
+    #     echo "Hello, ${luaFile}!" 
+    #     ${neovimPackage}/bin/nvim -u ${luaFile} "$@"
+    #   '';
+    # });
 }
 

@@ -1,6 +1,27 @@
-{ ... }:
+{ pkgs, ... }:
 
 let
+  jellybeans = pkgs.vimUtils.buildVimPlugin {
+    name = "vim-jellybeans";
+    src = pkgs.fetchFromGitHub {
+      owner = "mikekwright";
+      repo = "jellybeans.vim";
+      rev = "ef83bf4dc8b3eacffc97bf5c96ab2581b415c9fa";
+      sha256 = "X+37Mlyt6+ZwfYlt4ZtdHPXDgcKtiXlUoUPZVb58w/8=";
+    };
+  };
+
+  nvimHelloWorld = pkgs.vimUtils.buildVimPlugin {
+    name = "nvim-hello-world";
+    src = pkgs.fetchFromGitHub {
+      owner = "jw3126";
+      repo = "nvim-hello-world";
+      rev = "4128bd645bcac1d2e4bbbfca014f10e0b7f1b1b3";
+      sha256 = "36vs8tL4YMiBBWXaFO1ynEl82fg8ja/6kiSN44I3XQs=";
+    };
+  };
+
+
   luaConfig = /*lua*/ ''
     -- Set up globals {{{
     do
@@ -566,4 +587,6 @@ let
 in
 {
   lua = luaConfig;
+
+  vimPackages = [ jellybeans nvimHelloWorld ];
 }
