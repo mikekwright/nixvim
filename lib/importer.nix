@@ -29,8 +29,12 @@ let
         lua = b.lua + 
           /*lua*/ ''
 
-          ---- ${m.name} ----
-          '' + m.lua;
+          ---- BEGIN ${m.name or "default"} ----
+          '' + 
+          m.lua + /*lua*/ ''
+          ---- END ${m.name or "default"} ----
+
+          '';
         packages = b.packages ++ m.packages;
       }) baseModule loadedChildren;
     in 

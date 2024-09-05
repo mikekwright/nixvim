@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, debug, ... }:
 
 let
   nvimHelloWorld = pkgs.vimUtils.buildVimPlugin {
@@ -16,8 +16,14 @@ let
   '';
 in
 {
+  imports = [
+    ./tree.nix
+  ];
+
+  name = "tools";
+
   vimPackages = [ nvimHelloWorld ];
 
-  lua = helloLua;
+  lua = debug.traceResult helloLua;
 }
 

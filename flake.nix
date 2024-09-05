@@ -42,7 +42,7 @@
           module = import ./config; # import the module directly
           # You can use `extraSpecialArgs` to pass additional arguments to your module files
           extraSpecialArgs = {
-            inherit inputs system pkgs ;
+            inherit inputs system pkgs debug;
           };
         };
         nvim = lib.makeModule neovimModule;
