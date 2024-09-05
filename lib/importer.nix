@@ -29,10 +29,12 @@ let
         lua = b.lua + 
           /*lua*/ ''
 
-          ---- BEGIN ${m.name or "default"} ----
+          ${"\t"}---- BEGIN ${m.name or "default"} ----
+
           '' + 
           m.lua + /*lua*/ ''
-          ---- END ${m.name or "default"} ----
+
+          ${"\t"}---- END ${m.name or "default"} ----
 
           '';
         packages = b.packages ++ m.packages;

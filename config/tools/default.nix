@@ -16,11 +16,11 @@ let
   '';
 in
 {
+  name = "tools";
+
   imports = [
     ./tree.nix
   ];
-
-  name = "tools";
 
   vimPackages = [ nvimHelloWorld ];
 
