@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ ... }:
 
 let
   keysLua = /*lua*/ ''

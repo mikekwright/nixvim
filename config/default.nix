@@ -32,6 +32,7 @@ in
   imports = [
     ./theme
     ./tools
+    ./lsp
 
     ./keymaps.nix
   ];

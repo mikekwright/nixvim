@@ -1,4 +1,4 @@
-{ neovim-pkgs, pkgs, system, pkgs-unstable, debug, ... }:
+{ pkgs, debug, extra-pkgs, ... }:
 
 let
   loadImports = m: args: if builtins.hasAttr "imports" m
@@ -64,7 +64,7 @@ in {
       luaFile = (pkgs.writeText "init.lua" luaText);
 
       # The actual neovim package solution.
-      neovimPackage = neovim-pkgs.neovim.override {
+      neovimPackage = extra-pkgs.neovim-pkgs.neovim.override {
         configure = {
           #  This is trying to load as a vimscript file, not lua.  Need to
           #     continue to investigate.
