@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ pkgs, extra-pkgs, ... }:
 
 let
   rustAnalyzerLua = /*lua*/ ''
@@ -13,6 +13,7 @@ in
 {
   lua = rustAnalyzerLua;
 
-  packages = with pkgs; [
+  packages = with extra-pkgs.rustanalyzer-pkgs; [
+    rust-analyzer
   ];
 }
