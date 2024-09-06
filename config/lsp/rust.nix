@@ -17,8 +17,8 @@ in
     # This is the lsp server, but requires access to cargo and rustc
     rust-analyzer
 
-    rustc
-    rustup
-    cargo
+    #rustc
+    #rustup
+    #cargo
   ];
 }
