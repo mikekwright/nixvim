@@ -2,7 +2,7 @@
 
 let
   db-lua-config = ''
-  
+  nkeymap("<leader>d", ":DBUIToggle<CR>")
   '';
 in
 {
