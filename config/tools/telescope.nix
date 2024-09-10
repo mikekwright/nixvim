@@ -29,6 +29,9 @@ let
     nkeymap('<leader>fg', telescopeBuiltin.live_grep)
     nkeymap('<leader>fb', telescopeBuiltin.buffers)
     nkeymap('<leader>fh', telescopeBuiltin.help_tags)
+
+    local telescopeExtensions = require('telescope')
+    telescopeExtensions.load_extension('fzf')
   '';
 in
 {
@@ -37,12 +40,10 @@ in
   vimPackages = with extra-pkgs.nvim-telescope-pkgs.vimPlugins; [
     telescope-nvim
     plenary-nvim
+    telescope-fzf-native-nvim
   ];
 
   packages = with extra-pkgs.nvim-telescope-pkgs; [
     fd
-    #fzf
-    #fzf-vim
-    #fzf-zsh
   ];
 }
