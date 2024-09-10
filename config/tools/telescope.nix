@@ -30,6 +30,8 @@ let
     nkeymap('<leader>fb', telescopeBuiltin.buffers)
     nkeymap('<leader>fh', telescopeBuiltin.help_tags)
 
+    -- List of possible extensions, but need to be careful to not load too many
+    --   https://github.com/nvim-telescope/telescope.nvim/wiki/Extensions
     local telescopeExtensions = require('telescope')
     telescopeExtensions.load_extension('fzf')
   '';

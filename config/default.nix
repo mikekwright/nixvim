@@ -34,6 +34,9 @@ let
     vim.opt.termguicolors = true;
     vim.opt.timeoutlen = 1000;
     vim.opt.wrap = false;
+    
+    -- Disable all swap files
+    vim.opt.swapfile = false;
 
     -- Option that lets copy and paste work with system without special clipboard named "+
     vim.api.nvim_set_option("clipboard", "unnamedplus")

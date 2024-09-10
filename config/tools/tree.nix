@@ -1,15 +1,15 @@
-{ pkgs, ... }:
+{ extra-pkgs, ... }:
 
 let
-  nvimTreePlugin = pkgs.vimUtils.buildVimPlugin {
-    name = "nvim-tree.lua";
-    src = pkgs.fetchFromGitHub {
-      owner = "nvim-tree";
-      repo = "nvim-tree.lua";
-      rev = "nvim-tree-v1.6.0";
-      sha256 = "flZphMVMQdwBrJJ+3F5v7WAtnrv1Uwq2UmA+cgGfuQA=";
-    };
-  };
+  # nvimTreePlugin = pkgs.vimUtils.buildVimPlugin {
+  #   name = "nvim-tree.lua";
+  #   src = pkgs.fetchFromGitHub {
+  #     owner = "nvim-tree";
+  #     repo = "nvim-tree.lua";
+  #     rev = "nvim-tree-v1.6.0";
+  #     sha256 = "flZphMVMQdwBrJJ+3F5v7WAtnrv1Uwq2UmA+cgGfuQA=";
+  #   };
+  # };
 
   nvimTreeLua = /*lua*/ ''
     -- This was pulled from the nvim-tree documentation
@@ -168,11 +168,15 @@ let
     -- Run the tree on startup for editor
     vim.api.nvim_create_autocmd("VimEnter", {callback = open_nvim_tree})
 
-    
-
   '';
 in
 {
-  vimPackages = [ nvimTreePlugin ];
   lua = nvimTreeLua;
+
+  vimPackages = with extra-pkgs.nvim-tree-pkgs.vimPlugins; [
+    nvim-tree-lua
+
+    # Show the icons in the tree (will require a font)
+    nvim-web-devicons
+  ];
 }

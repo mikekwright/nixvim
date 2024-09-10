@@ -1,4 +1,4 @@
-{ pkgs, extra-pkgs, ... }:
+{ extra-pkgs, ... }:
 
 let
   rustAnalyzerLua = /*lua*/ ''
