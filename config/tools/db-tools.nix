@@ -39,7 +39,7 @@ in
       };
     };
   in
- [
+  [
     dadbod
     dadbod-ui
     dadbod-completion

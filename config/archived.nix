@@ -29,9 +29,6 @@ let
       require('telescope').load_extension(extension)
     end
 
-    require("lualine").setup({["options"] = {["icons_enabled"] = true}})
-    require("luasnip").config.set_config({})
-
     -- LSP {{{
     do
       
@@ -45,7 +42,6 @@ let
       local __lspCapabilities = function()
         capabilities = vim.lsp.protocol.make_client_capabilities()
 
-        
 
         return capabilities
       end
@@ -76,72 +72,7 @@ let
     end
     -- }}}
 
-    local function open_nvim_tree(data)
-
-      ------------------------------------------------------------------------------------------
-
-      -- buffer is a directory
-      local directory = vim.fn.isdirectory(data.file) == 1
-
-      -- buffer is a [No Name]
-      local no_name = data.file == "" and vim.bo[data.buf].buftype == ""
-
-      -- Will automatically open the tree when running setup if startup buffer is a directory,
-      -- is empty or is unnamed. nvim-tree window will be focused.
-      local open_on_setup = true
-
-      if (directory or no_name) and open_on_setup then
-        -- change to the directory
-        if directory then
-          vim.cmd.cd(data.file)
-        end
-
-        -- open the tree
-        require("nvim-tree.api").tree.open()
-        return
-      end
-
-      ------------------------------------------------------------------------------------------
-
-      -- Will automatically open the tree when running setup if startup buffer is a file.
-      -- File window will be focused.
-      -- File will be found if updateFocusedFile is enabled.
-      local open_on_setup_file = false
-
-      -- buffer is a real file on the disk
-      local real_file = vim.fn.filereadable(data.file) == 1
-
-      if (real_file or no_name) and open_on_setup_file then
-
-        -- skip ignored filetypes
-        local filetype = vim.bo[data.buf].ft
-        local ignored_filetypes = {}
-
-        if not vim.tbl_contains(ignored_filetypes, filetype) then
-          -- open the tree but don't focus it
-          require("nvim-tree.api").tree.toggle({ focus = false })
-          return
-        end
-      end
-
-      ------------------------------------------------------------------------------------------
-
-      -- Will ignore the buffer, when deciding to open the tree on setup.
-      local ignore_buffer_on_setup = false
-      if ignore_buffer_on_setup then
-        require("nvim-tree.api").tree.open()
-      end
-
-    end
-
-    require('nvim-tree').setup({["actions"] = {["open_file"] = {["window_picker"] = {["enable"] = false}}},["hijack_directories"] = {["auto_open"] = true},["on_attach"] = function(bufnr)
-      nvimTreeOnAttach(bufnr)
-    end
-    })
-
     require('bufferline').setup{["options"] = {["hover"] = {["enabled"] = false}}}
-
-    require('CopilotChat').setup({})
 
     require("otter").activate({ "javascript", "python", "rust", "lua"}, true, true, nil) 
 
@@ -233,141 +164,6 @@ let
       vim.keymap.set("n", "<C-W>L", "<Cmd>WinShift right<CR>", { silent = true, noremap = true })
       -- Swap two windows:
       --nnoremap <C-W>X <Cmd>WinShift swap<CR>
-    end
-
-
-    -- While the below works for normal mode, it does not work for visual mode at this time
-    --    I am just going to use the nixvim setup for defining the keys for toggle
-    local commentApi = require('Comment.api')
-    local commentVvar = vim.api.nvim_get_vvar
-
-    local commentKey = "<leader>kc"
-    local uncommentKey = "<leader>ku"
-
-    --vim.keymap.set("n", "<leader>kc", commentApi.comment.linewise.current, { silent = true, noremap = true })
-
-    -- NORMAL mode mappings
-    --vim.keymap.set('n', commentKey, '<Plug>(comment_comment_linewise)', { desc = 'Comment toggle linewise' })
-    --vim.keymap.set('n', cfg.opleader.block, '<Plug>(comment_comment_blockwise)', { desc = 'Comment toggle blockwise' })
-
-    --vim.keymap.set('n', commentKey, function()
-    --    return commentVvar('count') == 0 and '<Plug>(comment_comment_linewise_current)'
-    --        or '<Plug>(comment_comment_linewise_count)'
-    --end, { expr = true, desc = 'Comment toggle current line' })
-
-    -- vim.keymap.set('n', commentKey, function()
-    --     return vvar('count') == 0 and '<Plug>(comment_toggle_blockwise_current)'
-    --         or '<Plug>(comment_toggle_blockwise_count)'
-    -- end, { expr = true, desc = 'Comment toggle current block' })
-
-    -- VISUAL mode mappings
-    --vim.keymap.set('x', commentKey, '<Plug>(comment_comment_linewise_visual)', { desc = 'Comment toggle linewise (visual)' })
-    --vim.keymap.set('v', commentKey, '<Plug>(comment_comment_linewise_visual)', { desc = 'Comment toggle linewise (visual)' })
-    -- K(
-    --     'x',
-    --     cfg.opleader.block,
-    --     '<Plug>(comment_toggle_blockwise_visual)',
-    --     { desc = 'Comment toggle blockwise (visual)' }
-    -- )
-
-
-    --commentApi = require("Comment.api")
-    vim.keymap.set("n", "<leader>kc", commentApi.comment.linewise.current, { silent = true, noremap = true })
-    vim.keymap.set("n", "<leader>ku", commentApi.uncomment.linewise.current, { silent = true, noremap = true })
-    vim.keymap.set("v", "<leader>kc", '<Plug>(comment_toggle_linewise_visual)', { silent = true, noremap = true })
-    vim.keymap.set("v", "<leader>ku", '<Plug>(comment_toggle_linewise_visual)', { silent = true, noremap = true })
-
-
-    --vim.keymap.set("v", "<leader>kc", function()
-        -- vim.api.nvim_feedkeys(esc, 'nx', false)
-    --    commentApi.comment.linewise(vim.fn.visualmode())
-    --end, { silent = true, noremap = true })
-    -- vim.keymap.set("v", "<leader>ku", commentApi.uncomment.linewise(vim.fn.visualmode()), { silent = true, noremap = true })
-
-    local telescopeBuiltin = require('telescope.builtin')
-    vim.keymap.set('n', '<leader>ff', telescopeBuiltin.find_files, {})
-    vim.keymap.set('n', '<C-p>', telescopeBuiltin.find_files, {})
-    vim.keymap.set('n', '<leader>fg', telescopeBuiltin.live_grep, {})
-    vim.keymap.set('n', '<leader>fb', telescopeBuiltin.buffers, {})
-    vim.keymap.set('n', '<leader>fh', telescopeBuiltin.help_tags, {})
-
-    -- This was pulled from the nvim-tree documentation
-    --   https://github.com/nvim-tree/nvim-tree.lua/blob/master/lua/nvim-tree/keymap.lua
-    --
-    function nvimTreeOnAttach(bufnr)
-      local api = require('nvim-tree.api')
-
-      local function opts(desc)
-        return {
-          desc = 'nvim-tree: ' .. desc,
-          buffer = bufnr,
-          noremap = true,
-          silent = true,
-          nowait = true,
-        }
-      end
-
-      -- BEGIN_DEFAULT_ON_ATTACH
-      vim.keymap.set('n', '<C-]>',   api.tree.change_root_to_node,        opts('CD'))
-      vim.keymap.set('n', '<C-e>',   api.node.open.replace_tree_buffer,   opts('Open: In Place'))
-      vim.keymap.set('n', '<C-k>',   api.node.show_info_popup,            opts('Info'))
-      vim.keymap.set('n', '<C-r>',   api.fs.rename_sub,                   opts('Rename: Omit Filename'))
-      vim.keymap.set('n', '<C-t>',   api.node.open.tab,                   opts('Open: New Tab'))
-      vim.keymap.set('n', '<C-v>',   api.node.open.vertical,              opts('Open: Vertical Split'))
-      vim.keymap.set('n', '<C-x>',   api.node.open.horizontal,            opts('Open: Horizontal Split'))
-      vim.keymap.set('n', '<BS>',    api.node.navigate.parent_close,      opts('Close Directory'))
-      vim.keymap.set('n', '<CR>',    api.node.open.edit,                  opts('Open'))
-      vim.keymap.set('n', '<Tab>',   api.node.open.preview,               opts('Open Preview'))
-      vim.keymap.set('n', '>',       api.node.navigate.sibling.next,      opts('Next Sibling'))
-      vim.keymap.set('n', '<',       api.node.navigate.sibling.prev,      opts('Previous Sibling'))
-      vim.keymap.set('n', '.',       api.node.run.cmd,                    opts('Run Command'))
-      vim.keymap.set('n', '-',       api.tree.change_root_to_parent,      opts('Up'))
-      vim.keymap.set('n', 'a',       api.fs.create,                       opts('Create File Or Directory'))
-      vim.keymap.set('n', 'bd',      api.marks.bulk.delete,               opts('Delete Bookmarked'))
-      vim.keymap.set('n', 'bt',      api.marks.bulk.trash,                opts('Trash Bookmarked'))
-      vim.keymap.set('n', 'bmv',     api.marks.bulk.move,                 opts('Move Bookmarked'))
-      vim.keymap.set('n', 'B',       api.tree.toggle_no_buffer_filter,    opts('Toggle Filter: No Buffer'))
-      vim.keymap.set('n', 'c',       api.fs.copy.node,                    opts('Copy'))
-      vim.keymap.set('n', 'C',       api.tree.toggle_git_clean_filter,    opts('Toggle Filter: Git Clean'))
-      vim.keymap.set('n', '[c',      api.node.navigate.git.prev,          opts('Prev Git'))
-      vim.keymap.set('n', ']c',      api.node.navigate.git.next,          opts('Next Git'))
-      vim.keymap.set('n', 'd',       api.fs.remove,                       opts('Delete'))
-      vim.keymap.set('n', 'D',       api.fs.trash,                        opts('Trash'))
-      vim.keymap.set('n', 'E',       api.tree.expand_all,                 opts('Expand All'))
-      vim.keymap.set('n', 'e',       api.fs.rename_basename,              opts('Rename: Basename'))
-      vim.keymap.set('n', ']e',      api.node.navigate.diagnostics.next,  opts('Next Diagnostic'))
-      vim.keymap.set('n', '[e',      api.node.navigate.diagnostics.prev,  opts('Prev Diagnostic'))
-      vim.keymap.set('n', 'F',       api.live_filter.clear,               opts('Live Filter: Clear'))
-      vim.keymap.set('n', 'f',       api.live_filter.start,               opts('Live Filter: Start'))
-      vim.keymap.set('n', 'g?',      api.tree.toggle_help,                opts('Help'))
-      vim.keymap.set('n', 'gy',      api.fs.copy.absolute_path,           opts('Copy Absolute Path'))
-      vim.keymap.set('n', 'ge',      api.fs.copy.basename,                opts('Copy Basename'))
-      vim.keymap.set('n', 'H',       api.tree.toggle_hidden_filter,       opts('Toggle Filter: Dotfiles'))
-      vim.keymap.set('n', 'I',       api.tree.toggle_gitignore_filter,    opts('Toggle Filter: Git Ignore'))
-      vim.keymap.set('n', 'J',       api.node.navigate.sibling.last,      opts('Last Sibling'))
-      vim.keymap.set('n', 'K',       api.node.navigate.sibling.first,     opts('First Sibling'))
-      vim.keymap.set('n', 'L',       api.node.open.toggle_group_empty,    opts('Toggle Group Empty'))
-      vim.keymap.set('n', 'M',       api.tree.toggle_no_bookmark_filter,  opts('Toggle Filter: No Bookmark'))
-      vim.keymap.set('n', 'm',       api.marks.toggle,                    opts('Toggle Bookmark'))
-      vim.keymap.set('n', 'o',       api.node.open.edit,                  opts('Open'))
-      vim.keymap.set('n', 'O',       api.node.open.no_window_picker,      opts('Open: No Window Picker'))
-      vim.keymap.set('n', 'p',       api.fs.paste,                        opts('Paste'))
-      vim.keymap.set('n', 'P',       api.node.navigate.parent,            opts('Parent Directory'))
-      vim.keymap.set('n', 'q',       api.tree.close,                      opts('Close'))
-      vim.keymap.set('n', 'r',       api.fs.rename,                       opts('Rename'))
-      vim.keymap.set('n', 'R',       api.tree.reload,                     opts('Refresh'))
-      --vim.keymap.set('n', 's',       api.node.run.system,                 opts('Run System'))
-      vim.keymap.set('n', 'S',       api.tree.search_node,                opts('Search'))
-      vim.keymap.set('n', 'u',       api.fs.rename_full,                  opts('Rename: Full Path'))
-      vim.keymap.set('n', 'U',       api.tree.toggle_custom_filter,       opts('Toggle Filter: Hidden'))
-      vim.keymap.set('n', 'W',       api.tree.collapse_all,               opts('Collapse'))
-      vim.keymap.set('n', 'x',       api.fs.cut,                          opts('Cut'))
-      vim.keymap.set('n', 'y',       api.fs.copy.filename,                opts('Copy Name'))
-      vim.keymap.set('n', 'Y',       api.fs.copy.relative_path,           opts('Copy Relative Path'))
-      vim.keymap.set('n', '<2-LeftMouse>',  api.node.open.edit,           opts('Open'))
-      vim.keymap.set('n', '<2-RightMouse>', api.tree.change_root_to_node, opts('CD'))
-
-      vim.keymap.set("n", "s", api.node.open.vertical, {})
     end
 
     require('copilot').setup({
@@ -474,7 +270,15 @@ let
     -- }}
     -- Set up autocommands {{
     do
-      local __nixvim_autocommands = {{["callback"] = open_nvim_tree,["event"] = "VimEnter"},{["command"] = "if winnr('$') == 1 && bufname() == 'NvimTree_' . tabpagenr() | quit | endif",["event"] = "BufEnter",["nested"] = true},{["callback"] = function()
+    local __nixvim_autocommands = {
+      {
+        ["callback"] = open_nvim_tree,
+        ["event"] = "VimEnter"
+      },{
+        ["command"] = "if winnr('$') == 1 && bufname() == 'NvimTree_' . tabpagenr() | quit | endif",
+        ["event"] = "BufEnter",
+        ["nested"] = true},
+        {["callback"] = function()
       do
         local __nixvim_binds = {}
         for i, map in ipairs(__nixvim_binds) do
