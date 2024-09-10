@@ -3,6 +3,8 @@
 let
   rustAnalyzerLua = /*lua*/ ''
     lspconfig.rust_analyzer.setup {
+      capabilities = lsp_cmp_capabilities,
+
       -- Server-specific settings. See `:help lspconfig-setup`
       settings = {
         ['rust-analyzer'] = {},

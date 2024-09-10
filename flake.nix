@@ -15,7 +15,11 @@
     # This is for rust-analyzer 2024-08-27
     rustanalyzer-nixpkgs.url = "github:nixos/nixpkgs?ref=5629520edecb69630a3f4d17d3d33fc96c13f6fe";
 
+    # This is for the treesitter (and corresponding packages) 2024-08-04
     nvim-treesitter-nixpkgs.url = "github:nixos/nixpkgs?ref=5629520edecb69630a3f4d17d3d33fc96c13f6fe";
+
+    # This is the nvim-lspconfig (and corresponding packages) 2024-08-02
+    nvim-lspconfig-nixpkgs.url = "github:nixos/nixpkgs/5629520edecb69630a3f4d17d3d33fc96c13f6fe";
   };
 
   outputs = {
@@ -42,6 +46,7 @@
           pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
           neovim-pkgs = neovim-nixpkgs.legacyPackages.${system};
           nvim-treesitter-pkgs = inputs.nvim-treesitter-nixpkgs.legacyPackages.${system};
+	  nvim-lspconfig-pkgs = inputs.nvim-lspconfig-nixpkgs.legacyPackages.${system};
         };
 
         debug = (import ./lib/debug.nix { inherit pkgs extra-pkgs system; });
