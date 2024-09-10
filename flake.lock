@@ -78,12 +78,29 @@
         "type": "github"
       }
     },
+    "nvim-treesitter-nixpkgs": {
+      "locked": {
+        "lastModified": 1725099143,
+        "narHash": "sha256-CHgumPZaC7z+WYx72WgaLt2XF0yUVzJS60rO4GZ7ytY=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "5629520edecb69630a3f4d17d3d33fc96c13f6fe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "5629520edecb69630a3f4d17d3d33fc96c13f6fe",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "flake-parts": "flake-parts",
         "neovim-nixpkgs": "neovim-nixpkgs",
         "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable",
+        "nvim-treesitter-nixpkgs": "nvim-treesitter-nixpkgs",
         "rustanalyzer-nixpkgs": "rustanalyzer-nixpkgs"
       }
     },

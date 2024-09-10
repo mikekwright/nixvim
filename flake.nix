@@ -14,6 +14,8 @@
 
     # This is for rust-analyzer 2024-08-27
     rustanalyzer-nixpkgs.url = "github:nixos/nixpkgs?ref=5629520edecb69630a3f4d17d3d33fc96c13f6fe";
+
+    nvim-treesitter-nixpkgs.url = "github:nixos/nixpkgs?ref=5629520edecb69630a3f4d17d3d33fc96c13f6fe";
   };
 
   outputs = {
@@ -39,6 +41,7 @@
           rustanalyzer-pkgs = inputs.rustanalyzer-nixpkgs.legacyPackages.${system};
           pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
           neovim-pkgs = neovim-nixpkgs.legacyPackages.${system};
+          nvim-treesitter-pkgs = inputs.nvim-treesitter-nixpkgs.legacyPackages.${system};
         };
 
         debug = (import ./lib/debug.nix { inherit pkgs extra-pkgs system; });
