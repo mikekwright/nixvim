@@ -15,10 +15,9 @@ If you add a new configuration file, remember to add it to the
 
 To test your configuration simply run the following command
 
-```
+```bash
 nix run .
 ```
-
 
 ## References
 
@@ -31,4 +30,3 @@ nix run .
 * [Article - Nixvim with home manager and custom vim plugin](https://valentinpratz.de/posts/2024-02-12-nixvim-home-manager/)
 * [Youtube - Simple series on configuring Neovim](https://www.youtube.com/watch?v=zHTeCSVAFNY)
 * [Github - Another nvim example](https://github.com/elythh/nixvim)
-

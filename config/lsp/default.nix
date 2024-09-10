@@ -1,4 +1,4 @@
-{ extra-pkgs, ... }:
+{ pkgs, extra-pkgs, ... }:
 
 let
   lsp-config-lua = /*lua*/ ''
@@ -45,6 +45,53 @@ let
   --    {["name"] = "elmls"},{["extraOptions"] = {["cmd"] = {"/nix/store/qcic3nndsfw1ym2d0p4xwscxb4c5rbxy-vscode-langservers-extracted-4.10.0/bin/vscode-css-language-server","--stdio"}},["name"] = "cssls"}}
   --    local __lspOnAttach = function(client, bufnr)
 
+    --  This is better as it will only set the keymap if the server supports it
+    --     (figure out current capabilities by running:
+    --     :lua =vim.lsp.get_active_clients()[1].server_capabilities
+    vim.api.nvim_create_autocmd('LspAttach', {
+      callback = function(args)
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+
+        if client.server_capabilities.hoverProvider then
+          vim.keymap.set('n', '<C-k>', vim.lsp.buf.hover, { buffer = args.buf })
+        end
+
+        if client.server_capabilities.document_formatting then
+          vim.keymap.set('n', '<leader>lf', vim.lsp.buf.formatting, { buffer = args.buf })
+        end
+
+        if client.server_capabilities.code_action_provider then
+          vim.keymap.set('n', '<leader>la', vim.lsp.buf.code_action, { buffer = args.buf })
+        end
+
+        if client.server_capabilities.signatureHelpProvider then
+          vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, { buffer = args.buf })
+        end
+
+        if client.server_capabilities.renameProvider then
+          vim.keymap.set('n', '<leader>lr', vim.lsp.buf.rename, { buffer = args.buf })
+        end
+
+        if client.server_capabilities.definitionProvider then
+          vim.keymap.set('n', '<C-b>', vim.lsp.buf.definition, { buffer = args.buf })
+        end
+      end,
+    })
+
+    local null_ls = require("null-ls")
+
+    null_ls.setup({
+      sources = {
+        null_ls.builtins.formatting.stylua,
+        null_ls.builtins.completion.spell,
+
+        null_ls.builtins.diagnostics.fish,
+        null_ls.builtins.diagnostics.markdownlint,
+
+        require("none-ls.diagnostics.eslint"), -- requires none-ls-extras.nvim
+      },
+    })
+
   '';
 in
 {
@@ -53,14 +100,32 @@ in
   imports = [
     ./rust.nix
     ./nix.nix
+    ./python.nix
   ];
 
   lua = lsp-config-lua;
 
-  vimPackages =  [
+  vimPackages = let
+    none-ls-extras = pkgs.vimUtils.buildVimPlugin {
+      name = "none-ls-extras.nvim";
+      src = pkgs.fetchFromGitHub {
+        owner = "nvimtools";
+        repo = "none-ls-extras.nvim";
+        rev = "387590a3ea0986b33bb1ba90c506e0153dfe14a5";
+        sha256 = "9Eatn1LW6k4Bjk50vYd1AfXWSgaJqnTnUNAuLp2ezck=";
+      };
+    };
+  in [
+    none-ls-extras
   ] ++ (with extra-pkgs.nvim-lspconfig-pkgs.vimPlugins; [
     nvim-lspconfig
     nvim-cmp
     cmp-nvim-lsp
+
+    none-ls-nvim
   ]);
+
+  packages = with pkgs; [
+    markdownlint-cli
+  ];
 }
