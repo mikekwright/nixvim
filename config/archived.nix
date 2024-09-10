@@ -3,17 +3,6 @@
 
 let
   luaConfig = /*lua*/ ''
-    -- Set up globals {{{
-    do
-      local nixvim_globals = {["mapleader"] = ","}
-
-      for k,v in pairs(nixvim_globals) do
-        vim.g[k] = v
-      end
-    end
-    -- }}}
-
-
     -- Set up options {{{
     do
       local nixvim_options = {["breakindent"] = false,["encoding"] = "utf-8",["expandtab"] = true,["fileencoding"] = "utf-8",["filetype"] = "on",["hidden"] = true,["history"] = 1000,["ignorecase"] = true,["number"] = true,["relativenumber"] = false,["shiftwidth"] = 2,["showmode"] = true,["showtabline"] = 2,["smartindent"] = true,["softtabstop"] = 2,["tabstop"] = 2,["termguicolors"] = true,["timeoutlen"] = 1000,["wrap"] = false}
@@ -27,11 +16,6 @@ let
 
     vim.loader.disable()
 
-    -- Ignore the user lua configuration
-    vim.opt.runtimepath:remove(vim.fn.stdpath('config'))              -- ~/.config/nvim
-    vim.opt.runtimepath:remove(vim.fn.stdpath('config') .. "/after")  -- ~/.config/nvim/after
-    vim.opt.runtimepath:remove(vim.fn.stdpath('data') .. "/site")     -- ~/.local/share/nvim/site
-
     vim.cmd([[
       
     ]])
@@ -39,8 +23,6 @@ let
 
     require('Comment').setup({})
 
-
-    require('telescope').setup({["file_ignore_patterns"] = {"^.git/","^.mypy_cache/","^__pycache__/","^output/","^data/","%.ipynb"},["layout_config"] = {["prompt_position"] = "top"},["selection_caret"] = "> ",["set_env"] = {["COLORTERM"] = "truecolor"},["sorting_strategy"] = "ascending"})
 
     local __telescopeExtensions = {}
     for i, extension in ipairs(__telescopeExtensions) do
@@ -93,8 +75,6 @@ let
 
     end
     -- }}}
-
-    require('nvim-treesitter.configs').setup({["highlight"] = {["enable"] = true}})
 
     local function open_nvim_tree(data)
 
@@ -481,48 +461,6 @@ let
     --    vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = args.buf })
     --  end,
     --})
-
-    vim.cmd [[colorscheme jellybeans]]
-
-    local function keymap(key, action)
-      vim.keymap.set("n", key, action, { silent = true, noremap = false })
-    end
-
-    local function nkeymap(key, action)
-      vim.keymap.set("n", key, action, { silent = true, noremap = true })
-    end
-
-
-    -- Easily toggle between relative number showing
-    nkeymap("<leader>r", function()
-      vim.wo.relativenumber = not vim.wo.relativenumber
-    end)
-
-    --
-    -- This is just an example till a useful one emerges
-    --
-    --local treeApi = require("nvim-tree.api")
-    --nkeymap("<leader>e", treeApi.tree.toggle)
-
-    -- Terminal Keys
-    local function tkeymap(key, action)
-      vim.keymap.set("t", key, action, { silent = true, noremap = true })
-    end
-
-    tkeymap("<C-w>h", "<C-\\><C-n><C-w>h")
-    tkeymap("<C-w>j", "<C-\\><C-n><C-w>j")
-    tkeymap("<C-w>k", "<C-\\><C-n><C-w>k")
-    tkeymap("<C-w>l", "<C-\\><C-n><C-w>l")
-    tkeymap("<C-t>", "<C-\\><C-n>")
-
-    keymap("<C-t>", ":new<CR>:terminal<CR>i")  -- The extra i should put it in insert mode for the terminal
-
-    -- Tab is not supported in neovim by default, this maps to insert mode flow
-    --vim.keymap.set("n", "<TAB>", ">>")
-    --vim.keymap.set("n", "<S-TAB>", "<<")
-
-    -- Option that lets copy and paste work with system without special clipboard named "+
-    vim.api.nvim_set_option("clipboard", "unnamedplus")
 
 
     -- Set up autogroups {{

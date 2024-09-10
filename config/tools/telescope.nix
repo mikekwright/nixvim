@@ -4,7 +4,7 @@
 let
   telescope-lua-config = /*lua*/ ''
     require('telescope').setup({
-      ["file_ignore_patterns"] = {
+      file_ignore_patterns = {
         "^.git/",
         "^.mypy_cache/",
         "^__pycache__/",
@@ -13,14 +13,14 @@ let
         "%.ipynb",
         "^target/",
       },
-      ["layout_config"] = {
-        ["prompt_position"] = "top"
+      layout_config = {
+        prompt_position = "top"
       },
-      ["selection_caret"] = "> ",
-      ["set_env"] = {
-        ["COLORTERM"] = "truecolor"
+      selection_caret = "> ",
+      set_env = {
+        COLORTERM = "truecolor"
       },
-      ["sorting_strategy"] = "ascending"
+      sorting_strategy = "ascending"
     })
 
     local telescopeBuiltin = require('telescope.builtin')
@@ -45,6 +45,4 @@ in
     #fzf-vim
     #fzf-zsh
   ];
-
-  
 }

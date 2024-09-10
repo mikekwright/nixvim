@@ -1,4 +1,4 @@
-{ pkgs, debug, extra-pkgs, ... }:
+{ debug, ... }:
 
 let
   #treesitter-ensured-list = debug.traceResult (
@@ -6,7 +6,7 @@ let
   #);
 
   tools-setup-lua = /*lua*/ ''
-    
+
   '';
 in
 {
