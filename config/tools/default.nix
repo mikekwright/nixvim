@@ -135,6 +135,14 @@ in
     ./db-tools.nix
     ./telescope.nix
     ./copilot.nix
+    ./debugging.nix
+    ./testing.nix
+  ];
+
+  lua = debug.traceResult tools-setup-lua;
+
+  packages = with pkgs; [
+    lazygit
   ];
 
   vimPackages =
@@ -162,6 +170,5 @@ in
       gitsigns-nvim
     ]);
 
-  lua = debug.traceResult tools-setup-lua;
 }
 

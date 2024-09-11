@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 let
   initialLua = /*lua*/ ''
@@ -80,4 +80,19 @@ in
   ];
 
   lua = initialLua;
+
+
+  vimPackages = let
+    nvim-nio = pkgs.vimUtils.buildVimPlugin {
+      name = "nvim-nio";
+      src = pkgs.fetchFromGitHub {
+        owner = "nvim-neotest";
+        repo = "nvim-nio";
+        rev = "v1.10.0";
+        sha256 = "i6imNTb1xrfBlaeOyxyIwAZ/+o6ew9C4/z34a7/BgFg=";
+      };
+    };
+  in [
+    nvim-nio
+  ];
 }
