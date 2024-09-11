@@ -64,13 +64,12 @@ let
           end
         end
 
-        local telescopeBuiltin = require('telescope.builtin')
-        print(telescopeBuiltin)
         --
         -- Features with telescope integrated capabilities
         --
-        feature_enable_check('<C-b>', 'definition', client.server_capabilities.definitionProvider, vim.lsp.buf.definition)
+        local telescopeBuiltin = require('telescope.builtin')
         if telescopeBuiltin then
+          feature_enable_check('<C-b>', 'definition', client.server_capabilities.definitionProvider, telescopeBuiltin.lsp_definitions)
           feature_enable_check('<leader>ld', 'definition', client.server_capabilities.definitionProvider, telescopeBuiltin.lsp_definitions)
           feature_enable_check('<leader>li', 'implementation', client.server_capabilities.implementationProvider, telescopeBuiltin.lsp_implementation)
           feature_enable_check('<leader>lc', 'references', client.server_capabilities.referencesProvider, telescopeBuiltin.lsp_references)
@@ -83,6 +82,7 @@ let
           feature_enable_check('<leader>fw', 'workspace', client.server_capabilities.workspaceSymbolProvider, telescopeBuiltin.lsp_workspace_symbols)
 
         else
+          feature_enable_check('<C-b>', 'definition', client.server_capabilities.definitionProvider, vim.lsp.buf.definition)
           feature_enable_check('<leader>ld', 'definition', client.server_capabilities.definitionProvider, vim.lsp.buf.definition)
           feature_enable_check('<leader>li', 'implementation', client.server_capabilities.implementationProvider, vim.lsp.buf.implementation)
           feature_enable_check('<leader>lr', 'references', client.server_capabilities.referencesProvider, vim.lsp.buf.references)
