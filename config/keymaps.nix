@@ -15,6 +15,7 @@ let
 
     -- This key opens a new terminal
     keymap("<C-t>", ":new<CR>:terminal<CR>i")  -- The extra i should put it in insert mode for the terminal
+    keymap("<leader>tt", ":new<CR>:terminal<CR>i")  -- The extra i should put it in insert mode for the terminal
 
     -- Tab is not supported in neovim by default, this maps to insert mode flow
     --vim.keymap.set("n", "<TAB>", ">>")

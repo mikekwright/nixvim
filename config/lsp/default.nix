@@ -45,41 +45,72 @@ let
   --    {["name"] = "elmls"},{["extraOptions"] = {["cmd"] = {"/nix/store/qcic3nndsfw1ym2d0p4xwscxb4c5rbxy-vscode-langservers-extracted-4.10.0/bin/vscode-css-language-server","--stdio"}},["name"] = "cssls"}}
   --    local __lspOnAttach = function(client, bufnr)
 
-    --  This is better as it will only set the keymap if the server supports it
+    local lsp_debug_enabled = false
+
+        --  This is better as it will only set the keymap if the server supports it
     --     (figure out current capabilities by running:
     --     :lua =vim.lsp.get_active_clients()[1].server_capabilities
     vim.api.nvim_create_autocmd('LspAttach', {
       callback = function(args)
         local client = vim.lsp.get_client_by_id(args.data.client_id)
+        dprint('    Checking LSP capabilities for ' .. client.name .. ' (' .. args.buf .. ')')
 
-        if client.server_capabilities.hoverProvider then
-          vim.keymap.set('n', '<C-k>', vim.lsp.buf.hover, { buffer = args.buf })
+        local function feature_enable_check(key, name, feature, lsp_option)
+          if feature then
+            dprint("LSP ( S) - " .. name .. ": " .. client.name .. "(" .. args.buf .. ") - " .. key)
+            vim.keymap.set('n', key, lsp_option, { buffer = args.buf })
+          else
+            -- dprint("LSP (US) - " .. name .. ": " .. client.name .. "(" .. args.buf .. ")")
+          end
         end
 
-        if client.server_capabilities.document_formatting then
-          vim.keymap.set('n', '<leader>lf', vim.lsp.buf.formatting, { buffer = args.buf })
+        local telescopeBuiltin = require('telescope.builtin')
+        print(telescopeBuiltin)
+        --
+        -- Features with telescope integrated capabilities
+        --
+        feature_enable_check('<C-b>', 'definition', client.server_capabilities.definitionProvider, vim.lsp.buf.definition)
+        if telescopeBuiltin then
+          feature_enable_check('<leader>ld', 'definition', client.server_capabilities.definitionProvider, telescopeBuiltin.lsp_definitions)
+          feature_enable_check('<leader>li', 'implementation', client.server_capabilities.implementationProvider, telescopeBuiltin.lsp_implementation)
+          feature_enable_check('<leader>lc', 'references', client.server_capabilities.referencesProvider, telescopeBuiltin.lsp_references)
+          feature_enable_check('<leader>lR', 'references', client.server_capabilities.referencesProvider, telescopeBuiltin.lsp_incoming_calls)
+          feature_enable_check('<leader>lC', 'references', client.server_capabilities.referencesProvider, telescopeBuiltin.lsp_outgoing_calls)
+          feature_enable_check('<leader>lt', 'type_def', client.server_capabilities.typeDefinitionProvider, telescopeBuiltin.lsp_type_definitions)
+          feature_enable_check('<leader>fs', 'symbols', client.server_capabilities.documentSymbolProvider, telescopeBuiltin.lsp_document_symbols)
+          feature_enable_check('<leader>lS', 'symbols', client.server_capabilities.documentSymbolProvider, telescopeBuiltin.lsp_document_symbols)
+          feature_enable_check('<leader>lw', 'workspace', client.server_capabilities.workspaceSymbolProvider, telescopeBuiltin.lsp_workspace_symbols)
+          feature_enable_check('<leader>fw', 'workspace', client.server_capabilities.workspaceSymbolProvider, telescopeBuiltin.lsp_workspace_symbols)
+
+        else
+          feature_enable_check('<leader>ld', 'definition', client.server_capabilities.definitionProvider, vim.lsp.buf.definition)
+          feature_enable_check('<leader>li', 'implementation', client.server_capabilities.implementationProvider, vim.lsp.buf.implementation)
+          feature_enable_check('<leader>lr', 'references', client.server_capabilities.referencesProvider, vim.lsp.buf.references)
+          -- feature_enable_check('<leader>lr', 'references', client.server_capabilities.referencesProvider, "<CMD>Telescope lsp_references<CR>")
+          feature_enable_check('<leader>lt', 'type_def', client.server_capabilities.typeDefinitionProvider, vim.lsp.buf.type_definition)
+          feature_enable_check('<leader>lS', 'symbols', client.server_capabilities.documentSymbolProvider, vim.lsp.buf.document_symbol)
+          feature_enable_check('<leader>lw', 'workspace', client.server_capabilities.workspaceSymbolProvider, vim.lsp.buf.workspace_symbol)
         end
 
-        if client.server_capabilities.code_action_provider then
-          vim.keymap.set('n', '<leader>la', vim.lsp.buf.code_action, { buffer = args.buf })
-        end
+        --
+        -- Features without telescope integrated capabilities
+        --
+        feature_enable_check('<leader>lD', 'declaration', client.server_capabilities.declarationProvider, vim.lsp.buf.declaration)
+        feature_enable_check('<leader>lh', 'hover', client.server_capabilities.hoverProvider, vim.lsp.buf.hover)
+        feature_enable_check('<leader>lH', 'highlight', client.server_capabilities.documentHighlightProvider, vim.lsp.buf.document_highlight)
+        feature_enable_check('<leader>lf', 'format', client.server_capabilities.document_formatting, vim.lsp.buf.formatting)
+        feature_enable_check('<leader>ls', 'signature', client.server_capabilities.signatureHelpProvider, vim.lsp.buf.signature_help)
+        feature_enable_check('<leader>la', 'action', client.server_capabilities.code_action_provider, vim.lsp.buf.code_action)
+        feature_enable_check('<leader>lr', 'rename', client.server_capabilities.renameProvider, vim.lsp.buf.rename)
+        
+        --feature_enable_check('<leader>lR', 'references', client.server_capabilities.referencesProvider, vim.lsp.buf.clear_references)
 
-        if client.server_capabilities.signatureHelpProvider then
-          vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, { buffer = args.buf })
-        end
-
-        if client.server_capabilities.renameProvider then
-          vim.keymap.set('n', '<leader>lr', vim.lsp.buf.rename, { buffer = args.buf })
-        end
-
-        if client.server_capabilities.definitionProvider then
-          vim.keymap.set('n', '<C-b>', vim.lsp.buf.definition, { buffer = args.buf })
-        end
+        -- feature_enable_check('<leader>lL', 'document_link', client.server_capabilities.documentLinkProvider, vim.lsp.buf.document_link)
+        feature_enable_check('<leader>ll', 'lens', client.server_capabilities.codeLensProvider, vim.lsp.codelens)
       end,
     })
 
     local null_ls = require("null-ls")
-
     null_ls.setup({
       sources = {
         null_ls.builtins.formatting.stylua,
@@ -87,6 +118,20 @@ let
 
         null_ls.builtins.diagnostics.fish,
         null_ls.builtins.diagnostics.markdownlint,
+
+        -- This is for nix support
+        null_ls.builtins.diagnostics.statix,
+
+        -- This is for rust support
+        null_ls.builtins.formatting.dxfmt,
+
+        -- Python formatting options
+        -- null_ls.builtins.diagnostics.mypy,
+        null_ls.builtins.pyright,
+        null_ls.builtins.diagnostics.flake8,
+        -- null_ls.builtins.formatting.black,
+        --  If black is too slow there is a blackd that can be configured (to be faster)
+        --      https://github.com/nvimtools/none-ls.nvim/blob/main/doc/BUILTINS.md#blackd
 
         require("none-ls.diagnostics.eslint"), -- requires none-ls-extras.nvim
       },
@@ -127,5 +172,12 @@ in
 
   packages = with pkgs; [
     markdownlint-cli
+    statix
+
+    #mypy
+    #black
+    #flake8
+
+    dioxus-cli  # Provides dx for dxfmt
   ];
 }

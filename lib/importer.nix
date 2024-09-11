@@ -61,7 +61,7 @@ in {
       luaText = if builtins.hasAttr "lua" fullModule
         then fullModule.lua
         else "";
-      luaFile = (pkgs.writeText "init.lua" luaText);
+      luaFile = pkgs.writeText "init.lua" luaText;
 
       # The actual neovim package solution.
       neovimPackage = extra-pkgs.neovim-pkgs.neovim.override {
@@ -78,7 +78,7 @@ in {
         };
       };
     #in neovimPackage;
-    in (pkgs.writeShellApplication {
+    in pkgs.writeShellApplication {
       name = "nvim";
       runtimeInputs = [ neovimPackage ] ++ modulePackages;
       text = /*shell*/ ''
@@ -93,6 +93,6 @@ in {
           ${neovimPackage}/bin/nvim -u ${luaFile} "$@"
         fi
       '';
-    });
+    };
 }
 

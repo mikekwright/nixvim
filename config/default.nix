@@ -41,19 +41,33 @@ let
     -- Option that lets copy and paste work with system without special clipboard named "+
     vim.api.nvim_set_option("clipboard", "unnamedplus")
 
-    -- Add helper functions at the top for other lua sections to use
-    local function keymap(key, action)
+    function keymap(key, action)
       vim.keymap.set("n", key, action, { silent = true, noremap = false })
     end
 
-    local function nkeymap(key, action)
+    function nkeymap(key, action)
       vim.keymap.set("n", key, action, { silent = true, noremap = true })
     end
 
     -- Terminal Keys
-    local function tkeymap(key, action)
+    function tkeymap(key, action)
       vim.keymap.set("t", key, action, { silent = true, noremap = true })
     end
+
+    local run_in_debug = false
+    function dprint(msg)
+      if run_in_debug then
+        print(msg)
+      end
+    end
+
+    nkeymap("<leader>qd", function()
+      lsp_debug_enabled = not lsp_debug_enabled
+      print("Custom debugging is now: " .. tostring(lsp_debug_enabled))
+    end)
+
+    -- Changes for jumplist (:help jumplist)
+    nkeymap("<leader>bb", "<C-O>")
   '';
 in
 {
@@ -67,4 +81,3 @@ in
 
   lua = initialLua;
 }
-

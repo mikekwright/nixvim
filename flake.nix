@@ -57,8 +57,8 @@
           nvim-tree-pkgs = inputs.nvim-tree-lua.legacyPackages.${system};
         };
 
-        debug = (import ./lib/debug.nix { inherit pkgs extra-pkgs system; });
-        lib = (import ./lib/importer.nix { inherit debug extra-pkgs pkgs system; });
+        debug = import ./lib/debug.nix { inherit pkgs extra-pkgs system; };
+        lib = import ./lib/importer.nix { inherit debug extra-pkgs pkgs system; };
         
         neovimModule = {
           inherit pkgs extra-pkgs;
