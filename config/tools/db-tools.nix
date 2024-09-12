@@ -1,7 +1,9 @@
 { pkgs, ... }:
 
 let
-  db-lua-config = ''
+  db-lua-config = /*lua*/ ''
+    -- If there are more keys to support look at the plugin documentation
+    --   https://github.com/kristijanhusak/vim-dadbod-ui/blob/master/doc/dadbod-ui.txt#L382
     nkeymap("<leader>dd", ":DBUIToggle<CR>")
     nkeymap("<leader>de", "<Plug>(DBUI_ExecuteQuery)")
     nkeymap("<leader>dc", "<Plug>(DBUI_ToggleResultLayout)")
