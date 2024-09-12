@@ -8,6 +8,8 @@ let
     nkeymap("<leader>de", "<Plug>(DBUI_ExecuteQuery)")
     nkeymap("<leader>dc", "<Plug>(DBUI_ToggleResultLayout)")
     nkeymap("<leader>dq", "<Plug>(DBUI_Quit)")
+    nkeymap("<leader>ds", "<Plug>(DBUI_SaveQuery)")
+    nkeymap("<leader>dr", "<Plug>(DBUI_Redraw)")
   '';
 in
 {
