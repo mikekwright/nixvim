@@ -26,6 +26,9 @@
 
     # This is version 07-28-2024 for nvim-tree-lua
     nvim-tree-lua.url = "github:nixos/nixpkgs/5629520edecb69630a3f4d17d3d33fc96c13f6fe";
+
+    # This is the version used for left sidebar plugins (gitsigns, statuscol, etc.)
+    nvim-gitsigns-nixpkgs.url = "github:nixos/nixpkgs/5629520edecb69630a3f4d17d3d33fc96c13f6fe";
   };
 
   outputs = {
@@ -55,6 +58,7 @@
 	        nvim-lspconfig-pkgs = inputs.nvim-lspconfig-nixpkgs.legacyPackages.${system};
           nvim-telescope-pkgs = inputs.nvim-telescope-nixpkgs.legacyPackages.${system};
           nvim-tree-pkgs = inputs.nvim-tree-lua.legacyPackages.${system};
+          nvim-gitsign-pkgs = inputs.nvim-gitsigns-nixpkgs.legacyPackages.${system};
         };
 
         debug = import ./lib/debug.nix { inherit pkgs extra-pkgs system; };

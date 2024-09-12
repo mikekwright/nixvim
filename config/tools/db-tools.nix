@@ -2,11 +2,18 @@
 
 let
   db-lua-config = ''
-  nkeymap("<leader>d", ":DBUIToggle<CR>")
+    nkeymap("<leader>dd", ":DBUIToggle<CR>")
+    nkeymap("<leader>de", "<Plug>(DBUI_ExecuteQuery)")
+    nkeymap("<leader>dc", "<Plug>(DBUI_ToggleResultLayout)")
+    nkeymap("<leader>dq", "<Plug>(DBUI_Quit)")
   '';
 in
 {
   lua = db-lua-config;
+
+  packages = with pkgs; [
+    postgresql  # Need psql for that tool
+  ];
 
   vimPackages = let
     dadbod = pkgs.vimUtils.buildVimPlugin {
