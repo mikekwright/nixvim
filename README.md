@@ -35,3 +35,4 @@ nix run .
 
 * Install [Statuscol which gives a left side status column](https://github.com/luukvbaal/statuscol.nvim)
 * Look at [Nightfly color scheme](https://github.com/bluz71/vim-nightfly-colors)
+* Install [k8s support](https://github.com/Ramilito/kubectl.nvim)
