@@ -62,8 +62,8 @@ let
     end
 
     nkeymap("<leader>qd", function()
-      lsp_debug_enabled = not lsp_debug_enabled
-      print("Custom debugging is now: " .. tostring(lsp_debug_enabled))
+      run_in_debug = not run_in_debug
+      print("Custom debugging is now: " .. tostring(run_in_debug))
     end)
 
     -- Changes for jumplist (:help jumplist)
