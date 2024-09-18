@@ -16,7 +16,8 @@ in
   lua = db-lua-config;
 
   packages = with pkgs; [
-    postgresql  # Need psql for that tool
+    postgresql  # Need psql for tool
+    redis       # Need redis-cli for tool
   ];
 
   vimPackages = let

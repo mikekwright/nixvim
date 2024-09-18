@@ -138,6 +138,7 @@ in
     ./copilot.nix
     ./debugging.nix
     ./testing.nix
+    ./whichkey.nix
   ];
 
   lua = debug.traceResult tools-setup-lua;

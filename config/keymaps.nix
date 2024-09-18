@@ -17,6 +17,8 @@ let
     keymap("<C-t>", ":new<CR>:terminal<CR>i")  -- The extra i should put it in insert mode for the terminal
     keymap("<leader>tt", ":new<CR>:terminal<CR>i")  -- The extra i should put it in insert mode for the terminal
 
+    keymap("<leader>cs", ":nohlsearch<CR>")  -- Clear search highlights
+
     -- Tab is not supported in neovim by default, this maps to insert mode flow
     --vim.keymap.set("n", "<TAB>", ">>")
     --vim.keymap.set("n", "<S-TAB>", "<<")

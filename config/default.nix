@@ -20,18 +20,31 @@ let
     vim.wo.number = true;
     vim.opt.breakindent = false;
     vim.opt.encoding = "utf-8";
-    vim.opt.expandtab = true;
     vim.opt.fileencoding = "utf-8";
     vim.opt.hidden = true;
     vim.opt.history = 1000;
+
+    -- Correct search support (ignore case, unless search includes case)
     vim.opt.ignorecase = true;
+    vim.opt.smartcase = true;
+
     vim.opt.shiftwidth = 2;
     vim.opt.showmode = true;
     vim.opt.showtabline = 2;
     vim.opt.smartindent = true;
+
+    vim.opt.expandtab = true;
     vim.opt.softtabstop = 2;
     vim.opt.tabstop = 2;
+
     vim.opt.termguicolors = true;
+    vim.opt.background = "dark";
+
+    --   This can be useful to turn on if we are having some odd issues with the screen moving a lot
+    --   with the left side jumping on and off (like with gitsign)
+    -- vim.opt.signcolumn = "yes";
+
+    vim.opt.backspace = "indent,eol,start";
     vim.opt.timeoutlen = 1000;
     vim.opt.wrap = false;
     
