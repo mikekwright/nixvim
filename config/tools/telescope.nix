@@ -3,6 +3,8 @@
 
 let
   telescope-lua-config = /*lua*/ ''
+    local telescopeActions = require('telescope.actions')
+
     require('telescope').setup({
       file_ignore_patterns = {
         "^.git/",
@@ -13,14 +15,24 @@ let
         "%.ipynb",
         "^target/",
       },
-      layout_config = {
-        prompt_position = "top"
-      },
-      selection_caret = "> ",
       set_env = {
         COLORTERM = "truecolor"
       },
-      sorting_strategy = "ascending"
+      defaults = {
+        selection_caret = "> ",
+        path_display = { "smart" },
+        layout_config = {
+          prompt_position = "bottom",
+        },
+        sorting_strategy = "descending",
+        mappings = {
+          i = {
+            ["<C-k>"] = telescopeActions.move_selection_previous,
+            ["<C-j>"] = telescopeActions.move_selection_next,
+            ["<C-q>"] = telescopeActions.send_selected_to_qflist + telescopeActions.open_qflist 
+          }
+        }
+      }
     })
 
     local telescopeBuiltin = require('telescope.builtin')
