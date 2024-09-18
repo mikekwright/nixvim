@@ -67,7 +67,7 @@ let
       vim.keymap.set("t", key, action, { silent = true, noremap = true })
     end
 
-    local run_in_debug = false
+    local run_in_debug = true
     function dprint(msg)
       if run_in_debug then
         print(msg)
@@ -90,6 +90,7 @@ in
     ./lsp
 
     ./keymaps.nix
+    ./greeter.nix
   ];
 
   lua = initialLua;
