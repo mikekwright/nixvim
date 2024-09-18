@@ -137,6 +137,12 @@ let
       },
     })
 
+    --
+    -- Trouble gives an easy view into the list of current issues in the file
+    --    https://github.com/folke/trouble.nvim?tab=readme-ov-file
+    --
+    require('trouble').setup()
+    keymap("<leader>lt", ":Trouble diagnostics toggle<CR>")
   '';
 in
 {
@@ -166,6 +172,7 @@ in
     nvim-lspconfig
     nvim-cmp
     cmp-nvim-lsp
+    trouble-nvim
 
     none-ls-nvim
   ]);
