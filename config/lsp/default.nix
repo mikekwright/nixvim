@@ -153,6 +153,7 @@ in
     ./nix.nix
     ./python.nix
 
+    ./markdown.nix
     ./formatting.nix
   ];
 

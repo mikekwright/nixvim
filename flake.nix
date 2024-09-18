@@ -29,6 +29,9 @@
 
     # This is the version used for left sidebar plugins (gitsigns, statuscol, etc.)
     nvim-gitsigns-nixpkgs.url = "github:nixos/nixpkgs/5629520edecb69630a3f4d17d3d33fc96c13f6fe";
+
+    # This is the markdown render tooling
+    markdown-nixpkgs.url = "github:nixos/nixpkgs/280db3decab4cbeb22a4599bd472229ab74d25e1";
   };
 
   outputs = {
@@ -59,6 +62,7 @@
           nvim-telescope-pkgs = inputs.nvim-telescope-nixpkgs.legacyPackages.${system};
           nvim-tree-pkgs = inputs.nvim-tree-lua.legacyPackages.${system};
           nvim-gitsign-pkgs = inputs.nvim-gitsigns-nixpkgs.legacyPackages.${system};
+          markdown-pkgs = inputs.markdown-nixpkgs.legacyPackages.${system};
         };
 
         debug = import ./lib/debug.nix {inherit pkgs extra-pkgs system;};

@@ -71,7 +71,7 @@ let
       vim.keymap.set("t", key, action, { silent = true, noremap = true })
     end
 
-    local run_in_debug = true
+    local run_in_debug = false
     function dprint(msg)
       if run_in_debug then
         print(msg)

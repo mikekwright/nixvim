@@ -310,8 +310,8 @@ in
   ]  ++ (with pkgs.vimPlugins; [
     nvim-notify
     nui-nvim
-  ]) ++ [
-    extra-pkgs.nvim-treesitter-pkgs.vimPlugins.nvim-treesitter
-  ] ++ (map (p: extra-pkgs.nvim-treesitter-pkgs.vimPlugins.nvim-treesitter-parsers.${p}) treesitter-parsers);
+  ]) ++ (with extra-pkgs.nvim-treesitter-pkgs.vimPlugins; [
+    nvim-treesitter
+  ]) ++ (map (p: extra-pkgs.nvim-treesitter-pkgs.vimPlugins.nvim-treesitter-parsers.${p}) treesitter-parsers);
 }
 
