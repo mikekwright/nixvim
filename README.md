@@ -21,6 +21,8 @@ nix run .
 
 ## References
 
+* [Learn Lua X in Y minutes](https://learnxinyminutes.com/docs/lua/)
+
 * [Neovim Documentation](https://neovim.io/doc/user/builtin.html)
 
 * [Youtube - Setting up Neovim from scratch with tmux](https://www.youtube.com/watch?v=ZjMzBd1Dqz8)
@@ -38,4 +40,5 @@ nix run .
 * Install [k8s support](https://github.com/Ramilito/kubectl.nvim)
 * Decide [Should I use the auto-session (project kind of)](https://github.com/rmagatti/auto-session)
 * Look at [Surround that helps surround text](https://github.com/kylechui/nvim-surround)
-
+* Try out COC [Conquer of Completion](https://github.com/neoclide/coc.nvim)
+* Can also see [Jira plugin for neovim](https://github.com/Arekkusuva/jira-nvim)

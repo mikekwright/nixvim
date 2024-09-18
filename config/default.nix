@@ -57,6 +57,10 @@ let
     function keymap(key, action)
       vim.keymap.set("n", key, action, { silent = true, noremap = false })
     end
+    function keymapd(key, action, desc)
+      vim.keymap.set("n", key, action, { silent = true, noremap = false, desc = desc })
+    end
+
 
     function nkeymap(key, action)
       vim.keymap.set("n", key, action, { silent = true, noremap = true })

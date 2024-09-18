@@ -55,15 +55,15 @@
           pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
           neovim-pkgs = neovim-nixpkgs.legacyPackages.${system};
           nvim-treesitter-pkgs = inputs.nvim-treesitter-nixpkgs.legacyPackages.${system};
-	        nvim-lspconfig-pkgs = inputs.nvim-lspconfig-nixpkgs.legacyPackages.${system};
+          nvim-lspconfig-pkgs = inputs.nvim-lspconfig-nixpkgs.legacyPackages.${system};
           nvim-telescope-pkgs = inputs.nvim-telescope-nixpkgs.legacyPackages.${system};
           nvim-tree-pkgs = inputs.nvim-tree-lua.legacyPackages.${system};
           nvim-gitsign-pkgs = inputs.nvim-gitsigns-nixpkgs.legacyPackages.${system};
         };
 
-        debug = import ./lib/debug.nix { inherit pkgs extra-pkgs system; };
-        lib = import ./lib/importer.nix { inherit debug extra-pkgs pkgs system; };
-        
+        debug = import ./lib/debug.nix {inherit pkgs extra-pkgs system;};
+        lib = import ./lib/importer.nix {inherit debug extra-pkgs pkgs system;};
+
         neovimModule = {
           inherit pkgs extra-pkgs;
           module = import ./config; # import the module directly

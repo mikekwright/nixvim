@@ -152,6 +152,8 @@ in
     ./rust.nix
     ./nix.nix
     ./python.nix
+
+    ./formatting.nix
   ];
 
   lua = lsp-config-lua;
