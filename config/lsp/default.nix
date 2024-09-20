@@ -55,10 +55,10 @@ let
         local client = vim.lsp.get_client_by_id(args.data.client_id)
         dprint('    Checking LSP capabilities for ' .. client.name .. ' (' .. args.buf .. ')')
 
-        local function feature_enable_check(key, name, feature, lsp_option)
+        local function feature_enable_check(key, name, feature, lsp_option, desc)
           if feature then
             dprint("LSP ( S) - " .. name .. ": " .. client.name .. "(" .. args.buf .. ") - " .. key)
-            vim.keymap.set('n', key, lsp_option, { buffer = args.buf })
+            vim.keymap.set('n', key, lsp_option, { buffer = args.buf, desc = desc})
           else
             -- dprint("LSP (US) - " .. name .. ": " .. client.name .. "(" .. args.buf .. ")")
           end
@@ -69,44 +69,44 @@ let
         --
         local telescopeBuiltin = require('telescope.builtin')
         if telescopeBuiltin then
-          feature_enable_check('<C-b>', 'definition', client.server_capabilities.definitionProvider, telescopeBuiltin.lsp_definitions)
-          feature_enable_check('<leader>ld', 'definition', client.server_capabilities.definitionProvider, telescopeBuiltin.lsp_definitions)
-          feature_enable_check('<leader>li', 'implementation', client.server_capabilities.implementationProvider, telescopeBuiltin.lsp_implementation)
-          feature_enable_check('<leader>lc', 'references', client.server_capabilities.referencesProvider, telescopeBuiltin.lsp_references)
-          feature_enable_check('<leader>lR', 'references', client.server_capabilities.referencesProvider, telescopeBuiltin.lsp_incoming_calls)
-          feature_enable_check('<leader>lC', 'references', client.server_capabilities.referencesProvider, telescopeBuiltin.lsp_outgoing_calls)
-          feature_enable_check('<leader>lt', 'type_def', client.server_capabilities.typeDefinitionProvider, telescopeBuiltin.lsp_type_definitions)
-          feature_enable_check('<leader>fs', 'symbols', client.server_capabilities.documentSymbolProvider, telescopeBuiltin.lsp_document_symbols)
-          feature_enable_check('<leader>lS', 'symbols', client.server_capabilities.documentSymbolProvider, telescopeBuiltin.lsp_document_symbols)
-          feature_enable_check('<leader>lw', 'workspace', client.server_capabilities.workspaceSymbolProvider, telescopeBuiltin.lsp_workspace_symbols)
-          feature_enable_check('<leader>fw', 'workspace', client.server_capabilities.workspaceSymbolProvider, telescopeBuiltin.lsp_workspace_symbols)
+          feature_enable_check('<C-b>', 'definition', client.server_capabilities.definitionProvider, telescopeBuiltin.lsp_definitions, "LSP (t): Definitions")
+          feature_enable_check('<leader>ld', 'definition', client.server_capabilities.definitionProvider, telescopeBuiltin.lsp_definitions, "LSP (t): Goto definition")
+          feature_enable_check('<leader>li', 'implementation', client.server_capabilities.implementationProvider, telescopeBuiltin.lsp_implementation, "LSP (t): Goto implementation")
+          feature_enable_check('<leader>lc', 'references', client.server_capabilities.referencesProvider, telescopeBuiltin.lsp_references, "LSP (t): Find references")
+          feature_enable_check('<leader>lR', 'references', client.server_capabilities.referencesProvider, telescopeBuiltin.lsp_incoming_calls, "LSP (t): Find incoming calls")
+          feature_enable_check('<leader>lC', 'references', client.server_capabilities.referencesProvider, telescopeBuiltin.lsp_outgoing_calls, "LSP (t): Find outgoing calls")
+          feature_enable_check('<leader>lt', 'type_def', client.server_capabilities.typeDefinitionProvider, telescopeBuiltin.lsp_type_definitions, "LSP (t): Type definitions")
+          feature_enable_check('<leader>fs', 'symbols', client.server_capabilities.documentSymbolProvider, telescopeBuiltin.lsp_document_symbols, "LSP (t): Search Document Systems")
+          feature_enable_check('<leader>lS', 'symbols', client.server_capabilities.documentSymbolProvider, telescopeBuiltin.lsp_document_symbols, "LSP (t): Search Document Systems")
+          feature_enable_check('<leader>lw', 'workspace', client.server_capabilities.workspaceSymbolProvider, telescopeBuiltin.lsp_workspace_symbols, "LSP (t): Search workspace Symbols")
+          feature_enable_check('<leader>fw', 'workspace', client.server_capabilities.workspaceSymbolProvider, telescopeBuiltin.lsp_workspace_symbols, "LSP (t): Search workspace Symbols")
 
         else
-          feature_enable_check('<C-b>', 'definition', client.server_capabilities.definitionProvider, vim.lsp.buf.definition)
-          feature_enable_check('<leader>ld', 'definition', client.server_capabilities.definitionProvider, vim.lsp.buf.definition)
-          feature_enable_check('<leader>li', 'implementation', client.server_capabilities.implementationProvider, vim.lsp.buf.implementation)
-          feature_enable_check('<leader>lr', 'references', client.server_capabilities.referencesProvider, vim.lsp.buf.references)
+          feature_enable_check('<C-b>', 'definition', client.server_capabilities.definitionProvider, vim.lsp.buf.definition, "LSP: Definitions")
+          feature_enable_check('<leader>ld', 'definition', client.server_capabilities.definitionProvider, vim.lsp.buf.definition, "LSP: Definition")
+          feature_enable_check('<leader>li', 'implementation', client.server_capabilities.implementationProvider, vim.lsp.buf.implementation, "LSP: Goto implementation")
+          feature_enable_check('<leader>lr', 'references', client.server_capabilities.referencesProvider, vim.lsp.buf.references, "LSP: Find references")
           -- feature_enable_check('<leader>lr', 'references', client.server_capabilities.referencesProvider, "<CMD>Telescope lsp_references<CR>")
-          feature_enable_check('<leader>lt', 'type_def', client.server_capabilities.typeDefinitionProvider, vim.lsp.buf.type_definition)
-          feature_enable_check('<leader>lS', 'symbols', client.server_capabilities.documentSymbolProvider, vim.lsp.buf.document_symbol)
-          feature_enable_check('<leader>lw', 'workspace', client.server_capabilities.workspaceSymbolProvider, vim.lsp.buf.workspace_symbol)
+          feature_enable_check('<leader>lt', 'type_def', client.server_capabilities.typeDefinitionProvider, vim.lsp.buf.type_definition, "LSP: Type Definition")
+          feature_enable_check('<leader>lS', 'symbols', client.server_capabilities.documentSymbolProvider, vim.lsp.buf.document_symbol, "LSP: Document Symbols")
+          feature_enable_check('<leader>lw', 'workspace', client.server_capabilities.workspaceSymbolProvider, vim.lsp.buf.workspace_symbol, "LSP: Workspace Symbols")
         end
 
         --
         -- Features without telescope integrated capabilities
         --
-        feature_enable_check('<leader>lD', 'declaration', client.server_capabilities.declarationProvider, vim.lsp.buf.declaration)
-        feature_enable_check('<leader>lh', 'hover', client.server_capabilities.hoverProvider, vim.lsp.buf.hover)
-        feature_enable_check('<leader>lH', 'highlight', client.server_capabilities.documentHighlightProvider, vim.lsp.buf.document_highlight)
-        feature_enable_check('<leader>lf', 'format', client.server_capabilities.document_formatting, vim.lsp.buf.formatting)
-        feature_enable_check('<leader>ls', 'signature', client.server_capabilities.signatureHelpProvider, vim.lsp.buf.signature_help)
-        feature_enable_check('<leader>la', 'action', client.server_capabilities.code_action_provider, vim.lsp.buf.code_action)
-        feature_enable_check('<leader>lr', 'rename', client.server_capabilities.renameProvider, vim.lsp.buf.rename)
+        feature_enable_check('<leader>lD', 'declaration', client.server_capabilities.declarationProvider, vim.lsp.buf.declaration, "LSP: Goto Declaration")
+        feature_enable_check('<leader>lh', 'hover', client.server_capabilities.hoverProvider, vim.lsp.buf.hover, "LSP: Open Hover")
+        feature_enable_check('<leader>lH', 'highlight', client.server_capabilities.documentHighlightProvider, vim.lsp.buf.document_highlight, "LSP: Highlight")
+        feature_enable_check('<leader>lf', 'format', client.server_capabilities.document_formatting, vim.lsp.buf.formatting, "LSP: Format")
+        feature_enable_check('<leader>ls', 'signature', client.server_capabilities.signatureHelpProvider, vim.lsp.buf.signature_help, "LSP: Signature Help")
+        feature_enable_check('<leader>la', 'action', client.server_capabilities.code_action_provider, vim.lsp.buf.code_action, "LSP: Code Action")
+        feature_enable_check('<leader>lr', 'rename', client.server_capabilities.renameProvider, vim.lsp.buf.rename, "LSP: Rename")
         
         --feature_enable_check('<leader>lR', 'references', client.server_capabilities.referencesProvider, vim.lsp.buf.clear_references)
 
         -- feature_enable_check('<leader>lL', 'document_link', client.server_capabilities.documentLinkProvider, vim.lsp.buf.document_link)
-        feature_enable_check('<leader>ll', 'lens', client.server_capabilities.codeLensProvider, vim.lsp.codelens)
+        feature_enable_check('<leader>ll', 'lens', client.server_capabilities.codeLensProvider, vim.lsp.codelens, "LSP: Code Lens")
       end,
     })
 
@@ -142,7 +142,7 @@ let
     --    https://github.com/folke/trouble.nvim?tab=readme-ov-file
     --
     require('trouble').setup()
-    keymap("<leader>lt", ":Trouble diagnostics toggle<CR>")
+    keymapd("<leader>lt", ":Trouble diagnostics toggle<CR>", "Trouble: Toggle Diagnostics")
   '';
 in
 {

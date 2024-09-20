@@ -36,11 +36,12 @@ let
     })
 
     local telescopeBuiltin = require('telescope.builtin')
-    nkeymap('<leader>ff', telescopeBuiltin.find_files)
-    nkeymap('<C-p>', telescopeBuiltin.find_files)
-    nkeymap('<leader>fg', telescopeBuiltin.live_grep)
-    nkeymap('<leader>fb', telescopeBuiltin.buffers)
-    nkeymap('<leader>fh', telescopeBuiltin.help_tags)
+    keymapd('<leader>ff', telescopeBuiltin.find_files, 'Fuzzy Find Files')
+    keymapd('<leader>fh', ":help telescope.builtin<CR>", 'Help: Telescope')
+    keymapd('<C-p>', telescopeBuiltin.find_files, 'Fuzzy Find Files <Ctrl version>')
+    keymapd('<leader>fg', telescopeBuiltin.live_grep, 'Fuzzy grep')
+    keymapd('<leader>fb', telescopeBuiltin.buffers, 'Fuzzy search buffers')
+    keymapd('<leader>ft', telescopeBuiltin.help_tags, 'Fuzzy search on help tags')
 
     -- List of possible extensions, but need to be careful to not load too many
     --   https://github.com/nvim-telescope/telescope.nvim/wiki/Extensions
