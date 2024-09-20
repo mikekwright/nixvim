@@ -21,13 +21,28 @@ in
   ];
 
   vimPackages = let
+    # dadbod = pkgs.vimUtils.buildVimPlugin {
+    #   name = "vim-dadbod";
+    #   src = pkgs.fetchFromGitHub {
+    #     owner = "tpope";
+    #     repo = "vim-dadbod";
+    #     rev = "7888cb7164d69783d3dce4e0283decd26b82538b";
+    #     sha256 = "8wnUSYctVn3JeCVz2fdi9qcKi8ZyA4To+xs4WaP6rog=";
+    #   };
+    # };
+
+    #
+    # You can easily test a connection in dadbod just by using echo on the function db#adapter#dispatch like so
+    #    :echo db#adapter#dispatch("redis://michael_wright:pass@localhost:6383/0", "interactive")
+    #
+
     dadbod = pkgs.vimUtils.buildVimPlugin {
       name = "vim-dadbod";
       src = pkgs.fetchFromGitHub {
-        owner = "tpope";
+        owner = "mikekwright";
         repo = "vim-dadbod";
-        rev = "7888cb7164d69783d3dce4e0283decd26b82538b";
-        sha256 = "8wnUSYctVn3JeCVz2fdi9qcKi8ZyA4To+xs4WaP6rog=";
+        rev = "0b37cec0b78e3471e6e85f4f25841ecc0b6dcee3";
+        sha256 = "yX40XB09Vvn5T7XxZdIHtBU3vScICRay46KHg1WnBR8=";
       };
     };
 
@@ -50,8 +65,19 @@ in
         sha256 = "kci8ksgSRPmRhwTYw7Ya1v4hwPjN4BLFjV6+6YiK1hA=";
       };
     };
+    
+    vim-dispatch = pkgs.vimUtils.buildVimPlugin {
+      name = "vim-dispatch";
+      src = pkgs.fetchFromGitHub {
+        owner = "tpope";
+        repo = "vim-dispatch";
+        rev = "a2ff28abdb2d89725192db5b8562977d392a4d3f";
+        sha256 = "+92jco3btPAHWbVKL0kXycL4Inji3Wi0LtfQ5vXe6B8=";
+      };
+    };
   in
   [
+    vim-dispatch
     dadbod
     dadbod-ui
     dadbod-completion
