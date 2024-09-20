@@ -16,7 +16,6 @@ let
     --   https://github.com/nvim-tree/nvim-tree.lua/blob/master/lua/nvim-tree/keymap.lua
     --
 
-    nkeymap("<leader>e", ":NvimTreeToggle<CR>")
     --local treeApi = require("nvim-tree.api")
     --nkeymap("<leader>e", treeApi.tree.toggle)
 
@@ -109,6 +108,9 @@ let
       hijack_directories = {
         auto_open = true
       },
+      filters = {
+        dotfiles = true
+      },
       on_attach = function(bufnr)
         nvimTreeOnAttach(bufnr)
       end
@@ -132,7 +134,7 @@ let
         end
 
         -- open the tree
-        require("nvim-tree.api").tree.open()
+       require("nvim-tree.api").tree.open()
         return
       end
 
@@ -165,10 +167,21 @@ let
 
     end
 
+    local tree_api = require('nvim-tree.api')
+    local tree_view = require('nvim-tree.view')
+
+    keymapd("<leader>ee", ":NvimTreeToggle<CR>", 'Toggle nvim tree')
+    keymapd("<leader>ea", tree_api.tree.toggle_enable_filters, 'Toggle hidding dotfiles')
+    keymapd("<leader>ef", function()
+      if tree_view.is_visible() then
+        tree_api.tree.find_file()
+      else
+        print(vim.fn.expand('%'))
+      end
+    end, 'Show current file in the tree')
     -- Run the tree on startup for editor
     --  I removed this in favor of a greeter experience
     --vim.api.nvim_create_autocmd("VimEnter", {callback = open_nvim_tree})
-
   '';
 in
 {
