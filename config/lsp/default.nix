@@ -152,6 +152,7 @@ in
     ./rust.nix
     ./nix.nix
     ./python.nix
+    ./haskell.nix
 
     ./markdown.nix
     ./formatting.nix
