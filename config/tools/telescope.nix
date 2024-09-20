@@ -59,5 +59,6 @@ in
 
   packages = with extra-pkgs.nvim-telescope-pkgs; [
     fd
+    ripgrep
   ];
 }
