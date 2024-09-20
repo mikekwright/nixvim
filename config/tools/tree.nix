@@ -172,6 +172,7 @@ let
 
     keymapd("<leader>ee", ":NvimTreeToggle<CR>", 'Toggle nvim tree')
     keymapd("<leader>ea", tree_api.tree.toggle_enable_filters, 'Toggle hidding dotfiles')
+    keymapd('<leader>eh", ":help nvim-tree-api<CR>', 'Open nvim-tree help')
     keymapd("<leader>ef", function()
       if tree_view.is_visible() then
         tree_api.tree.find_file()
