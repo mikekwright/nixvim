@@ -41,10 +41,15 @@ in
       src = pkgs.fetchFromGitHub {
         owner = "mikekwright";
         repo = "vim-dadbod";
-        rev = "0b37cec0b78e3471e6e85f4f25841ecc0b6dcee3";
-        sha256 = "yX40XB09Vvn5T7XxZdIHtBU3vScICRay46KHg1WnBR8=";
+        rev = "502231d732d2136bf2a673ee9168b2f114d82161";
+        sha256 = "tIcGpUcUY/X0OHV+U+GhrqZYix5CarPdkZpQVSsZFSo=";
       };
     };
+
+    # dadbod = pkgs.vimUtils.buildVimPlugin {
+    #   name = "vim-dadbod";
+    #   src = /. + "/home/mikewright/Development/personal/vim-plugins/vim-dadbod-10";
+    # };
 
     dadbod-ui = pkgs.vimUtils.buildVimPlugin {
       name = "vim-dadbod-ui";
