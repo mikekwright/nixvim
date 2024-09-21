@@ -139,7 +139,7 @@ in
     ./debugging.nix
     ./testing.nix
     ./whichkey.nix
-    ./bookmarks.ni
+    ./bookmarks.nix
   ];
 
   lua = debug.traceResult tools-setup-lua;
