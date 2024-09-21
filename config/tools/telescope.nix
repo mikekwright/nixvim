@@ -47,6 +47,8 @@ let
     --   https://github.com/nvim-telescope/telescope.nvim/wiki/Extensions
     local telescopeExtensions = require('telescope')
     telescopeExtensions.load_extension('fzf')
+    telescopeExtensions.load_extension('bookmarks')
+
   '';
 in
 {

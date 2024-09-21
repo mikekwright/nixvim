@@ -84,7 +84,7 @@ let
     end)
 
     -- Changes for jumplist (:help jumplist)
-    nkeymap("<leader>bb", "<C-O>")
+    keymapd("<leader>gb", "<C-O>", "Goto: Previous Location")
   '';
 in
 {

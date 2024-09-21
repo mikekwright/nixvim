@@ -139,6 +139,7 @@ in
     ./debugging.nix
     ./testing.nix
     ./whichkey.nix
+    ./bookmarks.ni
   ];
 
   lua = debug.traceResult tools-setup-lua;

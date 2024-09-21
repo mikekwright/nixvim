@@ -11,13 +11,14 @@ let
       { "<leader>fn", desc = "New File" },
       -- { "<leader>f1", hidden = true }, -- hide this keymap
       { "<leader>w", proxy = "<c-w>", group = "windows" }, -- proxy to window mappings
-      { "<leader>b", group = "buffers", expand = function()
+      { "<leader>g", group = "buffers", expand = function()
           return require("which-key.extras").expand.buf()
         end
       },
       { "<leader>c", group = "Console",  desc = "Work with view on page" },
       { "<leader>e", group = "Nvim tree", desc = "Nvim tree" },
       { "<leader>t", group = "Terminal", desc = "Terminal support" },
+      { "<leader>b", group = "Bookmarks", desc = "Bookmarks" },
       -- {
       --   -- Nested mappings are allowed and can be added in any order
       --   -- Most attributes can be inherited or overridden on any level
