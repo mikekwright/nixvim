@@ -41,8 +41,8 @@ in
       src = pkgs.fetchFromGitHub {
         owner = "mikekwright";
         repo = "vim-dadbod";
-        rev = "3528b8c4bf9f21342f984a2679f908de811df4da";
-        sha256 = "Ez4FegA/nAZkqh9Zr5YYDVEZ0gT6462BiJUk9pcCFDM=";
+        rev = "fcb7c2e1775df2433b197d15cc7d82dda5bf0601";
+        sha256 = "Dem8kxmzWurRiAtHQgASIREUK2zIcFIi5nKv5i9WOfM=";
       };
     };
 
