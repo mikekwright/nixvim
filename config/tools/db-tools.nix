@@ -33,7 +33,7 @@ in
 
     #
     # You can easily test a connection in dadbod just by using echo on the function db#adapter#dispatch like so
-    #    :echo db#adapter#dispatch("redis://michael_wright:pass@localhost:6383/0", "interactive")
+    #    :echo db#adapter#dispatch("redis://user:pass@localhost:6383/0", "interactive")
     #
 
     dadbod = pkgs.vimUtils.buildVimPlugin {
@@ -41,15 +41,10 @@ in
       src = pkgs.fetchFromGitHub {
         owner = "mikekwright";
         repo = "vim-dadbod";
-        rev = "502231d732d2136bf2a673ee9168b2f114d82161";
-        sha256 = "tIcGpUcUY/X0OHV+U+GhrqZYix5CarPdkZpQVSsZFSo=";
+        rev = "3528b8c4bf9f21342f984a2679f908de811df4da";
+        sha256 = "Ez4FegA/nAZkqh9Zr5YYDVEZ0gT6462BiJUk9pcCFDM=";
       };
     };
-
-    # dadbod = pkgs.vimUtils.buildVimPlugin {
-    #   name = "vim-dadbod";
-    #   src = /. + "/home/mikewright/Development/personal/vim-plugins/vim-dadbod-10";
-    # };
 
     dadbod-ui = pkgs.vimUtils.buildVimPlugin {
       name = "vim-dadbod-ui";
