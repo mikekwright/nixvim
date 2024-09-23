@@ -183,6 +183,12 @@ let
         print(vim.fn.expand('%'))
       end
     end, 'Show current file in the tree')
+
+    keymapd("<leader>et", function()
+      local tree = require('nvim-tree')
+      tree.update_focused_file.enable = not tree.update_focused_file.enable
+    end, 'Toggle tree follow')
+
     -- Run the tree on startup for editor
     --  I removed this in favor of a greeter experience
     --vim.api.nvim_create_autocmd("VimEnter", {callback = open_nvim_tree})
