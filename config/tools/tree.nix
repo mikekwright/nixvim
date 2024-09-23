@@ -105,6 +105,9 @@ let
           }
         }
       },
+      update_focused_file = {
+        enable = true,
+      },
       hijack_directories = {
         auto_open = true
       },
@@ -183,6 +186,20 @@ let
     -- Run the tree on startup for editor
     --  I removed this in favor of a greeter experience
     --vim.api.nvim_create_autocmd("VimEnter", {callback = open_nvim_tree})
+
+    -- Pulled from redis (https://www.reddit.com/r/neovim/comments/11qz6w1/dynamically_resize_nvimtree/)
+    vim.api.nvim_create_autocmd({ "VimResized" }, {
+      desc = "Resize nvim-tree if nvim window got resized",
+
+      group = vim.api.nvim_create_augroup("NvimTreeResize", { clear = true }),
+      callback = function()
+        local percentage = 15
+
+        local ratio = percentage / 100
+        local width = math.floor(vim.go.columns * ratio)
+        vim.cmd("tabdo NvimTreeResize " .. width)
+      end,
+    })
   '';
 in
 {

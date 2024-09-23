@@ -22,6 +22,8 @@ let
     keymapd("<leader>qa", ":qall<CR>", "Quit all")
     keymapd("<leader>qq", ":qall!<CR>", "Quit all (forced)")
 
+    keymapd("<leader>gg", "<C-]>", "Go to help section")
+
     -- Tab is not supported in neovim by default, this maps to insert mode flow
     --vim.keymap.set("n", "<TAB>", ">>")
     --vim.keymap.set("n", "<S-TAB>", "<<")
