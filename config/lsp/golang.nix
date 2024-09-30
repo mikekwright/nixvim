@@ -20,6 +20,10 @@ in
     vim-go
   ];
 
+  startScript = /*bash*/ ''
+    unset GOROOT
+  '';
+
   packages = with pkgs; [
     gotools
 

@@ -17,6 +17,7 @@ let
         vimOptPackages = m.vimOptPackages or [];
         lua = m.lua or "";
         packages = m.packages or [];
+        startScript = m.startScript or "";
       };
 
       # This is the recursive check to basically pull all the other modules that we
@@ -38,6 +39,7 @@ let
 
           '';
         packages = b.packages ++ m.packages;
+        startScript = b.startScript + m.startScript;
       }) baseModule loadedChildren;
     in 
       debug.trace completedMerge completedMerge;
@@ -63,7 +65,8 @@ in {
         else "";
       luaFile = pkgs.writeText "init.lua" luaText;
 
-      # The actual neovim package solution.
+      scriptText = fullModule.startScript;       # The actual neovim package solution.
+
       neovimPackage = extra-pkgs.neovim-pkgs.neovim.override {
         configure = {
           #  This is trying to load as a vimscript file, not lua.  Need to
@@ -87,9 +90,13 @@ in {
           echo 'LUA CONFIG FILE: ${luaFile}'
           cat ${luaFile}
 
+          echo 'Startup scripts:'
+          echo '${scriptText}'
+
           echo '-------------------------'
           echo "Neovim config file path: ${luaFile}" 
         else
+          ${scriptText}
           ${neovimPackage}/bin/nvim -u ${luaFile} "$@"
         fi
       '';
