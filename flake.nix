@@ -32,6 +32,9 @@
 
     # This is the markdown render tooling
     markdown-nixpkgs.url = "github:nixos/nixpkgs/280db3decab4cbeb22a4599bd472229ab74d25e1";
+
+    # This is the go-tools for neovim (version 0.22.0)
+    gotools-nixpkgs.url = "github:nixos/nixpkgs/5ed627539ac84809c78b2dd6d26a5cebeb5ae269";
   };
 
   outputs = {
@@ -63,6 +66,7 @@
           nvim-tree-pkgs = inputs.nvim-tree-lua.legacyPackages.${system};
           nvim-gitsign-pkgs = inputs.nvim-gitsigns-nixpkgs.legacyPackages.${system};
           markdown-pkgs = inputs.markdown-nixpkgs.legacyPackages.${system};
+          gotools-pkgs = inputs.gotools-nixpkgs.legacyPackages.${system};
         };
 
         debug = import ./lib/debug.nix {inherit pkgs extra-pkgs system;};

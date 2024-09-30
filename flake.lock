@@ -18,6 +18,22 @@
         "type": "github"
       }
     },
+    "gotools-nixpkgs": {
+      "locked": {
+        "lastModified": 1725980463,
+        "narHash": "sha256-3ruEhwpLlccjwYTvLCyFAtPndcRxAs3XazL2lhOXucI=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "5ed627539ac84809c78b2dd6d26a5cebeb5ae269",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "5ed627539ac84809c78b2dd6d26a5cebeb5ae269",
+        "type": "github"
+      }
+    },
     "markdown-nixpkgs": {
       "locked": {
         "lastModified": 1726142289,
@@ -177,6 +193,7 @@
     "root": {
       "inputs": {
         "flake-parts": "flake-parts",
+        "gotools-nixpkgs": "gotools-nixpkgs",
         "markdown-nixpkgs": "markdown-nixpkgs",
         "neovim-nixpkgs": "neovim-nixpkgs",
         "nixpkgs": "nixpkgs",

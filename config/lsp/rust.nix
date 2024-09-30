@@ -1,34 +1,54 @@
-{ extra-pkgs, debug, ... }:
-
-let
-  rustAnalyzerLua = /*lua*/ ''
-    lspconfig.rust_analyzer.setup {
-      filetypes = { "rust" },
-      capabilities = lsp_cmp_capabilities,
-      extraOptions = {
-        cmd = { "${extra-pkgs.rustanalyzer-pkgs.rust-analyzer}/bin/rust-analyzer" },
-
-        cargo = {
-          allFeatures = true,
-        },
-      },
-
-      -- Server-specific settings. See `:help lspconfig-setup`
-      settings = {
-        ['rust-analyzer'] = {},
-      },
-    }
-  '';
-in
 {
+  extra-pkgs,
+  pkgs,
+  debug,
+  ...
+}: let
+  rustAnalyzerLua =
+    /*
+    lua
+    */
+    ''
+      vim.g.rustaceanvim = {
+        server = {
+          on_attach = function(client, bufnr)
+            -- Your on_attach function here
+          end,
+          default_settings = {
+            -- rust-analyzer language server configuration
+            ['rust-analyzer'] = {
+              cmd = { "${extra-pkgs.rustanalyzer-pkgs.rust-analyzer}/bin/rust-analyzer" },
+              cargo = {
+                allFeatures = true,
+              },
+            },
+          },
+        },
+      }
+    '';
+in {
   lua = rustAnalyzerLua;
+
+  vimPackages = let
+    rustaceanvim = pkgs.vimUtils.buildVimPlugin {
+      name = "rustaceanvim";
+      src = pkgs.fetchFromGitHub {
+        owner = "mrcjkb";
+        repo = "rustaceanvim";
+        rev = "v5.10.1";
+        sha256 = "fQZe0CtY+gXLeuv1+hr2CJwUWK2lvdOFJ9HNlq3brAo=";
+      };
+    };
+  in [
+    rustaceanvim
+  ];
 
   packages = with extra-pkgs.rustanalyzer-pkgs; [
     # This is the lsp server, but requires access to cargo and rustc
     rust-analyzer
 
-    #rustc
+    rustc
     #rustup
-    #cargo
+    cargo
   ];
 }
