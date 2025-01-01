@@ -1,42 +1,53 @@
-{ pkgs, ... }:
+{pkgs, ...}: let
+  conformLua =
+    /*
+    lua
+    */
+    ''
+      local conform = require('conform')
+      conform.setup({
+        -- For more options check out the github
+        --   https://github.com/stevearc/conform.nvim?tab=readme-ov-file#customizing-formatters
+        formatters = {
+          alejandra = {
+            command = "${pkgs.alejandra}/bin/alejandra",
+          },
+          prettier = {
+            command = "${pkgs.nodePackages.prettier}/bin/prettier",
+          }
+        },
 
-let
-  conformLua = /*lua*/ ''
-
-  local conform = require('conform')
-  conform.setup({
-      formatters_by_ft = {
-        nix = { "alejandra" },
-        javascript = { "prettier" },
-        typescript = { "prettier" },
-        javascriptreact = { "prettier" },
-        typescriptreact = { "prettier" },
-        svelte = { "prettier" },
-        css = { "prettier" },
-        html = { "prettier" },
-        json = { "prettier" },
-        yaml = { "prettier" },
-        markdown = { "prettier" },
-        graphql = { "prettier" },
-        liquid = { "prettier" },
-      },
-    })
-
-    keymapd("<leader>lf", function()
-      conform.format({
-        lsp_fallback = true,
-        async = false,
-        timeout_ms = 1000,
+        formatters_by_ft = {
+          nix = { "alejandra" },
+          javascript = { "prettier" },
+          typescript = { "prettier" },
+          javascriptreact = { "prettier" },
+          typescriptreact = { "prettier" },
+          svelte = { "prettier" },
+          css = { "prettier" },
+          html = { "prettier" },
+          json = { "prettier" },
+          yaml = { "prettier" },
+          markdown = { "prettier" },
+          graphql = { "prettier" },
+          liquid = { "prettier" },
+        },
       })
-    end, "Format the file or selection")
-  '';
-in
-{
+
+      keymapd("<leader>lf", function()
+        conform.format({
+          lsp_fallback = true,
+          async = false,
+          timeout_ms = 1000,
+        })
+      end, "Format the file or selection")
+    '';
+in {
   lua = conformLua;
 
   packages = with pkgs; [
-    alejandra  # Uncompromissing nix formatter
-    nodePackages.prettier  # For js,tsx,css,etc.
+    alejandra # Uncompromissing nix formatter
+    nodePackages.prettier # For js,tsx,css,etc.
   ];
 
   vimPackages = let

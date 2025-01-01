@@ -85,6 +85,21 @@ let
 
     -- Changes for jumplist (:help jumplist)
     keymapd("<leader>gb", "<C-O>", "Goto: Previous Location")
+
+    function print_table(name, t)
+      if type(t) == 'table' then
+        local s = name .. "{ "
+        for k,v in pairs(t) do
+           if type(k) ~= 'number' then k = '"'..k..'"' end
+           if type(v) ~= 'nil' then v = 'nil' end
+           -- s = s .. '['..k..'] = ' .. dump(v) .. ','
+           s = s .. '['..k..'] = ' .. v .. ','
+        end
+        dprint(s .. " }")
+      else
+        dprint(name .. " is not a table value")
+      end
+    end
   '';
 in
 {

@@ -5,7 +5,11 @@
     */
     ''
       lspconfig.hls.setup({
-        filetypes = { 'haskell', 'lhaskell', 'cabal' },
+        filetypes = { 'haskell', 'lhaskell', 'cabal', 'hs' },
+        capabilities = lsp_cmp_capabilities,
+        extraOptions = {
+          cmd = { '${pkgs.haskell-language-server}/bin/haskell-language-server-wrapper', '--lsp' },
+        },
       })
     '';
 in {
@@ -18,5 +22,7 @@ in {
 
   packages = with pkgs; [
     haskell-language-server
+    cabal-install
+    ghc
   ];
 }

@@ -282,6 +282,9 @@ let
       ---@type NoiceFormatOptions
       format = {}, --- @see section on formatting
     })
+
+    keymapd('<leader>ch', ":NoiceAll<CR>", "Noice: Display all details")
+
   '';
 in
 {

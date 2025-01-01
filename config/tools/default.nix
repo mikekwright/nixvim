@@ -135,7 +135,6 @@ in
     ./left-status.nix
     ./db-tools.nix
     ./telescope.nix
-    ./copilot.nix
     ./debugging.nix
     ./testing.nix
     ./whichkey.nix

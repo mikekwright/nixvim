@@ -27,6 +27,7 @@ let
       --   { "<leader>q", "<cmd>q<cr>", desc = "Quit" }, -- no need to specify mode since it's inherited
       --   { "<leader>w", "<cmd>w<cr>", desc = "Write" },
       -- }
+      { "<leader>le", group = "LSP: Tool Enabling", desc = "Toggle LSP Tooling" },
     })
 
   keymap("<leader>?", function()
