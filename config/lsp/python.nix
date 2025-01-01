@@ -15,7 +15,8 @@ in
 {
   lua = python-lsp-lua;
 
-  vimPackages = [
+  vimPackages = with pkgs.vimPlugins; [
+    nvim-dap-python
   ];
 
   packages = with pkgs; [

@@ -153,9 +153,11 @@ in
     ./nix.nix
     ./python.nix
     ./haskell.nix
+    ./go.nix
 
     ./markdown.nix
     ./formatting.nix
+    ./coc.nix
   ];
 
   lua = lsp-config-lua;
@@ -179,6 +181,10 @@ in
     trouble-nvim
 
     none-ls-nvim
+
+    # Debug Support
+    nvim-dap
+    nvim-dap-ui
   ]);
 
   packages = with pkgs; [

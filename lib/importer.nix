@@ -16,6 +16,7 @@ let
         vimPackages = m.vimPackages or [];
         vimOptPackages = m.vimOptPackages or [];
         lua = m.lua or "";
+        afterLua = m.afterLua or "";
         packages = m.packages or [];
       };
 
@@ -26,22 +27,24 @@ let
       completedMerge = builtins.foldl' (b: m: {
         vimPackages = b.vimPackages ++ m.vimPackages;
         vimOptPackages = b.vimOptPackages ++ m.vimOptPackages;
-        lua = b.lua + 
-          /*lua*/ ''
+        lua = b.lua + (if m.lua == "" then "" else /*lua*/ ''
+          ${"\t"}---- BEGIN ${m.name or "unknown"} ----
 
-          ${"\t"}---- BEGIN ${m.name or "default"} ----
+          '' + m.lua + /*lua*/ ''
+          ${"\t"}---- END ${m.name or "unknown"} ----
 
-          '' + 
-          m.lua + /*lua*/ ''
+          '');
+        afterLua = (if m.afterLua == "" then "" else /*lua*/ ''
+          ${"\t"}---- BEGIN ${m.name or "unknown"} AFTERLUA ----
 
-          ${"\t"}---- END ${m.name or "default"} ----
+          '' +  m.afterLua + /*lua*/ ''
+          ${"\t"}---- END ${m.name or "unknown"} AFTERLUA ----
 
-          '';
+          '') + b.afterLua;
         packages = b.packages ++ m.packages;
       }) baseModule loadedChildren;
     in 
       debug.trace completedMerge completedMerge;
-       
 
 in {
   makeModule = m: 
@@ -58,10 +61,15 @@ in {
 
       # This concats the lua configuration to a single file that is called as the config
       #   for neovim on boot.
-      luaText = if builtins.hasAttr "lua" fullModule
+      luaStartText = if builtins.hasAttr "lua" fullModule
         then fullModule.lua
         else "";
-      luaFile = pkgs.writeText "init.lua" luaText;
+
+      luaAfterText = if builtins.hasAttr "afterLua" fullModule
+        then fullModule.afterLua
+        else "";
+
+      luaFile = pkgs.writeText "init.lua" (luaStartText + luaAfterText);
 
       # The actual neovim package solution.
       neovimPackage = extra-pkgs.neovim-pkgs.neovim.override {
