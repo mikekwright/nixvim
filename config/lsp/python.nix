@@ -10,6 +10,10 @@ let
         pyright = {},
       },
     }
+
+    table.insert(neotest_adapters, require("neotest-python")({
+      dap = { justMyCode = false },
+    }))
   '';
 in
 {
@@ -17,6 +21,7 @@ in
 
   vimPackages = with pkgs.vimPlugins; [
     nvim-dap-python
+    neotest-python
   ];
 
   packages = with pkgs; [
