@@ -19,6 +19,8 @@ let
       { "<leader>e", group = "Nvim tree", desc = "Nvim tree" },
       { "<leader>t", group = "Terminal", desc = "Terminal support" },
       { "<leader>b", group = "Bookmarks", desc = "Bookmarks" },
+
+      { "<leader>r", group = "Run", desc = "Run" },
       -- {
       --   -- Nested mappings are allowed and can be added in any order
       --   -- Most attributes can be inherited or overridden on any level
