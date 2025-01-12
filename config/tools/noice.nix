@@ -283,7 +283,7 @@ let
       format = {}, --- @see section on formatting
     })
 
-    keymapd('<leader>ch', ":NoiceAll<CR>", "Noice: Display all details")
+    keymapd('<leader>ch', "Noice: Display all details", ":NoiceAll<CR>")
 
   '';
 in

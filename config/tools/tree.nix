@@ -173,21 +173,21 @@ let
     local tree_api = require('nvim-tree.api')
     local tree_view = require('nvim-tree.view')
 
-    keymapd("<leader>ee", ":NvimTreeToggle<CR>", 'Toggle nvim tree')
-    keymapd("<leader>ea", tree_api.tree.toggle_enable_filters, 'Toggle hidding dotfiles')
-    keymapd('<leader>eh", ":help nvim-tree-api<CR>', 'Open nvim-tree help')
-    keymapd("<leader>ef", function()
+    keymapd("<leader>ee", "Toggle nvim tree", ":NvimTreeToggle<CR>")
+    keymapd("<leader>ea", "Toggle hidding dotfiles", tree_api.tree.toggle_enable_filters)
+    keymapd("<leader>eh", "Open nvim-tree help", ":help nvim-tree-api<CR>")
+    keymapd("<leader>ef", "Show current file in the tree", function()
       if tree_view.is_visible() then
         tree_api.tree.find_file()
       else
         print(vim.fn.expand('%'))
       end
-    end, 'Show current file in the tree')
+    end)
 
-    keymapd("<leader>et", function()
+    keymapd("<leader>et", "Toggle tree follow", function()
       local tree = require('nvim-tree')
       tree.update_focused_file.enable = not tree.update_focused_file.enable
-    end, 'Toggle tree follow')
+    end)
 
     -- Run the tree on startup for editor
     --  I removed this in favor of a greeter experience

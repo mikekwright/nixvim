@@ -45,10 +45,10 @@
         }
       })
 
-      keymapd('<leader>lec', function()
+      keymapd('<leader>lec', "LSP: Toggle Copilot", function()
         vim.g.copilot_enabled = not vim.g.copilot_enabled
         print("Copilot is now " .. (vim.g.copilot_enabled and "enabled" or "disabled"))
-      end, "LSP: Toggle Copilot")
+      end)
     '';
 in {
   lua = copilot-lua;

@@ -1,7 +1,6 @@
 { extra-pkgs, ... }:
 
 let
-
   status-lua = /*lua*/ ''
     -- Gitsigns shows the status on the left side of the window
     require('gitsigns').setup({
@@ -81,15 +80,15 @@ let
         end)
 
         -- Actions
-        map('n', '<leader>hs', gitsigns.stage_hunk)
-        map('n', '<leader>hr', gitsigns.reset_hunk)
-        map('v', '<leader>hs', function() gitsigns.stage_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
-        map('v', '<leader>hr', function() gitsigns.reset_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
-        map('n', '<leader>hS', gitsigns.stage_buffer)
-        map('n', '<leader>hu', gitsigns.undo_stage_hunk)
+        keymapd("<leader>gss", "Gitsign: Stage Hunk", gitsigns.stage_hunk)
+        keymapd("<leader>gsr", "Gitsign: Reset Hunk", gitsigns.reset_hunk)
+        vkeymapd("<leader>gss", "Gitsign: Stage Hunk selection", function() gitsigns.stage_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
+        vkeymapd("<leader>gsr", "Gitsign: Reset Hunk selection", function() gitsigns.reset_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
+        keymapd("<leader>gsS", "Gitsign: Stage Buffer", gitsigns.stage_buffer)
+        keymapd("<leader>gsU", "Gitsign: Undo stage hunk", gitsigns.undo_stage_hunk)
+        keymapd("<leader>gsb", "Gitsign: Blame", function() gitsigns.blame_line{full=true} end)
         map('n', '<leader>hR', gitsigns.reset_buffer)
         map('n', '<leader>hp', gitsigns.preview_hunk)
-        map('n', '<leader>hb', function() gitsigns.blame_line{full=true} end)
         map('n', '<leader>tb', gitsigns.toggle_current_line_blame)
         map('n', '<leader>hd', gitsigns.diffthis)
         map('n', '<leader>hD', function() gitsigns.diffthis('~') end)

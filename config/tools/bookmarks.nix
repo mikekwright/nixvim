@@ -18,17 +18,17 @@ let
 
     local bm = require('bookmarks')
 
-    keymapd("<leader>bb", bm.bookmark_toggle, "Bookmark: Toggle Line")
-    keymapd("<leader>bi", bm.bookmark_ann, "Bookmark: Add/Edit Annotation")
-    keymapd("<leader>bc", bm.bookmark_clean, "Bookmark: Clean All")
-    keymapd("<leader>bn", bm.bookmark_next, "Bookmark: Next")
-    keymapd("<leader>bp", bm.bookmark_prev, "Bookmark: Previous")
+    keymapd("<leader>bb", "Bookmark: Toggle Line", bm.bookmark_toggle)
+    keymapd("<leader>bi", "Bookmark: Add/Edit Annotation", bm.bookmark_ann)
+    keymapd("<leader>bc", "Bookmark: Clean All", bm.bookmark_clean)
+    keymapd("<leader>bn", "Bookmark: Next", bm.bookmark_next)
+    keymapd("<leader>bp", "Bookmark: Previous", bm.bookmark_prev)
     -- keymapd("<leader>ml", bm.bookmark_list, "Bookmark: List")
     -- keymapd("<leader>ml", bmtelescope.extensions.bookmarks.list, "Bookmark: List (Telescope)")
 
     -- Remember to setup the telescope extension
-    keymapd("<leader>bl", "<cmd>Telescope bookmarks list<cr>", "Bookmark: List (Telescope)")
-    keymapd("<leader>bda", bm.bookmark_clear_all, "Bookmark: Clear All")
+    keymapd("<leader>bl", "Bookmark: List (Telescope)", "<cmd>Telescope bookmarks list<cr>")
+    keymapd("<leader>bda", "Bookmark: Clear All", bm.bookmark_clear_all)
   '';
 in
 {

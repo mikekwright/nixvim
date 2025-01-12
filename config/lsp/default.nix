@@ -159,7 +159,7 @@
         --    https://github.com/folke/trouble.nvim?tab=readme-ov-file
         --
         require('trouble').setup()
-        keymapd("<leader>lt", ":Trouble diagnostics toggle<CR>", "Trouble: Toggle Diagnostics")
+        keymapd("<leader>lt", "Trouble: Toggle Diagnostics", ":Trouble diagnostics toggle<CR>")
     '';
 in {
   name = "lsp";

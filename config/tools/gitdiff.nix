@@ -3,11 +3,11 @@
 let
 
   diffview-lua = /*lua*/ ''
-    keymapd("<leader>gd", ":DiffviewOpen<CR>", "Open git diff view")
-    keymapd("<leader>gc", ":DiffviewClose<CR>", "Close git view")
-    keymapd("<leader>gv", ":DiffviewFileHistory<CR>", "Open git history viewer")
-    keymapd("<leader>gf", ":DiffviewFileHistory %<CR>", "View git file history")
-    xkeymapd("<leader>gv", ":'<,'>DiffviewFileHistory<CR>", "Show git history")
+    keymapd("<leader>gd", "Open git diff view", ":DiffviewOpen<CR>")
+    keymapd("<leader>gc", "Close git view", ":DiffviewClose<CR>")
+    keymapd("<leader>gv", "Open git history viewer", ":DiffviewFileHistory<CR>")
+    keymapd("<leader>gf", "View git file history", ":DiffviewFileHistory %<CR>")
+    xkeymapd("<leader>gv", "Show git history", ":'<,'>DiffviewFileHistory<CR>")
   '';
 in
 {
