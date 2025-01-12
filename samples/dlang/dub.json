@@ -1,0 +1,9 @@
+{
+	"authors": [
+		"Michael Wright"
+	],
+	"copyright": "Copyright © 2025, Michael Wright",
+	"description": "A minimal D application.",
+	"license": "proprietary",
+	"name": "dlang"
+}
