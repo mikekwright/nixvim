@@ -71,6 +71,11 @@ let
       vim.keymap.set("t", key, action, { silent = true, noremap = true })
     end
 
+    -- Visual mode keys
+    function xkeymapd(key, action, desc)
+      vim.keymap.set("x", key, action, { silent = true, noremap = true, desc = desc})
+    end
+
     local run_in_debug = false
     function dprint(msg)
       if run_in_debug then

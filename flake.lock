@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "diffview-nixpkgs": {
+      "locked": {
+        "lastModified": 1735523292,
+        "narHash": "sha256-opBsbR/nrGxiiF6XzlVluiHYb6yN/hEwv+lBWTy9xoM=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "6d97d419e5a9b36e6293887a89a078cf85f5a61b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "6d97d419e5a9b36e6293887a89a078cf85f5a61b",
+        "type": "github"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": "nixpkgs-lib"
@@ -192,6 +208,7 @@
     },
     "root": {
       "inputs": {
+        "diffview-nixpkgs": "diffview-nixpkgs",
         "flake-parts": "flake-parts",
         "gotools-nixpkgs": "gotools-nixpkgs",
         "markdown-nixpkgs": "markdown-nixpkgs",
