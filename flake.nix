@@ -30,6 +30,8 @@
     gotools-nixpkgs.url = "github:nixos/nixpkgs/5ed627539ac84809c78b2dd6d26a5cebeb5ae269";
     # Version is 2024-06-13
     diffview-nixpkgs.url = "github:nixos/nixpkgs/6d97d419e5a9b36e6293887a89a078cf85f5a61b";
+    # Version is 2024-12-20
+    bqf-nixpkgs.url = "github:nixos/nixpkgs/6d97d419e5a9b36e6293887a89a078cf85f5a61b";
   };
 
   outputs = {
@@ -63,6 +65,7 @@
           markdown-pkgs = inputs.markdown-nixpkgs.legacyPackages.${system};
           gotools-pkgs = inputs.gotools-nixpkgs.legacyPackages.${system};
           diffview-pkgs = inputs.diffview-nixpkgs.legacyPackages.${system};
+          bqf-pkgs = inputs.bqf-nixpkgs.legacyPackages.${system};
         };
 
         debug = import ./lib/debug.nix {inherit pkgs extra-pkgs system;};

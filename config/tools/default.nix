@@ -45,6 +45,7 @@ in
     ./bookmarks.nix
     ./gitdiff.nix
     ./gitsigns.nix
+    ./bqf.nix
   ];
 
   lua = debug.traceResult tools-setup-lua;
