@@ -46,6 +46,9 @@ in
     ./gitdiff.nix
     ./gitsigns.nix
     ./bqf.nix
+
+    # Disable for now, has an error that I need to understand
+    # ./dropbar.nix
   ];
 
   lua = debug.traceResult tools-setup-lua;

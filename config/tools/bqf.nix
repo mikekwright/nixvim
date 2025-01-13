@@ -1,6 +1,8 @@
 { extra-pkgs, ... }:
 
 let
+  # Tracking bqf plugin from https://github.com/kevinhwang91/nvim-bqf
+
   bqf-lua = /*lua*/ ''
     local fn = vim.fn
 
