@@ -89,7 +89,13 @@
         };
 
         packages = {
+          full = nvim;
           # Lets you run `nix run .` to start custom neovim
+          default = nvim;
+        };
+
+        apps = {
+          full.package = nvim;
           default = nvim;
         };
       };
