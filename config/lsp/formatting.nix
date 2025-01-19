@@ -34,13 +34,13 @@
         },
       })
 
-      keymapd("<leader>lf", function()
+      keymapd("<leader>lf", "Format the file or selection", function()
         conform.format({
           lsp_fallback = true,
           async = false,
           timeout_ms = 1000,
         })
-      end, "Format the file or selection")
+      end)
     '';
 in {
   lua = conformLua;

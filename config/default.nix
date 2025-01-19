@@ -57,10 +57,9 @@ let
     function keymap(key, action)
       vim.keymap.set("n", key, action, { silent = true, noremap = false })
     end
-    function keymapd(key, action, desc)
+    function keymapd(key, desc, action)
       vim.keymap.set("n", key, action, { silent = true, noremap = false, desc = desc })
     end
-
 
     function nkeymap(key, action)
       vim.keymap.set("n", key, action, { silent = true, noremap = true })
@@ -69,6 +68,14 @@ let
     -- Terminal Keys
     function tkeymap(key, action)
       vim.keymap.set("t", key, action, { silent = true, noremap = true })
+    end
+
+    -- Visual mode keys
+    function xkeymapd(key, desc, action)
+      vim.keymap.set("x", key, action, { silent = true, noremap = true, desc = desc})
+    end
+    function vkeymapd(key, desc, action)
+      vim.keymap.set("v", key, action, { silent = true, noremap = true, desc = desc})
     end
 
     local run_in_debug = false
@@ -84,7 +91,7 @@ let
     end)
 
     -- Changes for jumplist (:help jumplist)
-    keymapd("<leader>gb", "<C-O>", "Goto: Previous Location")
+    keymapd("<leader>gb", "Goto: Previous Location", "<C-O>")
 
     function print_table(name, t)
       if type(t) == 'table' then

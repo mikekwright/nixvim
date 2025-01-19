@@ -15,14 +15,14 @@ let
 
     -- This key opens a new terminal
     keymap("<C-t>", ":new<CR>:terminal<CR>i")  -- The extra i should put it in insert mode for the terminal
-    keymapd("<leader>tt", ":new<CR>:terminal<CR>i", "Open terminal")
+    keymapd("<leader>tt", "Open terminal", ":new<CR>:terminal<CR>i")
 
-    keymapd("<leader>cs", ":nohlsearch<CR>", "Clear search highlights")
+    keymapd("<leader>cs", "Clear search highlights", ":nohlsearch<CR>")
 
-    keymapd("<leader>qa", ":qall<CR>", "Quit all")
-    keymapd("<leader>qq", ":qall!<CR>", "Quit all (forced)")
+    keymapd("<leader>qa", "Quit all", ":qall<CR>")
+    keymapd("<leader>qq", "Quit all (forced)", ":qall!<CR>")
 
-    keymapd("<leader>gg", "<C-]>", "Go to help section")
+    keymapd("<leader>gg", "Go to help section", "<C-]>")
 
     -- Tab is not supported in neovim by default, this maps to insert mode flow
     --vim.keymap.set("n", "<TAB>", ">>")

@@ -8,7 +8,7 @@
       markdownPlugin.setup({})
 
       --- More commands can be configured (https://github.com/MeanderingProgrammer/render-markdown.nvim?tab=readme-ov-file#commands)
-      keymapd("<leader>lem", markdownPlugin.toggle, "LSP: Toggle Markdown rendering")
+      keymapd("<leader>lem", "LSP: Toggle Markdown rendering", markdownPlugin.toggle)
     '';
 in {
   lua = markdownLua;
