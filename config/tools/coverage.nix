@@ -1,6 +1,8 @@
 { pkgs, ... }:
 
 let
+  # This plugin uses the nvim-coverage found on github
+  #   https://github.com/andythigpen/nvim-coverage
   coverage-lua = /*lua*/ ''
     require("coverage").setup({
       commands = true, -- create commands
