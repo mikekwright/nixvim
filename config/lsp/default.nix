@@ -174,6 +174,7 @@ in {
     ./python.nix
     ./haskell.nix
     ./golang.nix
+    ./kotlin.nix
 
     ./markdown.nix
     ./formatting.nix

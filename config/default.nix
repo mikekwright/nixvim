@@ -121,6 +121,9 @@ in
 
   lua = initialLua;
 
+  packages = with pkgs; [
+    cloc
+  ];
 
   vimPackages = let
     nvim-nio = pkgs.vimUtils.buildVimPlugin {
