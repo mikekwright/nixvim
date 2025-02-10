@@ -9,7 +9,7 @@
       capabilities = lsp_cmp_capabilities,
       -- If you don't update you $PATH
       extraOptions = {
-        cmd = { '${pkgs.kotlin-language-server}/bin/kotlin-language-server" },
+        cmd = { "${pkgs.kotlin-language-server}/bin/kotlin-language-server" },
       },
     })
   '';
@@ -24,7 +24,7 @@ in {
   packages = with pkgs; [
     kotlin-language-server
 
-    java
+    zulu
     kotlin
     kotlin-native
 
