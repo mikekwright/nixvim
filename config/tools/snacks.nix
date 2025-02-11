@@ -1,6 +1,10 @@
 { pkgs, ... }:
 
 let
+  # Read more from documentation
+  #  https://github.com/folke/snacks.nvim/blob/main/docs/util.md
+
+  
   # How to animate things that take place in neovim
   animate = (import ./snacks/animate.nix) { inherit pkgs; };
 
