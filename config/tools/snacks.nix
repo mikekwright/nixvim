@@ -1,31 +1,45 @@
 { pkgs, ... }:
 
 let
-  toggle-config = builtins.readFile ./snacks/toggle.lua;
-  picker-config = builtins.readFile ./snacks/picker.lua;
-  animate-config = builtins.readFile ./snacks/animate.lua;
-  bigfile-config = builtins.readFile ./snacks/bigfile.lua;
-  dim-config = builtins.readFile ./snacks/dim.lua;
-  gitbrowse-config = builtins.readFile ./snacks/gitbrowse.lua;
-  blameline-config = builtins.readFile ./snacks/blame_line.lua;
-  indent-config = builtins.readFile ./snacks/indent.lua;
+  # How to animate things that take place in neovim
+  animate = (import ./snacks/animate.nix) { inherit pkgs; };
+
+  # Helps to stop loading really large files
+  blameline = (import ./snacks/blame-line.nix) { inherit pkgs; };
+
+  # Zen is the mode that gives you focus on the area you want to work in.
+  zen = (import ./snacks/zen.nix) { inherit pkgs; };
+
+  # Helper to open a floating window with the history of the current file
+  bigfile = (import ./snacks/bigfile.nix) { inherit pkgs; };
+
+  # This is the plugin that will dim areas that are not in focus on the code (goes by clock)
+  dim = (import ./snacks/dim.nix) { inherit pkgs; };
+
+  # Quick solution to create a url that will open the current file in the source host url
+  gitbrowse = (import ./snacks/gitbrowse.nix) { inherit pkgs; };
+
+  # Provides a simple and useful indent marker that you can turn on/off and configure
+  indent = (import ./snacks/indent.nix) { inherit pkgs; };
+
+  # This is the big one, a replacement for the telescope plugin but provides all
+  #   the same functionality, just built into the same solution
+  picker = (import ./snacks/picker.nix) { inherit pkgs; };
+
+  toggle = (import ./snacks/toggle.nix) { inherit pkgs; };
 
   snacks-lua = /*lua*/ ''
     snacks = require('snacks')
     snacks.setup({
-      toggle = ${toggle-config},
-      picker = ${picker-config},
-      animate = ${animate-config},
-      bigfile = ${bigfile-config},
-
-      -- This is the plugin that will dim areas that are not in focus on the code (goes by clock)
-      dim = ${dim-config},
-      gitbrowse = ${gitbrowse-config},
-      blame_line = ${blameline-config},
-      indent = ${indent-config},
-
-      -- This field requires the lazy module (which I am not using)
-      -- dashboard = ,
+      toggle = ${toggle.config},
+      picker = ${picker.config},
+      animate = ${animate.config},
+      bigfile = ${bigfile.config},
+      dim = ${dim.config},
+      gitbrowse = ${gitbrowse.config},
+      blame_line = ${blameline.config},
+      indent = ${indent.config},
+      zen = ${zen.config},
     })
 
     --
@@ -44,37 +58,15 @@ let
       snacks.bufdelete()
     end)
 
-    -- Dim keyboard shortcuts
-    local initialized_dim = false
-    keymapd("<leader>sde", "Enable the Dim feature", function()
-      if not initialized_dim then
-        snacks.dim()
-        initialized_dim = true
-      end
-      snacks.dim.enable()
-    end)
-    keymapd("<leader>sdd", "Disable the Dim feature", function()
-      snacks.dim.disable()
-    end)
-
-    -- Gitbrowse file view
-    keymapd("<leader>sgv", "View the file in github", function()
-      snacks.gitbrowse()
-    end)
-    keymapd("<leader>sgb", "Blame view current line", function()
-      snacks.git.blame_line()
-    end)
-
-    -- Indent handling
-    snacks.indent.enable()  -- Start with it enabled
-    keymapd("<leader>svie", "Enable the indent option", function()
-      snacks.indent.enable()
-    end)
-    keymapd("<leader>svid", "Disable the indent option", function()
-      snacks.indent.disable()
-    end)
-
-
+    ${animate.keymaps}
+    ${indent.keymaps}
+    ${blameline.keymaps}
+    ${dim.keymaps}
+    ${gitbrowse.keymaps}
+    ${bigfile.keymaps}
+    ${picker.keymaps}
+    ${zen.keymaps}
+    ${toggle.keymaps}
   '';
 in
 {
