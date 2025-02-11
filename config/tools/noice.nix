@@ -1,4 +1,4 @@
-{ pkgs, debug, extra-pkgs, ... }:
+{ pkgs, debug, ... }:
 
 let
   treesitter-parsers = [
@@ -313,8 +313,7 @@ in
   ]  ++ (with pkgs.vimPlugins; [
     nvim-notify
     nui-nvim
-  ]) ++ (with extra-pkgs.nvim-treesitter-pkgs.vimPlugins; [
     nvim-treesitter
-  ]) ++ (map (p: extra-pkgs.nvim-treesitter-pkgs.vimPlugins.nvim-treesitter-parsers.${p}) treesitter-parsers);
+  ]) ++ (map (p: pkgs.vimPlugins.nvim-treesitter-parsers.${p}) treesitter-parsers);
 }
 

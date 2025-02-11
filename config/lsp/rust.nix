@@ -1,7 +1,5 @@
 {
-  extra-pkgs,
   pkgs,
-  debug,
   ...
 }: let
   rustAnalyzerLua =
@@ -17,7 +15,7 @@
           default_settings = {
             -- rust-analyzer language server configuration
             ['rust-analyzer'] = {
-              cmd = { "${extra-pkgs.rustanalyzer-pkgs.rust-analyzer}/bin/rust-analyzer" },
+              cmd = { "${pkgs.rust-analyzer}/bin/rust-analyzer" },
               cargo = {
                 allFeatures = true,
               },
@@ -43,7 +41,7 @@ in {
     rustaceanvim
   ];
 
-  packages = with extra-pkgs.rustanalyzer-pkgs; [
+  packages = with pkgs; [
     # This is the lsp server, but requires access to cargo and rustc
     rust-analyzer
 

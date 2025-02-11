@@ -1,4 +1,4 @@
-{ extra-pkgs, ... }:
+{ pkgs, ... }:
 
 let
 
@@ -112,7 +112,7 @@ in
 {
   lua = status-lua;
 
-  vimPackages = with extra-pkgs.nvim-gitsign-pkgs.vimPlugins; [
+  vimPackages = with pkgs.vimPlugins; [
     # This tool gives the ability to see inline git changes
     gitsigns-nvim
 

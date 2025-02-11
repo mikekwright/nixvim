@@ -2,43 +2,15 @@
   description = "A neovim flake, mostly around lua";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-24.05";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    # Date of nixpkgs unstable on 2025-02-08 (Neovim should be version 0.10.4)
+    # nixpkgs.url = "github:nixos/nixpkgs/117fcf7e058ea2bf4e20dbd59f5d5c5336bf80e8";
+    nixpkgs.url = "github:nixos/nixpkgs/4989a246d7a390a859852baddb1013f825435cee";
 
-    # This is neovim 0.10.1
-    #   Can update this version from here: https://www.nixhub.io/packages/neovim
-    neovim-nixpkgs.url = "github:nixos/nixpkgs?ref=5629520edecb69630a3f4d17d3d33fc96c13f6fe";
-
-    # Provide the support for different system configurations and builds
-    flake-parts.url = "github:hercules-ci/flake-parts";
-
-    # This is for rust-analyzer 2024-08-27
-    rustanalyzer-nixpkgs.url = "github:nixos/nixpkgs?ref=5629520edecb69630a3f4d17d3d33fc96c13f6fe";
-    # This is for the treesitter (and corresponding packages) 2024-08-04
-    nvim-treesitter-nixpkgs.url = "github:nixos/nixpkgs?ref=5629520edecb69630a3f4d17d3d33fc96c13f6fe";
-    # This is the nvim-lspconfig (and corresponding packages) 2024-08-02
-    nvim-lspconfig-nixpkgs.url = "github:nixos/nixpkgs/5629520edecb69630a3f4d17d3d33fc96c13f6fe";
-    # This is the telescope-nixpkgs 2024-08-02
-    nvim-telescope-nixpkgs.url = "github:nixos/nixpkgs/5629520edecb69630a3f4d17d3d33fc96c13f6fe";
-    # This is version 07-28-2024 for nvim-tree-lua
-    nvim-tree-lua.url = "github:nixos/nixpkgs/5629520edecb69630a3f4d17d3d33fc96c13f6fe";
-    # This is the version used for left sidebar plugins (gitsigns, statuscol, etc.)
-    nvim-gitsigns-nixpkgs.url = "github:nixos/nixpkgs/5629520edecb69630a3f4d17d3d33fc96c13f6fe";
-    # This is the markdown render tooling
-    markdown-nixpkgs.url = "github:nixos/nixpkgs/280db3decab4cbeb22a4599bd472229ab74d25e1";
-    # This is the go-tools for neovim (version 0.22.0)
-    gotools-nixpkgs.url = "github:nixos/nixpkgs/5ed627539ac84809c78b2dd6d26a5cebeb5ae269";
-    # Version is 2024-06-13
-    diffview-nixpkgs.url = "github:nixos/nixpkgs/6d97d419e5a9b36e6293887a89a078cf85f5a61b";
-    # Version is 2024-12-20
-    bqf-nixpkgs.url = "github:nixos/nixpkgs/6d97d419e5a9b36e6293887a89a078cf85f5a61b";
-    # Version is 2024-12-27
-    dropbar-nixpkgs.url = "github:nixos/nixpkgs/6d97d419e5a9b36e6293887a89a078cf85f5a61b";
+    # Flake parts for 2025-02-08
+    flake-parts.url = "github:hercules-ci/flake-parts/32ea77a06711b758da0ad9bd6a844c5740a87abd";
   };
 
   outputs = {
-    neovim-nixpkgs,
-    nixpkgs-unstable,
     flake-parts,
     ...
   } @ inputs:
@@ -55,21 +27,8 @@
         system,
         ...
       }: let
-        extra-pkgs = {
-          rustanalyzer-pkgs = inputs.rustanalyzer-nixpkgs.legacyPackages.${system};
-          pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
-          neovim-pkgs = neovim-nixpkgs.legacyPackages.${system};
-          nvim-treesitter-pkgs = inputs.nvim-treesitter-nixpkgs.legacyPackages.${system};
-          nvim-lspconfig-pkgs = inputs.nvim-lspconfig-nixpkgs.legacyPackages.${system};
-          nvim-telescope-pkgs = inputs.nvim-telescope-nixpkgs.legacyPackages.${system};
-          nvim-tree-pkgs = inputs.nvim-tree-lua.legacyPackages.${system};
-          nvim-gitsign-pkgs = inputs.nvim-gitsigns-nixpkgs.legacyPackages.${system};
-          markdown-pkgs = inputs.markdown-nixpkgs.legacyPackages.${system};
-          gotools-pkgs = inputs.gotools-nixpkgs.legacyPackages.${system};
-          diffview-pkgs = inputs.diffview-nixpkgs.legacyPackages.${system};
-          bqf-pkgs = inputs.bqf-nixpkgs.legacyPackages.${system};
-          dropbar-pkgs = inputs.dropbar-nixpkgs.legacyPackages.${system};
-        };
+        # This should go away at some point
+        extra-pkgs = {};
 
         debug = import ./lib/debug.nix {inherit pkgs extra-pkgs system;};
         lib = import ./lib/importer.nix {inherit debug extra-pkgs pkgs system;};

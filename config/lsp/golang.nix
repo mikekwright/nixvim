@@ -1,8 +1,6 @@
-{ extra-pkgs, ... }:
+{ pkgs, ... }:
 
 let
-  pkgs = extra-pkgs.gotools-pkgs;
-
   goLua = /*lua*/ ''
     lspconfig.gopls.setup({
       filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },

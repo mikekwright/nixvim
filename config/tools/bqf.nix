@@ -1,4 +1,4 @@
-{ extra-pkgs, ... }:
+{ pkgs, ... }:
 
 let
   # Tracking bqf plugin from https://github.com/kevinhwang91/nvim-bqf
@@ -112,7 +112,7 @@ in
 {
   lua = bqf-lua;
 
-  vimPackages = with extra-pkgs.bqf-pkgs.vimPlugins; [
+  vimPackages = with pkgs.vimPlugins; [
     nvim-bqf
   ];
 }

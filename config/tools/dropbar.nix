@@ -1,4 +1,4 @@
-{ extra-pkgs, pkgs, ... }:
+{ pkgs, ... }:
 
 let
   # Repo for dropbar plugin https://github.com/Bekaboo/dropbar.nvim
@@ -62,8 +62,4 @@ in
   in [
     dropbar
   ];
-
-    # with extra-pkgs.dropbar-pkgs.vimPlugins; [
-  #   dropbar-nvim
-  # ];
 }

@@ -1,5 +1,5 @@
 # Telescope provides the fuzzy search features that I enjoy.
-{ extra-pkgs, ... }:
+{ pkgs, ... }:
 
 let
   telescope-lua-config = /*lua*/ ''
@@ -54,13 +54,13 @@ in
 {
   lua = telescope-lua-config;
 
-  vimPackages = with extra-pkgs.nvim-telescope-pkgs.vimPlugins; [
+  vimPackages = with pkgs.vimPlugins; [
     telescope-nvim
     plenary-nvim
     telescope-fzf-native-nvim
   ];
 
-  packages = with extra-pkgs.nvim-telescope-pkgs; [
+  packages = with pkgs; [
     fd
     ripgrep
   ];

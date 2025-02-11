@@ -6,9 +6,12 @@ let
     local dashboard = require('alpha.themes.dashboard')
 
     dashboard.section.header.val = {
-      "                          ",
-      "    Welcome to Nixovim   ",
-      "                          ",
+      "███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗",
+      "████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║",
+      "██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║",
+      "██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║",
+      "██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║",
+      "╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝",
     }
 
     dashboard.section.buttons.val = {
@@ -18,7 +21,7 @@ let
       dashboard.button("h", "  Recently opened files", ":Telescope oldfiles<CR>"),
       dashboard.button("b", "  Find buffer", ":Telescope buffers<CR>"),
       dashboard.button("p", "  Find project", ":Telescope projects<CR>"),
-      dashboard.button("q", "Quit", ":q<CR>")
+      dashboard.button("q", " Quit", ":q<CR>")
     }
 
     require('alpha').setup(dashboard.config)

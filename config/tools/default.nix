@@ -47,6 +47,8 @@ in
     ./gitsigns.nix
     ./bqf.nix
 
+    ./snacks.nix
+
     # Disable for now, has an error that I need to understand
     # ./dropbar.nix
   ];

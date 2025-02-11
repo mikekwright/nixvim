@@ -1,4 +1,4 @@
-{ extra-pkgs, ... }:
+{ pkgs, ... }:
 
 let
   # nvimTreePlugin = pkgs.vimUtils.buildVimPlugin {
@@ -211,7 +211,7 @@ in
 {
   lua = nvimTreeLua;
 
-  vimPackages = with extra-pkgs.nvim-tree-pkgs.vimPlugins; [
+  vimPackages = with pkgs.vimPlugins; [
     nvim-tree-lua
 
     # Show the icons in the tree (will require a font)

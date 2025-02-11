@@ -1,4 +1,4 @@
-{ extra-pkgs, ... }:
+{ pkgs, ... }:
 
 let
 
@@ -13,7 +13,7 @@ in
 {
   lua = diffview-lua;
 
-  vimPackages = with extra-pkgs.diffview-pkgs.vimPlugins; [
+  vimPackages = with pkgs.vimPlugins; [
     diffview-nvim
   ];
 }

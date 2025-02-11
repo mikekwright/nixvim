@@ -1,6 +1,5 @@
 {
   pkgs,
-  extra-pkgs,
   ...
 }: let
   lsp-config-lua =
@@ -193,11 +192,10 @@ in {
         sha256 = "9Eatn1LW6k4Bjk50vYd1AfXWSgaJqnTnUNAuLp2ezck=";
       };
     };
-  in
-    [
+    in [
       none-ls-extras
     ]
-    ++ (with extra-pkgs.nvim-lspconfig-pkgs.vimPlugins; [
+    ++ (with pkgs.vimPlugins; [
       nvim-lspconfig
       nvim-cmp
       cmp-nvim-lsp
@@ -209,10 +207,6 @@ in {
   packages = with pkgs; [
     markdownlint-cli
     statix
-
-    #mypy
-    #black
-    #flake8
 
     dioxus-cli # Provides dx for dxfmt
   ];

@@ -1,4 +1,4 @@
-{extra-pkgs, ...}: let
+{pkgs, ...}: let
   markdownLua =
     /*
     lua
@@ -13,12 +13,9 @@
 in {
   lua = markdownLua;
 
-  vimPackages =
-    (with extra-pkgs.markdown-pkgs.vimPlugins; [
-      render-markdown
-      mini-nvim
-    ])
-    ++ (with extra-pkgs.nvim-treesitter-pkgs.vimPlugins; [
-      nvim-treesitter
-    ]);
+  vimPackages = with pkgs.vimPlugins; [
+    render-markdown-nvim
+    mini-nvim
+    nvim-treesitter
+  ];
 }
