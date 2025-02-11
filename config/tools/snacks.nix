@@ -7,6 +7,8 @@ let
   bigfile-config = builtins.readFile ./snacks/bigfile.lua;
   dim-config = builtins.readFile ./snacks/dim.lua;
   gitbrowse-config = builtins.readFile ./snacks/gitbrowse.lua;
+  blameline-config = builtins.readFile ./snacks/blame_line.lua;
+  indent-config = builtins.readFile ./snacks/indent.lua;
 
   snacks-lua = /*lua*/ ''
     snacks = require('snacks')
@@ -19,6 +21,8 @@ let
       -- This is the plugin that will dim areas that are not in focus on the code (goes by clock)
       dim = ${dim-config},
       gitbrowse = ${gitbrowse-config},
+      blame_line = ${blameline-config},
+      indent = ${indent-config},
 
       -- This field requires the lazy module (which I am not using)
       -- dashboard = ,
@@ -31,8 +35,9 @@ let
       { "<leader>s", group = "Snacks" },
       { "<leader>sd", group = "Code Dim" },
       { "<leader>sg", group = "Git" },
+      { "<leader>sv", group = "View Options" },
+      { "<leader>svi", group = "Indent Option" },
     })
-
 
     -- Buffer Delete keyboard shortcuts
     keymapd("<leader>bd", "Delete current buffer", function()
@@ -56,6 +61,19 @@ let
     keymapd("<leader>sgv", "View the file in github", function()
       snacks.gitbrowse()
     end)
+    keymapd("<leader>sgb", "Blame view current line", function()
+      snacks.git.blame_line()
+    end)
+
+    -- Indent handling
+    snacks.indent.enable()  -- Start with it enabled
+    keymapd("<leader>svie", "Enable the indent option", function()
+      snacks.indent.enable()
+    end)
+    keymapd("<leader>svid", "Disable the indent option", function()
+      snacks.indent.disable()
+    end)
+
 
   '';
 in
