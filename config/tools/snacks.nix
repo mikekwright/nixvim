@@ -32,6 +32,8 @@ let
 
   toggle = (import ./snacks/toggle.nix) { inherit pkgs; };
 
+  words = (import ./snacks/words.nix) { inherit pkgs; };
+
   snacks-lua = /*lua*/ ''
     snacks = require('snacks')
     snacks.setup({
@@ -44,6 +46,7 @@ let
       blame_line = ${blameline.config},
       indent = ${indent.config},
       zen = ${zen.config},
+      words = ${words.config},
     })
 
     --
@@ -71,6 +74,7 @@ let
     ${picker.keymaps}
     ${zen.keymaps}
     ${toggle.keymaps}
+    ${words.keymaps}
   '';
 in
 {

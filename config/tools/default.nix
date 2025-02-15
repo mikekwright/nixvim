@@ -39,9 +39,6 @@ in
     ./left-status.nix
     ./db-tools.nix
 
-    #  Going to disable telescope for now and try with snacks picker
-    # ./telescope.nix
-
     ./debugging.nix
     ./testing.nix
     ./whichkey.nix
@@ -51,9 +48,6 @@ in
     ./bqf.nix
 
     ./snacks.nix
-
-    # Disable for now, has an error that I need to understand
-    # ./dropbar.nix
   ];
 
   lua = debug.traceResult tools-setup-lua;
