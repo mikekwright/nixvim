@@ -38,13 +38,16 @@ in
     ./noice.nix
     ./left-status.nix
     ./db-tools.nix
-    ./telescope.nix
+
+    #  Going to disable telescope for now and try with snacks picker
+    # ./telescope.nix
+
     ./debugging.nix
     ./testing.nix
     ./whichkey.nix
     ./bookmarks.nix
-    ./gitdiff.nix
-    ./gitsigns.nix
+    #./gitdiff.nix
+    #./gitsigns.nix
     ./bqf.nix
 
     ./snacks.nix

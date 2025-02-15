@@ -291,7 +291,7 @@ in
   imports = [
     ./tree.nix
     ./db-tools.nix
-    ./telescope.nix
+    # ./telescope.nix
   ];
 
   lua = debug.traceResult tools-setup-lua;

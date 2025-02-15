@@ -84,20 +84,20 @@
             --
             -- Features with telescope integrated capabilities
             --
-            local telescopeBuiltin = require('telescope.builtin')
-            if telescopeBuiltin then
-              feature_enable_check('<C-b>', 'definition', client.server_capabilities.definitionProvider, telescopeBuiltin.lsp_definitions, "LSP (t): Definitions")
-              feature_enable_check('<leader>ld', 'definition', client.server_capabilities.definitionProvider, telescopeBuiltin.lsp_definitions, "LSP (t): Goto definition")
-              feature_enable_check('<leader>li', 'implementation', client.server_capabilities.implementationProvider, telescopeBuiltin.lsp_implementation, "LSP (t): Goto implementation")
-              feature_enable_check('<leader>lc', 'references', client.server_capabilities.referencesProvider, telescopeBuiltin.lsp_references, "LSP (t): Find references")
-              feature_enable_check('<leader>lR', 'references', client.server_capabilities.referencesProvider, telescopeBuiltin.lsp_incoming_calls, "LSP (t): Find incoming calls")
-              feature_enable_check('<leader>lC', 'references', client.server_capabilities.referencesProvider, telescopeBuiltin.lsp_outgoing_calls, "LSP (t): Find outgoing calls")
-              feature_enable_check('<leader>lt', 'type_def', client.server_capabilities.typeDefinitionProvider, telescopeBuiltin.lsp_type_definitions, "LSP (t): Type definitions")
-              feature_enable_check('<leader>fs', 'symbols', client.server_capabilities.documentSymbolProvider, telescopeBuiltin.lsp_document_symbols, "LSP (t): Search Document Systems")
-              feature_enable_check('<leader>lS', 'symbols', client.server_capabilities.documentSymbolProvider, telescopeBuiltin.lsp_document_symbols, "LSP (t): Search Document Systems")
-              feature_enable_check('<leader>lw', 'workspace', client.server_capabilities.workspaceSymbolProvider, telescopeBuiltin.lsp_workspace_symbols, "LSP (t): Search workspace Symbols")
-              feature_enable_check('<leader>fw', 'workspace', client.server_capabilities.workspaceSymbolProvider, telescopeBuiltin.lsp_workspace_symbols, "LSP (t): Search workspace Symbols")
-            else
+            -- local telescopeBuiltin = require('telescope.builtin')
+            -- if telescopeBuiltin then
+            --   feature_enable_check('<C-b>', 'definition', client.server_capabilities.definitionProvider, telescopeBuiltin.lsp_definitions, "LSP (t): Definitions")
+            --   feature_enable_check('<leader>ld', 'definition', client.server_capabilities.definitionProvider, telescopeBuiltin.lsp_definitions, "LSP (t): Goto definition")
+            --   feature_enable_check('<leader>li', 'implementation', client.server_capabilities.implementationProvider, telescopeBuiltin.lsp_implementation, "LSP (t): Goto implementation")
+            --   feature_enable_check('<leader>lc', 'references', client.server_capabilities.referencesProvider, telescopeBuiltin.lsp_references, "LSP (t): Find references")
+            --   feature_enable_check('<leader>lR', 'references', client.server_capabilities.referencesProvider, telescopeBuiltin.lsp_incoming_calls, "LSP (t): Find incoming calls")
+            --   feature_enable_check('<leader>lC', 'references', client.server_capabilities.referencesProvider, telescopeBuiltin.lsp_outgoing_calls, "LSP (t): Find outgoing calls")
+            --   feature_enable_check('<leader>lt', 'type_def', client.server_capabilities.typeDefinitionProvider, telescopeBuiltin.lsp_type_definitions, "LSP (t): Type definitions")
+            --   feature_enable_check('<leader>fs', 'symbols', client.server_capabilities.documentSymbolProvider, telescopeBuiltin.lsp_document_symbols, "LSP (t): Search Document Systems")
+            --   feature_enable_check('<leader>lS', 'symbols', client.server_capabilities.documentSymbolProvider, telescopeBuiltin.lsp_document_symbols, "LSP (t): Search Document Systems")
+            --   feature_enable_check('<leader>lw', 'workspace', client.server_capabilities.workspaceSymbolProvider, telescopeBuiltin.lsp_workspace_symbols, "LSP (t): Search workspace Symbols")
+            --   feature_enable_check('<leader>fw', 'workspace', client.server_capabilities.workspaceSymbolProvider, telescopeBuiltin.lsp_workspace_symbols, "LSP (t): Search workspace Symbols")
+            -- else
               feature_enable_check('<C-b>', 'definition', client.server_capabilities.definitionProvider, vim.lsp.buf.definition, "LSP: Definitions")
               feature_enable_check('<leader>ld', 'definition', client.server_capabilities.definitionProvider, vim.lsp.buf.definition, "LSP: Definition")
               feature_enable_check('<leader>li', 'implementation', client.server_capabilities.implementationProvider, vim.lsp.buf.implementation, "LSP: Goto implementation")
@@ -106,7 +106,7 @@
               feature_enable_check('<leader>lt', 'type_def', client.server_capabilities.typeDefinitionProvider, vim.lsp.buf.type_definition, "LSP: Type Definition")
               feature_enable_check('<leader>lS', 'symbols', client.server_capabilities.documentSymbolProvider, vim.lsp.buf.document_symbol, "LSP: Document Symbols")
               feature_enable_check('<leader>lw', 'workspace', client.server_capabilities.workspaceSymbolProvider, vim.lsp.buf.workspace_symbol, "LSP: Workspace Symbols")
-            end
+            -- end
 
             --
             -- Features without telescope integrated capabilities
