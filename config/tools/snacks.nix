@@ -52,13 +52,13 @@ let
     --
     -- The which key group configuration for Snacks
     --
-    wk.add({
-      { "<leader>s", group = "Snacks" },
-      { "<leader>sd", group = "Code Dim" },
-      { "<leader>sg", group = "Git" },
-      { "<leader>sv", group = "View Options" },
-      { "<leader>svi", group = "Indent Option" },
-    })
+    -- wk.add({
+    --   { "<leader>s", group = "Snacks" },
+    --   { "<leader>sd", group = "Code Dim" },
+    --   { "<leader>sg", group = "Git" },
+    --   { "<leader>sv", group = "View Options" },
+    --   { "<leader>svi", group = "Indent Option" },
+    -- })
 
     -- Buffer Delete keyboard shortcuts
     keymapd("<leader>bd", "Delete current buffer", function()

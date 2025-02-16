@@ -34,6 +34,7 @@ in
   name = "tools";
 
   imports = [
+    ./whichkey.nix
     ./tree.nix
     ./noice.nix
     ./left-status.nix
@@ -41,9 +42,8 @@ in
 
     ./debugging.nix
     ./testing.nix
-    ./whichkey.nix
     ./bookmarks.nix
-    #./gitdiff.nix
+    ./gitdiff.nix
     #./gitsigns.nix
     ./bqf.nix
 

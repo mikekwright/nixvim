@@ -58,10 +58,10 @@
 
   keymaps = /*lua*/ ''
     -- Gitbrowse file view
-    keymapd("<leader>sgv", "View the file in github", function()
+    keymapd("<leader>egg", "View the file in github", function()
       snacks.gitbrowse()
     end)
-    keymapd("<leader>sgb", "Blame view current line", function()
+    keymapd("<leader>egb", "Blame view current line", function()
       snacks.git.blame_line()
     end)
   '';

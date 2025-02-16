@@ -2,14 +2,18 @@
 
 let
   db-lua-config = /*lua*/ ''
+  wk.add({
+    { "<leader>ed", group = "Database", desc = "View database details" },
+  })
+
     -- If there are more keys to support look at the plugin documentation
     --   https://github.com/kristijanhusak/vim-dadbod-ui/blob/master/doc/dadbod-ui.txt#L382
-    nkeymap("<leader>dd", ":DBUIToggle<CR>")
-    nkeymap("<leader>de", "<Plug>(DBUI_ExecuteQuery)")
-    nkeymap("<leader>dc", "<Plug>(DBUI_ToggleResultLayout)")
-    nkeymap("<leader>dq", "<Plug>(DBUI_Quit)")
-    nkeymap("<leader>ds", "<Plug>(DBUI_SaveQuery)")
-    nkeymap("<leader>dr", "<Plug>(DBUI_Redraw)")
+    nkeymap("<leader>edd", ":DBUIToggle<CR>")
+    nkeymap("<leader>ede", "<Plug>(DBUI_ExecuteQuery)")
+    nkeymap("<leader>edc", "<Plug>(DBUI_ToggleResultLayout)")
+    nkeymap("<leader>edq", "<Plug>(DBUI_Quit)")
+    nkeymap("<leader>eds", "<Plug>(DBUI_SaveQuery)")
+    nkeymap("<leader>edr", "<Plug>(DBUI_Redraw)")
   '';
 in
 {
