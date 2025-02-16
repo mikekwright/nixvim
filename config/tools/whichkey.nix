@@ -5,18 +5,36 @@ let
 
   local wk = require("which-key")
     wk.add({
-      { "<leader>f", group = "File work" }, -- group
-      -- { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find File", mode = "n" },
-      -- { "<leader>fb", function() print("hello") end, desc = "Foobar" },
-      { "<leader>fn", desc = "New File" },
-      -- { "<leader>f1", hidden = true }, -- hide this keymap
+      --
+      -- Start with the overview of the list of specific groups include
+      --   
+      --   g -- Goto places (last, bookmarks, etc)
+      --   e -- Explore (tree, etc)
+      --   f -- find (files, etc)
+      --   h -- Help 
+      --   l -- Language (LSP support)  
+      --   d -- Debug
+      --   r -- Run
+      --   t -- Terminal
+      --   b -- Buffers
+      --
+
+
+      --   a -- (Nothing)
+      --   b -- Bookmarks
+      --   ,d -- Debug
+      --   ,
+
+      { "<leader>e", group = "Tree", desc = "Nvim tree" },
+      { "<leader>ef", group = "Files" }, -- group
+      { "<leader>
+
       { "<leader>w", proxy = "<c-w>", group = "windows" }, -- proxy to window mappings
       { "<leader>g", group = "buffers", expand = function()
           return require("which-key.extras").expand.buf()
         end
       },
       { "<leader>c", group = "Console",  desc = "Work with view on page" },
-      { "<leader>e", group = "Nvim tree", desc = "Nvim tree" },
       { "<leader>t", group = "Terminal", desc = "Terminal support" },
       { "<leader>b", group = "Bookmarks", desc = "Bookmarks" },
 

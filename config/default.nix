@@ -2,6 +2,16 @@
 
 let
   initialLua = /*lua*/ ''
+    -- The below requires the snacks plugin to be for the functions to work, but if so it can help with some
+    -- debug views
+    _G.dd = function(...)
+      require('snacks').debug.inspect(...)
+    end
+    _G.bt = function()
+      require('snacks').debug.backtrace()
+    end
+    --vim.print = _G.dd
+
     -- As we are trying to optimize our solution for just config defined in this flake we need
     --    to have our system ignore default configs (these are shared from online sources)
     vim.opt.runtimepath:remove(vim.fn.stdpath('config'))              -- ~/.config/nvim
