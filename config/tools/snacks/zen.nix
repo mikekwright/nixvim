@@ -40,8 +40,6 @@
   '';
 
   keymaps = /*lua*/ ''
-    keymapd("<leader>wz", "Toggle window zen mode", function()
-      snacks.zen.zen()
-    end)
+    keymapd("<leader>ecz", "Zen mode (toggle)", snacks.zen.zen)
   '';
 }

@@ -76,11 +76,15 @@
 
   keymaps = /*lua*/ ''
     -- Indent handling
+    wk.add({
+      { "<leader>eci", group = "Code indent", desc = "Tools for viewing indent of code" },
+    })
+
     snacks.indent.enable()  -- Start with it enabled
-    keymapd("<leader>svie", "Enable the indent option", function()
+    keymapd("<leader>ecie", "Enable the indent option", function()
       snacks.indent.enable()
     end)
-    keymapd("<leader>svid", "Disable the indent option", function()
+    keymapd("<leader>ecid", "Disable the indent option", function()
       snacks.indent.disable()
     end)
   '';
