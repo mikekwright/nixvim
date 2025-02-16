@@ -283,7 +283,7 @@ let
       format = {}, --- @see section on formatting
     })
 
-    keymapd('<leader>ch', "Noice: Display all details", ":NoiceAll<CR>")
+    keymapd('<leader>hn', "Noice: Display all details", ":NoiceAll<CR>")
 
   '';
 in
@@ -291,7 +291,7 @@ in
   imports = [
     ./tree.nix
     ./db-tools.nix
-    ./telescope.nix
+    # ./telescope.nix
   ];
 
   lua = debug.traceResult tools-setup-lua;

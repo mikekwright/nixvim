@@ -34,23 +34,20 @@ in
   name = "tools";
 
   imports = [
+    ./whichkey.nix
     ./tree.nix
     ./noice.nix
     ./left-status.nix
     ./db-tools.nix
-    ./telescope.nix
+
     ./debugging.nix
     ./testing.nix
-    ./whichkey.nix
     ./bookmarks.nix
     ./gitdiff.nix
-    ./gitsigns.nix
+    #./gitsigns.nix
     ./bqf.nix
 
     ./snacks.nix
-
-    # Disable for now, has an error that I need to understand
-    # ./dropbar.nix
   ];
 
   lua = debug.traceResult tools-setup-lua;

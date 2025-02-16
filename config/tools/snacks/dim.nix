@@ -28,16 +28,21 @@
   '';
 
   keymaps = /*lua*/ ''
+
+    wk.add({
+      { "<leader>ec", group = "Explore Code", desc = "Code specific commands for exploring" },
+      { "<leader>ecd", group = "Code Dim", desc = "Adjust code by dimming surrounding areas" },
+    })
     -- Dim keyboard shortcuts
     local initialized_dim = false
-    keymapd("<leader>sde", "Enable the Dim feature", function()
+    keymapd("<leader>ecde", "Enable the Dim feature", function()
       if not initialized_dim then
         snacks.dim()
         initialized_dim = true
       end
       snacks.dim.enable()
     end)
-    keymapd("<leader>sdd", "Disable the Dim feature", function()
+    keymapd("<leader>ecdd", "Disable the Dim feature", function()
       snacks.dim.disable()
     end)
   '';

@@ -2,6 +2,10 @@
 
 let
   bookmarks_lua = /*lua*/ ''
+    wk.add({
+      { "<leader>eb", group = "Bookmarks", desc = "Manage bookmarks" },
+    })
+
     require('bookmarks').setup({
       save_file = vim.fn.expand "$HOME/.bookmarks", -- bookmarks save file path
       keywords =  {
@@ -18,17 +22,17 @@ let
 
     local bm = require('bookmarks')
 
-    keymapd("<leader>bb", "Bookmark: Toggle Line", bm.bookmark_toggle)
-    keymapd("<leader>bi", "Bookmark: Add/Edit Annotation", bm.bookmark_ann)
-    keymapd("<leader>bc", "Bookmark: Clean All", bm.bookmark_clean)
-    keymapd("<leader>bn", "Bookmark: Next", bm.bookmark_next)
-    keymapd("<leader>bp", "Bookmark: Previous", bm.bookmark_prev)
+    keymapd("<leader>ebb", "Bookmark: Toggle Line", bm.bookmark_toggle)
+    keymapd("<leader>ebi", "Bookmark: Add/Edit Annotation", bm.bookmark_ann)
+    keymapd("<leader>ebc", "Bookmark: Clean All", bm.bookmark_clean)
+    keymapd("<leader>ebn", "Bookmark: Next", bm.bookmark_next)
+    keymapd("<leader>ebp", "Bookmark: Previous", bm.bookmark_prev)
     -- keymapd("<leader>ml", bm.bookmark_list, "Bookmark: List")
     -- keymapd("<leader>ml", bmtelescope.extensions.bookmarks.list, "Bookmark: List (Telescope)")
 
     -- Remember to setup the telescope extension
-    keymapd("<leader>bl", "Bookmark: List (Telescope)", "<cmd>Telescope bookmarks list<cr>")
-    keymapd("<leader>bda", "Bookmark: Clear All", bm.bookmark_clear_all)
+    keymapd("<leader>ebl", "Bookmark: List (Telescope)", "<cmd>Telescope bookmarks list<cr>")
+    keymapd("<leader>ebC", "Bookmark: Clear All", bm.bookmark_clear_all)
   '';
 in
 {

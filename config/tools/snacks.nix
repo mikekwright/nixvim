@@ -32,6 +32,8 @@ let
 
   toggle = (import ./snacks/toggle.nix) { inherit pkgs; };
 
+  words = (import ./snacks/words.nix) { inherit pkgs; };
+
   snacks-lua = /*lua*/ ''
     snacks = require('snacks')
     snacks.setup({
@@ -44,18 +46,19 @@ let
       blame_line = ${blameline.config},
       indent = ${indent.config},
       zen = ${zen.config},
+      words = ${words.config},
     })
 
     --
     -- The which key group configuration for Snacks
     --
-    wk.add({
-      { "<leader>s", group = "Snacks" },
-      { "<leader>sd", group = "Code Dim" },
-      { "<leader>sg", group = "Git" },
-      { "<leader>sv", group = "View Options" },
-      { "<leader>svi", group = "Indent Option" },
-    })
+    -- wk.add({
+    --   { "<leader>s", group = "Snacks" },
+    --   { "<leader>sd", group = "Code Dim" },
+    --   { "<leader>sg", group = "Git" },
+    --   { "<leader>sv", group = "View Options" },
+    --   { "<leader>svi", group = "Indent Option" },
+    -- })
 
     -- Buffer Delete keyboard shortcuts
     keymapd("<leader>bd", "Delete current buffer", function()
@@ -71,6 +74,7 @@ let
     ${picker.keymaps}
     ${zen.keymaps}
     ${toggle.keymaps}
+    ${words.keymaps}
   '';
 in
 {
