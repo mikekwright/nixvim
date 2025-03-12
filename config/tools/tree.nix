@@ -19,6 +19,8 @@ let
     --local treeApi = require("nvim-tree.api")
     --nkeymap("<leader>e", treeApi.tree.toggle)
 
+    require("nvim-web-devicons")
+
     function nvimTreeOnAttach(bufnr)
       local api = require('nvim-tree.api')
 
@@ -210,6 +212,10 @@ let
 in
 {
   lua = nvimTreeLua;
+
+  packages = with pkgs; [
+    nerd-fonts.fira-code
+  ];
 
   vimPackages = with pkgs.vimPlugins; [
     nvim-tree-lua

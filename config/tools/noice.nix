@@ -309,8 +309,10 @@ in
       };
     }; 
   in [ 
-    noice-nvim
+    #noice-nvim
   ]  ++ (with pkgs.vimPlugins; [
+    noice-nvim
+
     nvim-notify
     nui-nvim
     nvim-treesitter

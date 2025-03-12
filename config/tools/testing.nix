@@ -36,27 +36,28 @@ in
 {
   lua = neotest-lua;
 
-  vimPackages = let
-    neotest-nvim = pkgs.vimUtils.buildVimPlugin {
-      name = "neotest-nvim";
-      src = pkgs.fetchFromGitHub {
-        owner = "nvim-neotest";
-        repo = "neotest";
-        rev = "v5.5.0";
-        sha256 = "ua/fV1zClX97P4aZNPzRuO382D8hm8xe4UaBxa88Hu0=";
-      };
-    };
-    neotest-python = pkgs.vimUtils.buildVimPlugin {
-      name = "neotest-python";
-      src = pkgs.fetchFromGitHub {
-        owner = "nvim-neotest";
-        repo = "neotest-python";
-        rev = "72603dfdbaad5695160268cb10531a14cc37236e";  # August 2024
-        sha256 = "WZ5dH/XgS92fBmFhf/NZcMXmndV/nvHWuKKT/PZlGbU=";
-      };
-    };
-  in [
-    neotest-nvim
+  # vimPackages = let
+  #   neotest-nvim = pkgs.vimUtils.buildVimPlugin {
+  #     name = "neotest-nvim";
+  #     src = pkgs.fetchFromGitHub {
+  #       owner = "nvim-neotest";
+  #       repo = "neotest";
+  #       rev = "v5.5.0";
+  #       sha256 = "ua/fV1zClX97P4aZNPzRuO382D8hm8xe4UaBxa88Hu0=";
+  #     };
+  #   };
+  #   neotest-python = pkgs.vimUtils.buildVimPlugin {
+  #     name = "neotest-python";
+  #     src = pkgs.fetchFromGitHub {
+  #       owner = "nvim-neotest";
+  #       repo = "neotest-python";
+  #       rev = "72603dfdbaad5695160268cb10531a14cc37236e";  # August 2024
+  #       sha256 = "WZ5dH/XgS92fBmFhf/NZcMXmndV/nvHWuKKT/PZlGbU=";
+  #     };
+  #   };
+  # in [
+  vimPackages = with pkgs.vimPlugins; [
+    neotest
     neotest-python
   ];
 }

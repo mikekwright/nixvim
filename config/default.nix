@@ -127,6 +127,7 @@ in
 
     ./keymaps.nix
     ./greeter.nix
+    ./avante.nix
   ];
 
   lua = initialLua;
@@ -146,11 +147,12 @@ in
       };
     };
   in [
-    nvim-nio
+    # nvim-nio
   ] ++ (with pkgs.vimPlugins; [
     # Set of many different lua functions that you can take advantage of as needed instead of
     #   reinventing the wheel on your own implementations
     # https://github.com/nvim-lua/plenary.nvim/
+    nvim-nio
     plenary-nvim
   ]);
 }

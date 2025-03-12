@@ -2,8 +2,6 @@
   description = "A neovim flake, mostly around lua";
 
   inputs = {
-    # Date of nixpkgs unstable on 2025-02-08 (Neovim should be version 0.10.4)
-    # nixpkgs.url = "github:nixos/nixpkgs/117fcf7e058ea2bf4e20dbd59f5d5c5336bf80e8";
     nixpkgs.url = "github:nixos/nixpkgs/4989a246d7a390a859852baddb1013f825435cee";
 
     # Flake parts for 2025-02-08
