@@ -160,6 +160,7 @@ in {
     ./haskell.nix
     ./golang.nix
     ./kotlin.nix
+    ./typescript.nix
 
     ./markdown.nix
     ./formatting.nix
