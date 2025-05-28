@@ -97,6 +97,8 @@ in
   ]);
 
   packages = with pkgs; [
+    # Snacks searcher uses rg
+    ripgrep
     sqlite
   ];
 }
