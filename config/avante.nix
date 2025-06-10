@@ -8,8 +8,12 @@ let
     require('avante_lib').load()
     require("avante").setup({
       debug = false,
-      provider = "gemini",
+      provider = "copilot",
       -- auto_suggestions_provider = "copilot",
+
+      depencencies = {
+        'copilot',
+      },
 
       -- provider = "openai",
       -- openai = {

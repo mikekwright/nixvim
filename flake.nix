@@ -10,6 +10,7 @@
 
   outputs = {
     flake-parts,
+    self,
     ...
   } @ inputs:
     flake-parts.lib.mkFlake {inherit inputs;} {
@@ -41,6 +42,11 @@
         };
         nvim = lib.makeModule neovimModule;
       in {
+        _module.args.pkgs = import self.inputs.nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+        };
+
         checks = {
           # Run `nix flake check .` to verify that your config is not broken
           # TODO: Add the test derivation that can run

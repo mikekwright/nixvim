@@ -6,7 +6,7 @@
     ''
       require('copilot').setup({
         panel = {
-          enabled = false,  -- disable copilot by default, use <cmd>lua require('copilot').toggle()<CR> to toggle
+          enabled = true,  -- disable copilot by default, use <cmd>lua require('copilot').toggle()<CR> to toggle
           auto_refresh = true,
           keymap = {
             jump_prev = "[[",
@@ -59,13 +59,20 @@ in {
       src = pkgs.fetchFromGitHub {
         owner = "zbirenbaum";
         repo = "copilot.lua";
-        rev = "86537b286f18783f8b67bccd78a4ef4345679625";
-        sha256 = "HC1QZlqEg+RBz/8kjLadafc06UoMAjhh0UO/BWQGMY8=";
+        rev = "c1bb86abbed1a52a11ab3944ef00c8410520543d";
+        sha256 = "qxHpIsFFLDG/jtk6e1hkOZgDSRA5Q0+DMxxAxckNhIc=";
+
+        # rev = "86537b286f18783f8b67bccd78a4ef4345679625";
+        # sha256 = "HC1QZlqEg+RBz/8kjLadafc06UoMAjhh0UO/BWQGMY8=";
       };
     };
   in [
     copilot-nvim
   ];
+
+  # vimPackages = with pkgs.vimPlugins; [
+  #   copilot-vim
+  # ];
 
   packages = with pkgs; [
     nodejs_22 # This is required for copilot
