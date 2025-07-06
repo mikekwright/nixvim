@@ -88,26 +88,43 @@ in {
           };
         };
       };
-    #in neovimPackage;
-    in pkgs.writeShellApplication {
+
+      neowrapper = pkgs.writeShellApplication {
+        name = "nvim";
+        runtimeInputs = [ neovimPackage ] ++ modulePackages;
+        text = /*shell*/ ''
+          set +u
+          if [[ -n $NVIM_DEBUG ]]; then
+            echo 'LUA CONFIG FILE: ${luaFile}'
+            cat ${luaFile}
+
+            echo 'Startup scripts:'
+            echo '${scriptText}'
+
+            echo '-------------------------'
+            echo "Neovim config file path: ${luaFile}" 
+          else
+            ${scriptText}
+            ${neovimPackage}/bin/nvim -u ${luaFile} "$@"
+          fi
+        '';
+      };
+    in pkgs.stdenv.mkDerivation rec {
       name = "nvim";
-      runtimeInputs = [ neovimPackage ] ++ modulePackages;
-      text = /*shell*/ ''
-        set +u
-        if [[ -n $NVIM_DEBUG ]]; then
-          echo 'LUA CONFIG FILE: ${luaFile}'
-          cat ${luaFile}
-
-          echo 'Startup scripts:'
-          echo '${scriptText}'
-
-          echo '-------------------------'
-          echo "Neovim config file path: ${luaFile}" 
-        else
-          ${scriptText}
-          ${neovimPackage}/bin/nvim -u ${luaFile} "$@"
-        fi
+      buildCommand = let
+        desktopEntry = pkgs.makeDesktopItem {
+          inherit name;
+          desktopName = "Neovim";
+          exec = "${neowrapper}/bin/${name} %f";
+          terminal = true;
+        };
+      in ''
+        mkdir -p $out/bin
+        cp ${neowrapper}/bin/${name} $out/bin
+        mkdir -p $out/share/applications
+        cp ${desktopEntry}/share/applications/${name}.desktop $out/share/applications/${name}.desktop
       '';
+      dontBuild = true;
     };
 }
 
