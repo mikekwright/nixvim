@@ -26,7 +26,8 @@ in {
 
     zulu
     kotlin
-    kotlin-native
+    #  This doesn't exist for the arm linux
+    # kotlin-native
 
     ktlint
     ktfmt
