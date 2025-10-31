@@ -4,6 +4,7 @@ let
   zig-lua = /*lua*/ ''
     lspconfig.zls.setup({
       cmd = { "zls" },
+      capabilities = lsp_cmp_capabilities,
       filetypes = { "zig", "zir" },
       root_dir = lspconfig.util.root_pattern("build.zig", ".git") or vim.loop.cwd,
       single_file_support = true,
