@@ -161,6 +161,7 @@ in {
     ./golang.nix
     ./kotlin.nix
     ./typescript.nix
+    ./zig.nix
 
     ./markdown.nix
     ./formatting.nix
