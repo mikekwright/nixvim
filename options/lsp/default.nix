@@ -1,10 +1,8 @@
 {
   pkgs,
-  options,
-  lib,
   ...
 }: let
-  lsp-config-lua =
+  lua =
     /*
     lua
     */
@@ -157,12 +155,15 @@
     #       require("none-ls.diagnostics.eslint"), -- requires none-ls-extras.nvim
     #     },
     #   })
+in {
+  inherit lua afterLua;
 
-in lib.loadOption options "lsp" {
   name = "lsp";
 
   imports = [
     ./markdown.nix
+    ./formatting.nix
+
     # ./copilot.nix
     # ./neotest.nix
     # ./dap.nix
@@ -176,11 +177,7 @@ in lib.loadOption options "lsp" {
     # ./typescript.nix
     # ./zig.nix
     #
-    # ./formatting.nix
   ];
-
-  lua = lsp-config-lua;
-  afterLua = afterLua;
 
   vimPackages = (let
     none-ls-extras = pkgs.vimUtils.buildVimPlugin {

@@ -211,6 +211,8 @@ let
   '';
 in
 {
+  common = true;
+
   lua = nvimTreeLua;
 
   packages = with pkgs; [

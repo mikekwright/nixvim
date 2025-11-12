@@ -30,6 +30,8 @@ let
   '';
 in
 {
+  common = true;
+
   lua = keysLua;
 }
 

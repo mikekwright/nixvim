@@ -43,6 +43,8 @@
       end)
     '';
 in {
+  name = "lsp.formatting";
+  
   lua = conformLua;
 
   packages = with pkgs; [

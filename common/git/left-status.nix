@@ -1,7 +1,6 @@
 { pkgs, ... }:
 
 let
-
   status-lua = /*lua*/ ''
     -- Gitsigns shows the status on the left side of the window
     require('gitsigns').setup({
@@ -110,6 +109,8 @@ let
   '';
 in
 {
+  common = true;
+
   lua = status-lua;
 
   vimPackages = with pkgs.vimPlugins; [

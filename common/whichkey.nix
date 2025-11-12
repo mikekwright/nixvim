@@ -55,6 +55,8 @@ let
   '';
 in
 {
+  common = true;
+
   lua = whichkey_lua;
 
   vimPackages =

@@ -1,4 +1,4 @@
-{pkgs, options, ...}: let
+{pkgs, ...}: let
   markdownLua =
     /*
     lua
@@ -11,15 +11,17 @@
       keymapd("<leader>lem", "LSP: Toggle Markdown rendering", markdownPlugin.toggle)
     '';
 in {
-  lua = options.extensions "lsp.markdown" markdownLua;
+  name = "lsp.markdown";
 
-  vimPackages = with pkgs.vimPlugins; options.extensions "lsp.markdown" [
+  lua = markdownLua;
+
+  vimPackages = with pkgs.vimPlugins; [
     render-markdown-nvim
     mini-nvim
     nvim-treesitter
   ];
 
-  packages = with pkgs; options.packages "lsp.markdown" [
+  packages = with pkgs; [
     markdownlint-cli
   ];
 }

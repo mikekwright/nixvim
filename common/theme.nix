@@ -9,6 +9,8 @@ let
   '';
 in
 {
+  common = true;
+
   lua = commonThemeLua; 
 
   vimPackages = let

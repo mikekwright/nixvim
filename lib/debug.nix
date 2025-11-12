@@ -9,4 +9,3 @@ in
   trace = if debug then builtins.trace else (traceItem: returnItem: returnItem);
   traceResult = if debug then (r: builtins.trace r r) else (r: r);
 }
-

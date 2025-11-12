@@ -1,6 +1,8 @@
 { ... }:
 
 {
+  common = true;
+
   imports = [
     ./lsp
   ];

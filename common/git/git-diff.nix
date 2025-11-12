@@ -1,7 +1,6 @@
 { pkgs, ... }:
 
 let
-
   diffview-lua = /*lua*/ ''
     wk.add({
       { "<leader>eg", group = "Explore git", desc = "Tools for working with git" },
@@ -16,6 +15,8 @@ let
   '';
 in
 {
+  common = true;
+
   lua = diffview-lua;
 
   vimPackages = with pkgs.vimPlugins; [

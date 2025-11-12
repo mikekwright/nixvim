@@ -120,6 +120,8 @@ let
   '';
 in
 {
+  common = true;
+
   lua = initialLua;
 
   packages = with pkgs; [

@@ -10,6 +10,8 @@ let
   '';
 in
 {
+  common = true;
+
   inherit lua;
 
   imports = [
