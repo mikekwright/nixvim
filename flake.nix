@@ -39,7 +39,6 @@
             ];
           };
 
-          # module = import ./config; # import the module directly
           # You can use `extraSpecialArgs` to pass additional arguments to your module files
           extraSpecialArgs = {
             inherit inputs system pkgs debug extra-pkgs;
@@ -53,9 +52,13 @@
         };
 
         packages = let
+          buildPackage = includes: lib.makeModule includes neovimModule;
+
           complete-includes = import ./packages/complete.nix {inherit lib;};
+          minimal-includes = import ./packages/minimal.nix {inherit lib;};
         in rec {
-          complete = lib.makeModule complete-includes neovimModule;
+          complete = buildPackage complete-includes;
+          minimal = buildPackage minimal-includes;
 
           # Lets you run `nix run .` to start custom neovim
           default = complete;
