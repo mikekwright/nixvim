@@ -49,11 +49,22 @@ let
       debug.trace completedMerge completedMerge;
 
 in {
-  makeModule = m: 
+  makeIncludes = includes: {
+    extensions = includes.extensions or [];
+    packages = includes.packages or [];
+    complete = includes.complete or [];
+    ai = includes.ai or [];
+  };
+
+  makeModule = includes: m: 
     let
+      # This options is what will be used to include the specific extensions
+      #    an packages that are desired for the given setup
+      options = import ./options.nix { inherit includes; };
+
       # The base module from flake is not a common module definition, this kicks off the
       #   process of building and loading all the modules in the system.
-      fullModule = mergeModule (m.module m.extraSpecialArgs) m.extraSpecialArgs;
+      fullModule = mergeModule (m.module (m.extraSpecialArgs // options)) m.extraSpecialArgs;
 
       # Module packages are any other 3rd party packages that are needed when running neovim
       #    such as rust, python, etc (mostly just lsp servers)

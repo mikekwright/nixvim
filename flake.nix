@@ -33,13 +33,18 @@
 
         neovimModule = {
           inherit pkgs extra-pkgs;
-          module = import ./config; # import the module directly
+          module = { ... }: {
+            imports = [
+              ./common
+            ];
+          };
+
+          # module = import ./config; # import the module directly
           # You can use `extraSpecialArgs` to pass additional arguments to your module files
           extraSpecialArgs = {
             inherit inputs system pkgs debug extra-pkgs;
           };
         };
-        nvim = lib.makeModule neovimModule;
       in {
         checks = {
           # Run `nix flake check .` to verify that your config is not broken
@@ -47,9 +52,13 @@
           #default = mkTestFrom Module neovimModule;
         };
 
-        packages = {
+        packages = let
+          complete-includes = import ./packages/complete.nix {inherit lib;};
+        in rec {
+          complete = lib.makeModule complete-includes neovimModule;
+
           # Lets you run `nix run .` to start custom neovim
-          default = nvim;
+          default = complete;
         };
       };
     };
