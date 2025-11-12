@@ -2,6 +2,8 @@
   pkgs,
   ...
 }: let
+  name = "lsp";
+
   lua =
     /*
     lua
@@ -156,27 +158,24 @@
     #     },
     #   })
 in {
-  inherit lua afterLua;
-
-  name = "lsp";
+  inherit lua afterLua name;
 
   imports = [
     ./markdown.nix
     ./formatting.nix
 
-    # ./copilot.nix
-    # ./neotest.nix
-    # ./dap.nix
-    #
-    # ./rust.nix
-    # ./nix.nix
-    # ./python.nix
-    # ./haskell.nix
-    # ./golang.nix
-    # ./kotlin.nix
-    # ./typescript.nix
-    # ./zig.nix
-    #
+    ./copilot.nix
+    ./neotest.nix
+    ./dap.nix
+
+    ./rust.nix
+    ./nix.nix
+    ./python.nix
+    ./haskell.nix
+    ./golang.nix
+    ./kotlin.nix
+    ./typescript.nix
+    ./zig.nix
   ];
 
   vimPackages = (let

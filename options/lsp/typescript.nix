@@ -1,5 +1,7 @@
 {pkgs, ...}: let
-  typescript-lua =
+  name = "lsp.typescript";
+
+  lua =
     /*
     lua
     */
@@ -64,7 +66,7 @@
       -- end)
     '';
 in {
-  lua = typescript-lua;
+  inherit name lua;
 
   vimPackages = let
     typescript-tools = pkgs.vimUtils.buildVimPlugin {

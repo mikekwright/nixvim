@@ -2,30 +2,28 @@
   pkgs,
   ...
 }: let
-  rustAnalyzerLua =
-    /*
-    lua
-    */
-    ''
-      vim.g.rustaceanvim = {
-        server = {
-          on_attach = function(client, bufnr)
-            -- Your on_attach function here
-          end,
-          default_settings = {
-            -- rust-analyzer language server configuration
-            ['rust-analyzer'] = {
-              cmd = { "${pkgs.rust-analyzer}/bin/rust-analyzer" },
-              cargo = {
-                allFeatures = true,
-              },
+  name = "lsp.rust";
+
+  lua = /*lua*/ ''
+    vim.g.rustaceanvim = {
+      server = {
+        on_attach = function(client, bufnr)
+          -- Your on_attach function here
+        end,
+        default_settings = {
+          -- rust-analyzer language server configuration
+          ['rust-analyzer'] = {
+            cmd = { "${pkgs.rust-analyzer}/bin/rust-analyzer" },
+            cargo = {
+              allFeatures = true,
             },
           },
         },
-      }
-    '';
+      },
+    }
+  '';
 in {
-  lua = rustAnalyzerLua;
+  inherit lua name;
 
   vimPackages = let
     rustaceanvim = pkgs.vimUtils.buildVimPlugin {

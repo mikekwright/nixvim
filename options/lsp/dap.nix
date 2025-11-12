@@ -1,7 +1,9 @@
 { pkgs, ... }:
 
 let
-  dapLua = /*lua*/ ''
+  name = "lsp.dap";
+
+  lua = /*lua*/ ''
     local dap_plugin = require('dap')
 
     vim.keymap.set("n", '<leader>rd', function()
@@ -10,7 +12,7 @@ let
   '';
 in
 {
-  lua = dapLua;
+  inherit lua name;
 
   vimPackages = with pkgs.vimPlugins; [
     # This is the plugin that uses microsoft's debug adapter protocol (DAP)

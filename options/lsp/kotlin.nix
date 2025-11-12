@@ -1,5 +1,7 @@
 {pkgs, ...}: let
-  kotlin-lua =
+  name = "lsp.kotlin";
+
+  lua =
     /*
     lua
     */
@@ -14,12 +16,7 @@
     })
   '';
 in {
-
-  #
-  # Maybe look at this tool in the future
-  #   https://github.com/MrcJkb/haskell-tools.nvim
-  #
-  lua = kotlin-lua;
+  inherit lua name;
 
   packages = with pkgs; [
     kotlin-language-server

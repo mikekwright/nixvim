@@ -1,7 +1,9 @@
 { pkgs, ... }:
 
 let
-  nix-lsp-lua = /*lua*/ ''
+  name = "lsp.nix";
+
+  lua = /*lua*/ ''
     lspconfig.nixd.setup {
       capabilities = lsp_cmp_capabilities,
       extraOptions = {
@@ -17,7 +19,7 @@ let
   '';
 in
 {
-  lua = nix-lsp-lua;
+  inherit lua name;
 
   vimPackages = with pkgs.vimPlugins; [
     vim-nix

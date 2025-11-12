@@ -1,5 +1,7 @@
 {pkgs, ...}: let
-  copilot-lua =
+  name = "lsp.copilot";
+
+  lua =
     /*
     lua
     */
@@ -51,7 +53,7 @@
       end)
     '';
 in {
-  lua = copilot-lua;
+  inherit lua name;
 
   vimPackages = let
     copilot-nvim = pkgs.vimUtils.buildVimPlugin {

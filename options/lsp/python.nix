@@ -1,7 +1,9 @@
 { pkgs, ... }:
 
 let
-  python-lsp-lua = /*lua*/ ''
+  name = "lsp.python";
+
+  lua = /*lua*/ ''
     lspconfig.pyright.setup {
       capabilities = lsp_cmp_capabilities,
 
@@ -17,7 +19,7 @@ let
   '';
 in
 {
-  lua = python-lsp-lua;
+  inherit lua name;
 
   vimPackages = with pkgs.vimPlugins; [
     nvim-dap-python

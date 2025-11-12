@@ -1,5 +1,6 @@
 {pkgs, ...}: let
-  conformLua =
+  name = "lsp.formatting";
+  lua =
     /*
     lua
     */
@@ -43,10 +44,8 @@
       end)
     '';
 in {
-  name = "lsp.formatting";
+  inherit lua name;
   
-  lua = conformLua;
-
   packages = with pkgs; [
     alejandra # Uncompromissing nix formatter
     nodePackages.prettier # For js,tsx,css,etc.

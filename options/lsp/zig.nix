@@ -1,7 +1,9 @@
 { pkgs, ... }:
 
 let
-  zig-lua = /*lua*/ ''
+  name = "lsp.zig";
+
+  lua = /*lua*/ ''
     lspconfig.zls.setup({
       cmd = { "zls" },
       capabilities = lsp_cmp_capabilities,
@@ -12,7 +14,7 @@ let
   '';
 in
 {
-  lua = zig-lua;
+  inherit lua name;
 
   vimPackages = let
     zig.vim = pkgs.vimUtils.buildVimPlugin {

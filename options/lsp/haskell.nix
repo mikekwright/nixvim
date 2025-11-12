@@ -1,5 +1,7 @@
 {pkgs, ...}: let
-  haskell_lua =
+  name = "lsp.haskell";
+
+  lua =
     /*
     lua
     */
@@ -13,12 +15,11 @@
       })
     '';
 in {
-
+  inherit lua name;
   #
   # Maybe look at this tool in the future
   #   https://github.com/MrcJkb/haskell-tools.nvim
   #
-  lua = haskell_lua;
 
   packages = with pkgs; [
     haskell-language-server

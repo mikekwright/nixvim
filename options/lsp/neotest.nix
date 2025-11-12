@@ -1,11 +1,13 @@
 { pkgs, ... }:
 
 let
-  neotestStartLua = /*lua*/ ''
+  name = "lsp.neotest";
+
+  lua = /*lua*/ ''
     neotest_adapters = {}
   '';
 
-  neotestEndLua = /*lua*/ ''
+  afterLua = /*lua*/ ''
     require("neotest").setup({
       adapters = neotest_adapters,
       -- {
@@ -21,8 +23,7 @@ let
   '';
 in
 {
-  lua = neotestStartLua;
-  afterLua = neotestEndLua;
+  inherit lua afterLua name;
 
   vimPackages = with pkgs.vimPlugins; [
     # This plugin is supposed to make it easier to setup and use tests in conjunction with

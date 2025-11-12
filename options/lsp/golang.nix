@@ -1,7 +1,9 @@
 { pkgs, ... }:
 
 let
-  goLua = /*lua*/ ''
+  name = "lsp.golang";
+
+  lua = /*lua*/ ''
     lspconfig.gopls.setup({
       filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
       capabilities = lsp_cmp_capabilities,
@@ -22,7 +24,7 @@ let
   '';
 in
 {
-  lua = goLua;
+  inherit lua name;
 
   vimPackages = with pkgs.vimPlugins; [
     vim-go
