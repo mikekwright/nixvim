@@ -1,9 +1,10 @@
 { pkgs, ... }:
 
 let
+  name = "tools.snacks";
+
   # Read more from documentation
   #  https://github.com/folke/snacks.nvim/blob/main/docs/util.md
-
   
   # How to animate things that take place in neovim
   animate = (import ./snacks/animate.nix) { inherit pkgs; };
@@ -34,7 +35,7 @@ let
 
   words = (import ./snacks/words.nix) { inherit pkgs; };
 
-  snacks-lua = /*lua*/ ''
+  lua = /*lua*/ ''
     snacks = require('snacks')
     snacks.setup({
       toggle = ${toggle.config},
@@ -78,7 +79,7 @@ let
   '';
 in
 {
-  lua = snacks-lua;
+  inherit name lua;
 
   vimPackages = let
     snacks-nvim = pkgs.vimUtils.buildVimPlugin {

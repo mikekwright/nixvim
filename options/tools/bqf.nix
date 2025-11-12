@@ -1,9 +1,10 @@
 { pkgs, ... }:
 
 let
-  # Tracking bqf plugin from https://github.com/kevinhwang91/nvim-bqf
+  name = "tools.bqf";
 
-  bqf-lua = /*lua*/ ''
+  # Tracking bqf plugin from https://github.com/kevinhwang91/nvim-bqf
+  lua = /*lua*/ ''
     local fn = vim.fn
 
     function _G.qftf(info)
@@ -110,7 +111,7 @@ let
   '';
 in
 {
-  lua = bqf-lua;
+  inherit lua name;
 
   vimPackages = with pkgs.vimPlugins; [
     nvim-bqf

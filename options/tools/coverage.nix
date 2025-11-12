@@ -1,9 +1,11 @@
 { pkgs, ... }:
 
 let
+  name = "tools.coverage";
+
   # This plugin uses the nvim-coverage found on github
   #   https://github.com/andythigpen/nvim-coverage
-  coverage-lua = /*lua*/ ''
+  lua = /*lua*/ ''
     require("coverage").setup({
       commands = true, -- create commands
       highlights = {
@@ -27,7 +29,7 @@ let
   '';
 in
 {
-  lua = coverage-lua;
+  inherit lua name;
 
   vimPackages = with pkgs.vimPlugins; [
     nvim-coverage

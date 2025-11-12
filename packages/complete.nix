@@ -18,5 +18,17 @@ lib.makeIncludes
     "lsp.rust"
     "lsp.typescript"
     "lsp.zig"
+
+    "tools.bookmarks"
+    "tools.bqf"
+    "tools.coverage"
+    "tools.db"
+    "tools.debugging"
+    "tools.mini"
+    "tools.noice"
+    "tools.snacks"
+    "tools.testing"
+
+    "ai"
   ];
 }

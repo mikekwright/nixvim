@@ -1,11 +1,13 @@
 { debug, pkgs, ... }:
 
 let
+  name = "tools";
+
   #treesitter-ensured-list = debug.traceResult (
   #  builtins.concatStringsSep "," (map (f: "\"${f}\"") treesitter-parsers)
   #);
 
-  tools-setup-lua = /*lua*/ ''
+  lua = debug.traceResult /*lua*/ ''
     require("lualine").setup({
       options = {
         icons_enabled = true
@@ -31,26 +33,21 @@ let
   '';
 in
 {
-  name = "tools";
+  inherit name lua;
 
   imports = [
-    ./whichkey.nix
-    ./tree.nix
+    ./bookmarks.nix
+    ./bqf.nix
+    ./coverage.nix
+
     ./noice.nix
-    ./left-status.nix
-    ./db-tools.nix
+    ./db.nix
 
     ./debugging.nix
     ./testing.nix
-    ./bookmarks.nix
-    ./gitdiff.nix
-    #./gitsigns.nix
-    ./bqf.nix
 
     ./snacks.nix
   ];
-
-  lua = debug.traceResult tools-setup-lua;
 
   packages = with pkgs; [
     lazygit

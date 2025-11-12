@@ -1,7 +1,9 @@
 { pkgs, ... }:
 
 let
-  neotest-lua = /*lua*/ ''
+  name = "tools.testing";
+
+  lua = /*lua*/ ''
     require("neotest").setup({
       adapters = {
         require("neotest-python")({
@@ -34,7 +36,7 @@ let
   '';
 in
 {
-  lua = neotest-lua;
+  inherit name lua;
 
   # vimPackages = let
   #   neotest-nvim = pkgs.vimUtils.buildVimPlugin {

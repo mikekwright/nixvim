@@ -1,7 +1,9 @@
 { pkgs, ... }:
 
 let
-  db-lua-config = /*lua*/ ''
+  name = "tools.db";
+
+  lua = /*lua*/ ''
   wk.add({
     { "<leader>ed", group = "Database", desc = "View database details" },
   })
@@ -17,7 +19,7 @@ let
   '';
 in
 {
-  lua = db-lua-config;
+  inherit name lua;
 
   packages = with pkgs; [
     postgresql  # Need psql for tool

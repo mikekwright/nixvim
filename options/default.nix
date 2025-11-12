@@ -5,5 +5,7 @@
 
   imports = [
     ./lsp
+    ./tools
+    ./ai
   ];
 }

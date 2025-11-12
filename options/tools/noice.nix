@@ -1,6 +1,8 @@
 { pkgs, debug, ... }:
 
 let
+  name = "tools.noice";
+
   treesitter-parsers = [
     "arduino"
     "angular"
@@ -43,7 +45,7 @@ let
   #  builtins.concatStringsSep "," (map (f: "\"${f}\"") treesitter-parsers)
   #);
 
-  tools-setup-lua = /*lua*/ ''
+  lua = debug.traceResult /*lua*/ ''
     require('nvim-treesitter.configs').setup({
       -- Parsers can be set using the nix package management
       auto_install = false,
@@ -288,13 +290,10 @@ let
   '';
 in
 {
-  imports = [
-    ./tree.nix
-    ./db-tools.nix
-    # ./telescope.nix
-  ];
+  inherit name lua;
 
-  lua = debug.traceResult tools-setup-lua;
+  imports = [
+  ];
 
   vimPackages = let
     # Noice replaces the cmdline, messages and some popup stuff

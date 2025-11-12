@@ -1,7 +1,9 @@
 { pkgs, ... }:
 
 let
-  bookmarks_lua = /*lua*/ ''
+  name = "tools.bookmarks";
+
+  lua = /*lua*/ ''
     wk.add({
       { "<leader>eb", group = "Bookmarks", desc = "Manage bookmarks" },
     })
@@ -36,7 +38,7 @@ let
   '';
 in
 {
-  lua = bookmarks_lua;
+  inherit lua name;
 
   vimPackages = let
     # https://github.com/tomasky/bookmarks.nvim
