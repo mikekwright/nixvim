@@ -3,6 +3,7 @@
 lib.makeIncludes
 {
   complete = [
+    "lsp"
     
   ];
 }

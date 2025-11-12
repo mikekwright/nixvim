@@ -36,12 +36,13 @@
           module = { ... }: {
             imports = [
               ./common
+              ./options
             ];
           };
 
           # You can use `extraSpecialArgs` to pass additional arguments to your module files
           extraSpecialArgs = {
-            inherit inputs system pkgs debug extra-pkgs;
+            inherit inputs system pkgs debug extra-pkgs lib;
           };
         };
       in {

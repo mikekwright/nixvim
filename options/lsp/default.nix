@@ -1,5 +1,7 @@
 {
   pkgs,
+  options,
+  lib,
   ...
 }: let
   lsp-config-lua =
@@ -112,64 +114,75 @@
           end,
         })
 
-        local null_ls = require("null-ls")
-        null_ls.setup({
-          sources = {
-            null_ls.builtins.formatting.stylua,
-            null_ls.builtins.completion.spell,
-
-            null_ls.builtins.diagnostics.fish,
-            null_ls.builtins.diagnostics.markdownlint,
-
-            -- This is for nix support
-            null_ls.builtins.diagnostics.statix,
-
-            -- This is for rust support
-            null_ls.builtins.formatting.dxfmt,
-
-            -- Python formatting options
-            -- null_ls.builtins.diagnostics.mypy,
-            null_ls.builtins.pyright,
-            null_ls.builtins.diagnostics.flake8,
-            -- null_ls.builtins.formatting.black,
-            --  If black is too slow there is a blackd that can be configured (to be faster)
-            --      https://github.com/nvimtools/none-ls.nvim/blob/main/doc/BUILTINS.md#blackd
-
-            require("none-ls.diagnostics.eslint"), -- requires none-ls-extras.nvim
-          },
-        })
-
         --
         -- Trouble gives an easy view into the list of current issues in the file
         --    https://github.com/folke/trouble.nvim?tab=readme-ov-file
         --
         require('trouble').setup()
         keymapd("<leader>lt", "Trouble: Toggle Diagnostics", ":Trouble diagnostics toggle<CR>")
+
+        local null_ls = require("null-ls")
+        local null_ls_sources = {}
+        -- You can add a source by running table.insert(null_ls_sources, null_ls.builtins.formatting.stylua)
     '';
-in {
+
+    afterLua = /*lua*/ ''
+      null_ls.setup({
+        sources = null_ls_sources,
+      })
+    '';
+
+    # null_ls.setup({
+    #     sources = {
+    #       null_ls.builtins.formatting.stylua,
+    #       null_ls.builtins.completion.spell,
+    #
+    #       null_ls.builtins.diagnostics.fish,
+    #       null_ls.builtins.diagnostics.markdownlint,
+    #
+    #       -- This is for nix support
+    #       null_ls.builtins.diagnostics.statix,
+    #
+    #       -- This is for rust support
+    #       null_ls.builtins.formatting.dxfmt,
+    #
+    #       -- Python formatting options
+    #       -- null_ls.builtins.diagnostics.mypy,
+    #       null_ls.builtins.pyright,
+    #       null_ls.builtins.diagnostics.flake8,
+    #       -- null_ls.builtins.formatting.black,
+    #       --  If black is too slow there is a blackd that can be configured (to be faster)
+    #       --      https://github.com/nvimtools/none-ls.nvim/blob/main/doc/BUILTINS.md#blackd
+    #
+    #       require("none-ls.diagnostics.eslint"), -- requires none-ls-extras.nvim
+    #     },
+    #   })
+
+in lib.loadOption options "lsp" {
   name = "lsp";
 
   imports = [
-    ./neotest.nix
-    ./dap.nix
-    ./copilot.nix
-
-    ./rust.nix
-    ./nix.nix
-    ./python.nix
-    ./haskell.nix
-    ./golang.nix
-    ./kotlin.nix
-    ./typescript.nix
-    ./zig.nix
-
     ./markdown.nix
-    ./formatting.nix
+    # ./copilot.nix
+    # ./neotest.nix
+    # ./dap.nix
+    #
+    # ./rust.nix
+    # ./nix.nix
+    # ./python.nix
+    # ./haskell.nix
+    # ./golang.nix
+    # ./kotlin.nix
+    # ./typescript.nix
+    # ./zig.nix
+    #
+    # ./formatting.nix
   ];
 
   lua = lsp-config-lua;
+  afterLua = afterLua;
 
-  vimPackages = let
+  vimPackages = (let
     none-ls-extras = pkgs.vimUtils.buildVimPlugin {
       name = "none-ls-extras.nvim";
       src = pkgs.fetchFromGitHub {
@@ -189,12 +202,9 @@ in {
       trouble-nvim
 
       none-ls-nvim
-    ]);
+    ]));
 
   packages = with pkgs; [
-    markdownlint-cli
-    statix
-
-    dioxus-cli # Provides dx for dxfmt
+    # dioxus-cli # Provides dx for dxfmt
   ];
 }

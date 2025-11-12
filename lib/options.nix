@@ -1,29 +1,27 @@
 { includes ? { complete = {}; packages = {}; extensions = {}; ai = {}; } }:
 
 let
-  hasOption = option: list:
-    builtins.any (x: x == option) list;
-in
+  hasOption = option: list1: list2:
+    builtins.any (x: x == option) list1 || builtins.any(x: x == option) list2;
 
+    returnDefault = value: let
+      valueType = builtins.typeOf value;
+    in
+      if valueType == "list" then []
+      else if valueType == "set" then {}
+      else if valueType == "string" then ""
+      else null;
+in
 {
   extensions = option: value: 
-    let
-      defaultReturn = if builtins.isList value then [] else {};
-    in
-    if hasOption option includes.extensions || hasOption option includes.complete
-      then value else defaultReturn;
+    if hasOption option includes.extensions includes.complete
+      then value else returnDefault value;
 
   packages = option: value: 
-    let
-      defaultReturn = if builtins.isList value then [] else {};
-    in
-    if hasOption option includes.packages || hasOption option includes.complete
-      then value else defaultReturn;
+    if hasOption option includes.packages includes.complete
+      then value else returnDefault value;
 
   ai = option: value: 
-    let
-      defaultReturn = if builtins.isList value then [] else {};
-    in
-    if hasOption option includes.ai || hasOption option includes.complete
-      then value else defaultReturn;
+    if hasOption option includes.ai includes.complete
+      then value else returnDefault value;
 }

@@ -48,7 +48,33 @@ let
     in 
       debug.trace completedMerge completedMerge;
 
+  emptyModuleSet = {
+    name = "";
+    lua = "";
+    afterLua = "";
+    startScript = "";
+    vimPackages = [];
+    vimOptPackages = [];
+    imports = [];
+    packages = [];
+  };
 in {
+  loadOption = options: flag: attr:
+    let
+      compareSet = emptyModuleSet // attr;
+    in
+    {
+      inherit (compareSet) name imports;
+
+      lua = options.extensions flag compareSet.lua;
+      afterLua = options.extensions flag compareSet.afterLua;
+      startScript = options.extensions flag compareSet.startScript;
+      vimPackages = options.extensions flag compareSet.vimPackages;
+      vimOptPackages = options.extensions flag compareSet.vimOptPackages;
+
+      packages = options.packages flag compareSet.packages;
+    };
+
   makeIncludes = includes: {
     extensions = includes.extensions or [];
     packages = includes.packages or [];
@@ -62,9 +88,11 @@ in {
       #    an packages that are desired for the given setup
       options = import ./options.nix { inherit includes; };
 
+      arguments = m.extraSpecialArgs // { inherit options; };
+
       # The base module from flake is not a common module definition, this kicks off the
       #   process of building and loading all the modules in the system.
-      fullModule = mergeModule (m.module (m.extraSpecialArgs // options)) m.extraSpecialArgs;
+      fullModule = mergeModule (m.module arguments) arguments;
 
       # Module packages are any other 3rd party packages that are needed when running neovim
       #    such as rust, python, etc (mostly just lsp servers)

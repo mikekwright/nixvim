@@ -25,5 +25,7 @@ in
 
   packages = with pkgs; [
     nixd
+
+    statix
   ];
 }
