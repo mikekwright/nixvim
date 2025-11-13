@@ -3,7 +3,9 @@
 # Avante.nvim is a nvim plugin that supposedly works the same as cursor IDE but focused
 #    on neovim instead.
 let
-  avante_lua = /*lua*/ ''
+  name = "ai.avante";
+
+  afterLua = /*lua*/ ''
     -- The load for the `avante_lib` needs to be called first to avoid other errors
     require('avante_lib').load()
     require("avante").setup({
@@ -121,7 +123,7 @@ let
   };
 in
 {
-  afterLua = avante_lua;
+  inherit name afterLua;
 
   vimPackages = let
     avante-plugin = pkgs.vimUtils.buildVimPlugin {

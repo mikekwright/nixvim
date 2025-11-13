@@ -7,5 +7,6 @@ in
   inherit name;
 
   imports = [
+    ./avante.nix
   ];
 }
