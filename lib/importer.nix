@@ -1,17 +1,31 @@
 { pkgs, debug, ... }:
 
 let
+  loadOption = options: flag: attr:
+    {
+      inherit (attr) name imports;
+
+      lua = options.extensions flag attr.lua;
+      afterLua = options.extensions flag attr.afterLua;
+      startScript = options.extensions flag attr.startScript;
+      vimPackages = options.extensions flag attr.vimPackages;
+      vimOptPackages = options.extensions flag attr.vimOptPackages;
+
+      packages = options.packages flag attr.packages;
+    };
+
   loadImports = m: args: if builtins.hasAttr "imports" m
-    then builtins.map (i: ((import i) args) // { name=i; }) m.imports
+    then builtins.map (i: ((import i) args) // { }) m.imports
     else [];
 
-  mergeModule = m: args: 
+  mergeModule = m: options: args:
     let
       childrenModules = debug.trace m (loadImports m args);
 
       # TODO: Would be nice to create a config section that could just update itself into
       #   the lua config (so more declarative), but that is a future piece of work.
-      baseModule = {
+      originalModule = {
+        common = m.common or false;
         name = m.name or "default";
         vimPackages = m.vimPackages or [];
         vimOptPackages = m.vimOptPackages or [];
@@ -21,9 +35,13 @@ let
         startScript = m.startScript or "";
       };
 
+      baseModule = if originalModule.common
+        then originalModule
+        else loadOption options originalModule.name originalModule;
+
       # This is the recursive check to basically pull all the other modules that we
       #   have.
-      loadedChildren = builtins.map (m: mergeModule m args) childrenModules;
+      loadedChildren = builtins.map (m: mergeModule m options args) childrenModules;
 
       completedMerge = builtins.foldl' (b: m: {
         vimPackages = b.vimPackages ++ m.vimPackages;
@@ -47,13 +65,23 @@ let
       }) baseModule loadedChildren;
     in 
       debug.trace completedMerge completedMerge;
-
 in {
-  makeModule = m: 
+  makeIncludes = includes: {
+    extensions = includes.extensions or [];
+    packages = includes.packages or [];
+    complete = includes.complete or [];
+    ai = includes.ai or [];
+  };
+
+  makeModule = includes: m: 
     let
+      # This options is what will be used to include the specific extensions
+      #    an packages that are desired for the given setup
+      options = import ./options.nix { inherit includes; };
+
       # The base module from flake is not a common module definition, this kicks off the
       #   process of building and loading all the modules in the system.
-      fullModule = mergeModule (m.module m.extraSpecialArgs) m.extraSpecialArgs;
+      fullModule = mergeModule (m.module m.extraSpecialArgs) options m.extraSpecialArgs;
 
       # Module packages are any other 3rd party packages that are needed when running neovim
       #    such as rust, python, etc (mostly just lsp servers)
