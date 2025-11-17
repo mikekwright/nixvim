@@ -178,27 +178,40 @@ in {
     ./zig.nix
   ];
 
-  vimPackages = (let
+  vimPackages = let
+    none-ls-nvim = pkgs.vimUtils.buildVimPlugin {
+      name = "none-ls.nvim";
+      src = pkgs.fetchFromGitHub {
+        owner = "nvimtools";
+        repo = "none-ls.nvim";
+        rev = "550197530c12b4838d685cf4e0d5eb4cca8d52c7";
+        sha256 = "aV0xQc7ap9jDHwwAwe19+9QruCM3wE8dxqL8aj5THbM=";
+      };
+    };
+
     none-ls-extras = pkgs.vimUtils.buildVimPlugin {
       name = "none-ls-extras.nvim";
       src = pkgs.fetchFromGitHub {
         owner = "nvimtools";
         repo = "none-ls-extras.nvim";
-        rev = "387590a3ea0986b33bb1ba90c506e0153dfe14a5";
-        sha256 = "9Eatn1LW6k4Bjk50vYd1AfXWSgaJqnTnUNAuLp2ezck=";
+        rev = "70659cc3d38151424298ab46b0f67f2251cef231";
+        sha256 = "Mm3BJI4wZ+Bzip2/A4l71MsGnGuITKTNDAMrxV8LleE=";
       };
-    };
-    in [
-      none-ls-extras
-    ]
-    ++ (with pkgs.vimPlugins; [
-      nvim-lspconfig
-      nvim-cmp
-      cmp-nvim-lsp
-      trouble-nvim
 
-      none-ls-nvim
-    ]));
+      dependencies = [ none-ls-nvim ];
+    };
+  in [
+    none-ls-nvim
+    none-ls-extras
+  ] ++
+  (with pkgs.vimPlugins; [
+    nvim-lspconfig
+    nvim-cmp
+    cmp-nvim-lsp
+    trouble-nvim
+
+    #none-ls-nvim
+  ]);
 
   packages = with pkgs; [
     # dioxus-cli # Provides dx for dxfmt

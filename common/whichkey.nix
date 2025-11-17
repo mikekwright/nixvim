@@ -68,8 +68,8 @@ in
         src = pkgs.fetchFromGitHub {
           owner = "folke";
           repo = "which-key.nvim";
-          rev = "v3.13.3";
-          sha256 = "P3Uugc+RPsRVD/kFCmHDow3PLeb2oXEbNX3WzoZ9xlw=";
+          rev = "3aab2147e74890957785941f0c1ad87d0a44c15a";
+          sha256 = "1dwri7gxqgb58pfy829s0ns709m0nrcj1cgz2wj1k09qfffri9mc";
         };
       };
     in [
