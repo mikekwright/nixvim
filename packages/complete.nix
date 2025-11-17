@@ -19,6 +19,7 @@ lib.makeIncludes
     "lsp.typescript"
     "lsp.zig"
 
+    "tools"
     "tools.bookmarks"
     "tools.bqf"
     "tools.coverage"
