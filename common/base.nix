@@ -40,13 +40,17 @@ let
 
     vim.opt.shiftwidth = 2;
     vim.opt.showmode = true;
-    vim.opt.showtabline = 2;
-    vim.opt.smartindent = true;
 
+    -- This option should disable the tab name that shows at the top (when value is 0)
+    vim.opt.showtabline = 1;
+
+    -- Better handling of the indent flow
+    vim.opt.smartindent = true;
     vim.opt.expandtab = true;
     vim.opt.softtabstop = 2;
     vim.opt.tabstop = 2;
 
+    -- Make sure we are always in a dark setup
     vim.opt.termguicolors = true;
     vim.opt.background = "dark";
 
