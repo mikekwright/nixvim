@@ -68,19 +68,23 @@
 in {
   inherit name lua;
 
-  vimPackages = let
-    typescript-tools = pkgs.vimUtils.buildVimPlugin {
-      name = "typescript-tools.nvim";
-      src = pkgs.fetchFromGitHub {
-        owner = "pmizio";
-        repo = "typescript-tools.nvim";
-        # April 25th, 2025
-        rev = "3c501d7c7f79457932a8750a2a1476a004c5c1a9";
-        sha256 = "roSEM3YGfKIoGQIlvaC0IFCIzkPLhJmnUMc+CBQmQE8=";
-      };
-    };
-  in [
-    typescript-tools
+  vimPackages = 
+  # let
+  #   typescript-tools = pkgs.vimUtils.buildVimPlugin {
+  #     name = "typescript-tools.nvim";
+  #     src = pkgs.fetchFromGitHub {
+  #       owner = "pmizio";
+  #       repo = "typescript-tools.nvim";
+  #       # April 25th, 2025
+  #       rev = "3c501d7c7f79457932a8750a2a1476a004c5c1a9";
+  #       sha256 = "roSEM3YGfKIoGQIlvaC0IFCIzkPLhJmnUMc+CBQmQE8=";
+  #     };
+  #   };
+  # in [
+  #   typescript-tools
+  # ];
+  with pkgs.vimPlugins; [
+    typescript-tools-nvim
   ];
 
   packages = with pkgs; [

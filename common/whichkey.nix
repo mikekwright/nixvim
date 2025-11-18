@@ -60,19 +60,37 @@ in
   lua = whichkey_lua;
 
   vimPackages =
-    let
-      # Pretty cool helper tool for neovim
-      #   https://github.com/folke/which-key.nvim
-      whichkey-nvim = pkgs.vimUtils.buildVimPlugin {
-        name = "whichkey";
-        src = pkgs.fetchFromGitHub {
-          owner = "folke";
-          repo = "which-key.nvim";
-          rev = "3aab2147e74890957785941f0c1ad87d0a44c15a";
-          sha256 = "1dwri7gxqgb58pfy829s0ns709m0nrcj1cgz2wj1k09qfffri9mc";
-        };
-      };
-    in [
-      whichkey-nvim
+    # let
+    #   lazy-nvim = pkgs.vimUtils.buildVimPlugin {
+    #     name = "whichkey";
+    #     src = pkgs.fetchFromGitHub {
+    #       owner = "folke";
+    #       repo = "lazy.nvim";
+    #       rev = "85c7ff3711b730b4030d03144f6db6375044ae82";
+    #       sha256 = "h5404njTAfqMJFQ3MAr2PWSbV81eS4aIs0cxAXkT0EM=";
+    #     };
+    #
+    #   };
+    #
+    #   # Pretty cool helper tool for neovim
+    #   #   https://github.com/folke/which-key.nvim
+    #   whichkey-nvim = pkgs.vimUtils.buildVimPlugin {
+    #     name = "whichkey";
+    #     src = pkgs.fetchFromGitHub {
+    #       owner = "folke";
+    #       repo = "which-key.nvim";
+    #       rev = "3aab2147e74890957785941f0c1ad87d0a44c15a";
+    #       sha256 = "1dwri7gxqgb58pfy829s0ns709m0nrcj1cgz2wj1k09qfffri9mc";
+    #     };
+    #
+    #     dependencies = [
+    #       lazy-nvim
+    #     ];
+    #   };
+    # in [
+    #   whichkey-nvim
+    # ];
+    with pkgs.vimPlugins; [
+      which-key-nvim
     ];
 }
