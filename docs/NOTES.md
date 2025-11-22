@@ -32,3 +32,14 @@ being installed.  I am not using that for my package manager, but
 I need to see what other benefits/flows may come from using it that
 could be useful.
 
+November 15th, 2025
+-------------------------------------------------------------------
+
+At this point I was trying to look at options to resolve the failing
+lua builds.  At that time I discovered that there is a better way
+to create the neovim package instead of just overriding the package
+and that is to use the `pkgs.neovimUtils.makeNeovimConfig` function
+from `nixpkgs`.
+
+This gives the option of "skipping" modules with the `nvimSkipModules`
+that can specify the modoules.
