@@ -81,21 +81,11 @@ in
 {
   inherit name lua;
 
-  vimPackages = let
-    snacks-nvim = pkgs.vimUtils.buildVimPlugin {
-      name = "snacks-nvim";
-      src = pkgs.fetchFromGitHub {
-        owner = "folke";
-        repo = "snacks.nvim";
-        rev = "v2.20.0";
-        sha256 = "YUjTuY47fWnHd9/z6WqFD0biW+wn9zLLsOVJibwpgKw=";
-      };
-    };
-  in [
+  vimPackages = with pkgs.vimPlugins; [
     snacks-nvim
-  ] ++ (with pkgs.vimPlugins; [
+
     sqlite-lua
-  ]);
+  ];
 
   packages = with pkgs; [
     # Snacks searcher uses rg

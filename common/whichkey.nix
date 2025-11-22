@@ -59,20 +59,7 @@ in
 
   lua = whichkey_lua;
 
-  vimPackages =
-    let
-      # Pretty cool helper tool for neovim
-      #   https://github.com/folke/which-key.nvim
-      whichkey-nvim = pkgs.vimUtils.buildVimPlugin {
-        name = "whichkey";
-        src = pkgs.fetchFromGitHub {
-          owner = "folke";
-          repo = "which-key.nvim";
-          rev = "v3.13.3";
-          sha256 = "P3Uugc+RPsRVD/kFCmHDow3PLeb2oXEbNX3WzoZ9xlw=";
-        };
-      };
-    in [
-      whichkey-nvim
-    ];
+  vimPackages =with pkgs.vimPlugins; [
+    which-key-nvim
+  ];
 }

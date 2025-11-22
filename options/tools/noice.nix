@@ -295,26 +295,12 @@ in
   imports = [
   ];
 
-  vimPackages = let
-    # Noice replaces the cmdline, messages and some popup stuff
-    #   https://github.com/folke/noice.nvim 
-    noice-nvim = pkgs.vimUtils.buildVimPlugin {
-      name = "noice.nvim";
-      src = pkgs.fetchFromGitHub {
-        owner = "folke";
-        repo = "noice.nvim";
-        rev = "448bb9c524a7601035449210838e374a30153172";  # 4.5.0
-        sha256 = "86oWl3XGuuVhaWVe6egjc7Mt8Pp7qpTMJ2EZiNlztt8=";
-      };
-    }; 
-  in [ 
-    #noice-nvim
-  ]  ++ (with pkgs.vimPlugins; [
+  vimPackages = with pkgs.vimPlugins; [
     noice-nvim
 
     nvim-notify
     nui-nvim
     nvim-treesitter
-  ]) ++ (map (p: pkgs.vimPlugins.nvim-treesitter-parsers.${p}) treesitter-parsers);
+  ] ++ (map (p: pkgs.vimPlugins.nvim-treesitter-parsers.${p}) treesitter-parsers);
 }
 

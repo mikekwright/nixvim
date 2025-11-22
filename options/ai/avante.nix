@@ -125,39 +125,15 @@ in
 {
   inherit name afterLua;
 
-  vimPackages = let
-    avante-plugin = pkgs.vimUtils.buildVimPlugin {
-      name = "avante.nvim";
-      src = pkgs.fetchFromGitHub {
-        owner = "yetone";
-        repo = "avante.nvim";
-        # v0.0.21 (Feb ~28th, 2025)
-        rev = "9c9fadd256d6138d771e17b9ca68905908e16c17";
-        sha256 = "XAI+kPUCcWrnHN0SHt6wrQ6gS/F24WGUS9PrtDGyU6A=";
-      };
+  vimPackages = with pkgs.vimPlugins; [
+    #avante-plugin
+    # Have to use the above plugin as the one under is not working correctly with other plugins
+    avante-nvim
 
-      postInstall =
-        let
-          ext = pkgs.stdenv.hostPlatform.extensions.sharedLibrary;
-        in
-        ''
-          mkdir -p $out/build
-          ln -s ${avante-nvim-lib}/lib/libavante_repo_map${ext} $out/build/avante_repo_map${ext}
-          ln -s ${avante-nvim-lib}/lib/libavante_templates${ext} $out/build/avante_templates${ext}
-          ln -s ${avante-nvim-lib}/lib/libavante_tokenizers${ext} $out/build/avante_tokenizers${ext}
-          ln -s ${avante-nvim-lib}/lib/libavante_html2md${ext} $out/build/avante_html2md${ext}
-        '';
-      };
-  in
-    with pkgs.vimPlugins; [
-      avante-plugin
-      # Have to use the above plugin as the one under is not working correctly with other plugins
-      #avante-nvim
-
-      # These are needed dependencies
-      dressing-nvim
-      # nui-nvim
-      plenary-nvim
-      img-clip-nvim
+    # These are needed dependencies
+    dressing-nvim
+    # nui-nvim
+    plenary-nvim
+    img-clip-nvim
   ];
 }

@@ -103,18 +103,16 @@ in {
 
       scriptText = fullModule.startScript;       # The actual neovim package solution.
 
-      neovimPackage =  pkgs.neovim.override {
-        configure = {
-          #  This is trying to load as a vimscript file, not lua.  Need to
-          #     continue to investigate.
-          #customRC = luaText;
-
-          #  Install all the needed plugins at this point.
-          packages.myVimPackage = {
-            start = fullModule.vimPackages;
-            opt = fullModule.vimOptPackages;
-          };
+      neovimConfiguration = pkgs.neovimUtils.makeNeovimConfig {
+        #  Install all the needed plugins at this point.
+        packages.myVimPackage = {
+          start = fullModule.vimPackages;
+          opt = fullModule.vimOptPackages;
         };
+      };
+
+      neovimPackage =  pkgs.neovim.override {
+        configure = neovimConfiguration;
       };
 
       neowrapper = pkgs.writeShellApplication {
