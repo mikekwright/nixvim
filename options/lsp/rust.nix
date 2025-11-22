@@ -25,23 +25,7 @@
 in {
   inherit lua name;
 
-  vimPackages = 
-  # let
-  #   rustaceanvim = pkgs.vimUtils.buildVimPlugin {
-  #     name = "rustaceanvim";
-  #     src = pkgs.fetchFromGitHub {
-  #       owner = "mrcjkb";
-  #       repo = "rustaceanvim";
-  #       rev = "v6.9.7";
-  #       sha256 = "fQZe0CtY+gXLeuv1+hr2CJwUWK2lvdOFJ9HNlq3brAo=";
-  #     };
-  #
-  #     dependencies = [ pkgs.vimPlugins.neotest ];
-  #   };
-  # in [
-  #   rustaceanvim
-  # ];
-  with pkgs.vimPlugins; [
+  vimPackages = with pkgs.vimPlugins; [
     rustaceanvim
   ];
 
