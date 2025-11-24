@@ -150,7 +150,7 @@
             feature_enable_check('<leader>lC', 'references', client.server_capabilities.referencesProvider, vim.lsp.buf.outgoing_calls, "LSP (t): Find outgoing calls")
             feature_enable_check('<leader>lR', 'references', client.server_capabilities.referencesProvider, vim.lsp.buf.incoming_calls, "LSP (t): Find incoming calls")
             --   feature_enable_check('<leader>fw', 'workspace', client.server_capabilities.workspaceSymbolProvider, telescopeBuiltin.lsp_workspace_symbols, "LSP (t): Search workspace Symbols")
-            feature_enable_check('<leader>lt', 'type_def', client.server_capabilities.typeDefinitionProvider, vim.lsp.buf.type_definition, "LSP: Type Definition")
+            feature_enable_check('<leader>ly', 'type_def', client.server_capabilities.typeDefinitionProvider, vim.lsp.buf.type_definition, "LSP: Type Definition")
             feature_enable_check('<leader>lS', 'symbols', client.server_capabilities.documentSymbolProvider, vim.lsp.buf.document_symbol, "LSP: Document Symbols")
             feature_enable_check('<leader>lw', 'workspace', client.server_capabilities.workspaceSymbolProvider, vim.lsp.buf.workspace_symbol, "LSP: Workspace Symbols")
 
