@@ -36,17 +36,18 @@ in
   inherit name lua;
 
   imports = [
-    ./bookmarks.nix
+    ./noice.nix
+    ./snacks.nix
+
     ./bqf.nix
     ./coverage.nix
 
-    ./noice.nix
     ./db.nix
 
     ./debugging.nix
     ./testing.nix
 
-    ./snacks.nix
+    ./bookmarks.nix
   ];
 
   packages = with pkgs; [

@@ -104,9 +104,6 @@ let
       print("Custom debugging is now: " .. tostring(run_in_debug))
     end)
 
-    -- Changes for jumplist (:help jumplist)
-    keymapd("<leader>gb", "Goto: Previous Location", "<C-O>")
-
     function print_table(name, t)
       if type(t) == 'table' then
         local s = name .. "{ "

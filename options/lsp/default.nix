@@ -12,11 +12,63 @@
         -- For help check out (:h lspconfig-setup)
         local lspconfig = require('lspconfig')
 
-        require('cmp').setup({
+        -- require('cmp').setup({
+        --   sources = {
+        --     { name = 'nvim_lsp' }
+        --   }
+        -- })
+
+        local blink_cmp = require('blink.cmp')
+
+        blink_cmp.setup({
           sources = {
-            { name = 'nvim_lsp' }
+            default = { 'lsp', 'path', 'snippets', 'buffer' },
+          },
+
+          keymap = {
+            -- Start with the default set of keymaps
+            preset = 'default',
+          
+            ['<C-k>'] = { 'select_prev', 'fallback' },
+            ['<C-j>'] = { 'select_next', 'fallback' },
+
+            ['<C-d>'] = { 'show_documentation', 'fallback' },
+
+            ['<Up>'] = { 'scroll_documentation_up', 'fallback' },
+            ['<Down>'] = { 'scroll_documentation_down', 'fallback' },
+
+            -- ['<C-Enter>' ] = { 'accept', 'fallback' },
+
+            ['<Tab>'] = { 'accept', 'fallback' },
+            ['<C-l>' ] = { 'accept', 'fallback' },
+            ['<C-e>' ] = { 'hide', 'fallback' },
+
+            -- disable a keymap from the preset
+            -- ['<C-e>'] = false, -- or {}
+            
+            -- show with a list of providers
+            -- ['<C-space>'] = { function(cmp) cmp.show({ providers = { 'snippets' } }) end },
+          
+            -- control whether the next command will be run when using a function
+            ['<C-n>'] = { 
+              function(cmp)
+                if some_condition then return end -- runs the next command
+                return true -- doesn't run the next command
+              end,
+              'select_next'
+            },
           }
         })
+
+        vim.b.completion = true
+        keymapd("<leader>lb", "Toggle auto completion", function()
+          vim.b.completion = not vim.b.completion
+          if vim.b.completion then
+            print('Completion enabled')
+          else
+            print('Completion disabled')
+          end
+        end)
 
         -- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
         local lsp_cmp_capabilities = require('cmp_nvim_lsp').default_capabilities()
@@ -209,6 +261,8 @@ in {
     nvim-cmp
     cmp-nvim-lsp
     trouble-nvim
+
+    blink-cmp
 
     #none-ls-nvim
   ]);

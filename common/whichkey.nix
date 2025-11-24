@@ -9,8 +9,10 @@ let
       -- Start with the overview of the list of specific groups include
       --   
       --   ? -- General help (Defined below)
-      --   g -- Goto places (last, bookmarks, etc)
-      { "<leader>g", group = "Goto", desc = "Goto" },
+      --   m -- Goto places (last, bookmarks, etc)
+      { "<leader>m", group = "Move/Bookmark", desc = "Goto/Bookmark" },
+      --   g -- Git commands
+      { "<leader>g", group = "Git", desc = "Git" },
       --   e -- Explore (tree, etc)
       { "<leader>e", group = "Explore", desc = "Quickly view / explore" },
       --   f -- find (files, etc)

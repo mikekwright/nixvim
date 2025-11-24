@@ -3,7 +3,8 @@
 let
   status-lua = /*lua*/ ''
     -- Gitsigns shows the status on the left side of the window
-    require('gitsigns').setup({
+    local gitsigns = require('gitsigns')
+    gitsigns.setup({
       signs = {
         add          = { text = '┃' },
         change       = { text = '┃' },
@@ -80,25 +81,36 @@ let
         end)
 
         -- Actions
-        map('n', '<leader>egss', gitsigns.stage_hunk, { desc = "Stage Hunk" })
-        map('n', '<leader>egsr', gitsigns.reset_hunk, { desc = "Reset hunk" })
-        map('v', '<leader>egss', function() gitsigns.stage_hunk {vim.fn.line('.'), vim.fn.line('v')} end, { desc = "Stage Hunk" })
-        map('v', '<leader>egsr', function() gitsigns.reset_hunk {vim.fn.line('.'), vim.fn.line('v')} end, { desc = "Reset Hunk" })
-        map('n', '<leader>egsb', gitsigns.stage_buffer, { desc = "Stage buffer" })
-        map('n', '<leader>egsu', gitsigns.undo_stage_hunk, { desc = "Undo Stage hunk" })
-        map('n', '<leader>egsR', gitsigns.reset_buffer, { desc = "Reset buffer" })
-        map('n', '<leader>egsp', gitsigns.preview_hunk, { desc = "Preview hunk" })
+        map('n', '<leader>gss', gitsigns.stage_hunk, { desc = "Stage Hunk" })
+        map('n', '<leader>gsr', gitsigns.reset_hunk, { desc = "Reset hunk" })
+        map('v', '<leader>gss', function() gitsigns.stage_hunk {vim.fn.line('.'), vim.fn.line('v')} end, { desc = "Stage Hunk" })
+        map('v', '<leader>gsr', function() gitsigns.reset_hunk {vim.fn.line('.'), vim.fn.line('v')} end, { desc = "Reset Hunk" })
+        map('n', '<leader>gsb', gitsigns.stage_buffer, { desc = "Stage buffer" })
+        map('n', '<leader>gsu', gitsigns.undo_stage_hunk, { desc = "Undo Stage hunk" })
+        map('n', '<leader>gsR', gitsigns.reset_buffer, { desc = "Reset buffer" })
+        map('n', '<leader>gsp', gitsigns.preview_hunk, { desc = "Preview hunk" })
         -- map('n', '<leader>hb', function() gitsigns.blame_line{full=true} end)
-        map('n', '<leader>egsB', gitsigns.toggle_current_line_blame, { desc = "Toggle blame line" })
-        map('n', '<leader>egsd', gitsigns.diffthis, { desc = "Diff this" })
-        map('n', '<leader>egsD', function() gitsigns.diffthis('~') end, { desc = "Diff ~" })
-        map('n', '<leader>egst', gitsigns.toggle_deleted, { desc = "Toggle deleted" })
+        map('n', '<leader>gsB', gitsigns.toggle_current_line_blame, { desc = "Toggle blame line" })
+        map('n', '<leader>gsd', gitsigns.diffthis, { desc = "Diff this" })
+        map('n', '<leader>gsD', function() gitsigns.diffthis('~') end, { desc = "Diff ~" })
+        map('n', '<leader>gst', gitsigns.toggle_deleted, { desc = "Toggle deleted" })
 
         -- Text object
         map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
       end
     })
 
+    keymapd("<leader>gl", "Toggle Blame Line", function()
+      local enabled = gitsigns.toggle_current_line_blame()
+      if enabled then
+        vim.print('Line blame enabled')
+      else
+        vim.print('Line blame disabled')
+      end
+    end) -- ":Gitsigns toggle_current_line_blame<CR>")
+    keymapd("<leader>gb", "Blame file", function()
+      gitsigns.blame({full=true})
+    end) --":Gitsigns blame<CR>")
     --
     --
     --
