@@ -22,7 +22,10 @@ let
     keymapd("<leader>qa", "Quit all", ":qall<CR>")
     keymapd("<leader>qq", "Quit all (forced)", ":qall!<CR>")
 
-    keymapd("<leader>gg", "Go to help section", "<C-]>")
+    -- Movement keyboard shortcuts
+    keymapd("<leader>mh", "Go to help section", "<C-]>")
+    -- Changes for jumplist (:help jumplist)
+    keymapd("<leader>mb", "Goto: Previous Location", "<C-O>")
 
     -- Tab is not supported in neovim by default, this maps to insert mode flow
     --vim.keymap.set("n", "<TAB>", ">>")
