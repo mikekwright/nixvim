@@ -39,7 +39,7 @@
 
             -- ['<C-Enter>' ] = { 'accept', 'fallback' },
 
-            ['<Enter>'] = { 'accept' },
+            ['<Enter>'] = { 'accept', 'fallback' },
             ['<Tab>'] = { 'accept', 'fallback' },
             ['<C-l>' ] = { 'accept', 'fallback' },
             ['<C-e>' ] = { 'hide', 'fallback' },
@@ -171,8 +171,20 @@
         -- Trouble gives an easy view into the list of current issues in the file
         --    https://github.com/folke/trouble.nvim?tab=readme-ov-file
         --
-        require('trouble').setup()
-        keymapd("<leader>lt", "Trouble: Toggle Diagnostics", ":Trouble diagnostics toggle<CR>")
+        local trouble = require('trouble')
+        trouble.setup()
+
+        keymapd("<leader>lt", "touble float", function()
+          vim.diagnostic.open_float({ scope = "cursor", focusable = false })
+        end)
+        keymapd("<leader>lT", "Trouble: Toggle Diagnostics", function()
+          trouble.toggle({
+            mode = "diagnostics", -- Use the diagnostics mode
+            filter = { buf = 0 }, -- Filter to the current buffer only
+            focus = true,         -- Focus the trouble window immediately
+            follow = true,        -- Highlight the item corresponding to the cursor position
+          })
+        end) -- ":Trouble diagnostics toggle<CR>")
 
         local null_ls = require("null-ls")
         local null_ls_sources = {}
@@ -184,32 +196,6 @@
         sources = null_ls_sources,
       })
     '';
-
-    # null_ls.setup({
-    #     sources = {
-    #       null_ls.builtins.formatting.stylua,
-    #       null_ls.builtins.completion.spell,
-    #
-    #       null_ls.builtins.diagnostics.fish,
-    #       null_ls.builtins.diagnostics.markdownlint,
-    #
-    #       -- This is for nix support
-    #       null_ls.builtins.diagnostics.statix,
-    #
-    #       -- This is for rust support
-    #       null_ls.builtins.formatting.dxfmt,
-    #
-    #       -- Python formatting options
-    #       -- null_ls.builtins.diagnostics.mypy,
-    #       null_ls.builtins.pyright,
-    #       null_ls.builtins.diagnostics.flake8,
-    #       -- null_ls.builtins.formatting.black,
-    #       --  If black is too slow there is a blackd that can be configured (to be faster)
-    #       --      https://github.com/nvimtools/none-ls.nvim/blob/main/doc/BUILTINS.md#blackd
-    #
-    #       require("none-ls.diagnostics.eslint"), -- requires none-ls-extras.nvim
-    #     },
-    #   })
 in {
   inherit lua afterLua name;
 
@@ -264,8 +250,6 @@ in {
     trouble-nvim
 
     blink-cmp
-
-    #none-ls-nvim
   ]);
 
   packages = with pkgs; [
