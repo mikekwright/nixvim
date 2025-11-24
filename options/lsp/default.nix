@@ -39,6 +39,7 @@
 
             -- ['<C-Enter>' ] = { 'accept', 'fallback' },
 
+            ['<Enter>'] = { 'accept' },
             ['<Tab>'] = { 'accept', 'fallback' },
             ['<C-l>' ] = { 'accept', 'fallback' },
             ['<C-e>' ] = { 'hide', 'fallback' },
