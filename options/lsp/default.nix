@@ -96,6 +96,9 @@
               end,
               'select_next'
             },
+
+            -- A copilot based extension for blink
+            --   https://github.com/fang2hou/blink-copilot/
           }
         })
 
