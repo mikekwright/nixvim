@@ -19,8 +19,13 @@
         -- })
 
         local blink_cmp = require('blink.cmp')
+        _G.blink_enabled = true
 
         blink_cmp.setup({
+          enabled = function()
+            return _G.blink_enabled
+          end,
+
           sources = {
             default = { 'lsp', 'path', 'snippets', 'buffer' },
           },
@@ -61,12 +66,14 @@
           }
         })
 
-        vim.b.completion = true
+        _G.blink_enabled = true
         keymapd("<leader>lb", "Toggle auto completion", function()
-          vim.b.completion = not vim.b.completion
-          if vim.b.completion then
+          _G.blink_enabled = not _G.blink_enabled 
+          if _G.blink_enabled then
+            -- require('blink.cmp').enable()
             print('Completion enabled')
           else
+            -- require('blink.cmp').disable()
             print('Completion disabled')
           end
         end)

@@ -9,9 +9,6 @@ let
   # How to animate things that take place in neovim
   animate = (import ./snacks/animate.nix) { inherit pkgs; };
 
-  # Helps to stop loading really large files
-  blameline = (import ./snacks/blame-line.nix) { inherit pkgs; };
-
   # Zen is the mode that gives you focus on the area you want to work in.
   zen = (import ./snacks/zen.nix) { inherit pkgs; };
 
@@ -44,7 +41,6 @@ let
       bigfile = ${bigfile.config},
       dim = ${dim.config},
       gitbrowse = ${gitbrowse.config},
-      blame_line = ${blameline.config},
       indent = ${indent.config},
       zen = ${zen.config},
       words = ${words.config},
@@ -68,7 +64,6 @@ let
 
     ${animate.keymaps}
     ${indent.keymaps}
-    ${blameline.keymaps}
     ${dim.keymaps}
     ${gitbrowse.keymaps}
     ${bigfile.keymaps}
