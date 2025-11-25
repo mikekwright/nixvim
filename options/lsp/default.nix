@@ -27,9 +27,10 @@
           end,
 
           sources = {
-            default = { 'lsp', 'path', 'snippets', 'buffer', 'emoji' },
+            default = { 'lsp', 'path', 'avante', 'snippets', 'buffer', 'emoji' },
 
             providers = {
+              -- Provider: https://github.com/moyiz/blink-emoji.nvim/
               emoji = {
                 module = "blink-emoji",
                 name = "Emoji",
@@ -49,7 +50,16 @@
                 --     vim.o.filetype
                 --   )
                 -- end,
-              }
+              },
+
+              -- Provider: https://github.com/Kaiser-Yang/blink-cmp-avante/
+              avante = {
+                module = 'blink-cmp-avante',
+                name = 'Avante',
+                opts = {
+                    -- options for blink-cmp-avante
+                }
+              },
             },
           },
 
@@ -281,6 +291,7 @@ in {
 
     blink-cmp
     blink-emoji-nvim
+    blink-cmp-avante
   ]);
 
   packages = with pkgs; [
