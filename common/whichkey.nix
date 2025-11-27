@@ -36,6 +36,9 @@ let
       --   k -- Comment
       { "<leader>k", group = "Comment", desc = "Comment commands" },
 
+      --   a -- AI
+      { "<leader>a", group = "AI", desc = "AI Tools" },
+
       -- { "<leader>g", group = "buffers", expand = function()
       --     return require("which-key.extras").expand.buf()
       --   end

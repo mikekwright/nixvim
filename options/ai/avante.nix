@@ -10,8 +10,42 @@ let
     require('avante_lib').load()
     require("avante").setup({
       debug = false,
-      provider = "gemini",
+      provider = "claude",
+
+      claude = {
+        endpoint = "https://api.anthropic.com",
+        model = "claude-sonnet-4-20250514",
+        timeout = 30000, -- Timeout in milliseconds
+          extra_request_body = {
+            temperature = 0.75,
+            max_tokens = 20480,
+          },
+      },
+
+      gemini = {
+        -- Get model options by running
+        --    curl "https://generativelanguage.googleapis.com/v1beta/models?key=$GEMINI_API_KEY" grep "name" | grep "gemini"
+        model = "gemini-2.5-pro",
+        system = [[
+          You are a strict coding assistant. 
+          Do not output disclaimers or identity statements.
+          Return only the code or explanation.
+        ]],
+      },
       -- auto_suggestions_provider = "copilot",
+
+      hints = { enabled = true },
+
+      -- acp_providers = {
+      --   ["gemini-cli"] = {
+      --     command = "gemini",
+      --     args = { "--experimental-acp", "--model", "gemini-2.5-pro" },
+      --     env = {
+      --       NODE_NO_WARNINGS = "1",
+      --       GEMINI_API_KEY = os.getenv("GEMINI_API_KEY"),
+      --     },
+      --   },
+      -- },
 
       -- provider = "openai",
       -- openai = {
@@ -124,6 +158,10 @@ let
 in
 {
   inherit name afterLua;
+
+  packages = with pkgs; [
+    gemini-cli
+  ];
 
   vimPackages = with pkgs.vimPlugins; [
     #avante-plugin

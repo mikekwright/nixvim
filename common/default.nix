@@ -15,8 +15,12 @@ in
   inherit lua;
 
   imports = [
+
     # This is the starting point for most things
     ./base.nix
+
+    # Have common functions in this location to be used in other places
+    ./funcs.nix
 
     # Keys are critical and whichkey is small enough we should always include
     ./whichkey.nix
