@@ -3,6 +3,10 @@
 let
   name = "ai.claude";
 
+  # At this point (Nov 26, 2025) this is almost entirely an ai created module.
+  #   there was a bit more back and forth, but its ability to land so close to where
+  #   I was hoping it could land is pretty amazing.  Will manually tweak (or ai tweak
+  #   where possible) over the next little while.
   lua = /*lua*/ ''
     -- Register Claude button with the greeter
     register_dashboard_action("c", "Claude AI", ":lua open_claude_terminal()<CR>")
