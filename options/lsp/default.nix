@@ -55,6 +55,22 @@
             return true
           end,
 
+          -- Show completion item documentation automatically
+          completion = {
+            documentation = {
+              auto_show = true,
+              auto_show_delay_ms = 500,
+            },
+            ghost_text = {
+              enabled = true,
+            },
+            menu = {
+              draw = {
+                columns = { { "label", "label_description", gap = 1 }, { "kind_icon", "kind" } },
+              },
+            },
+          },
+
           sources = {
             default = { 'lsp', 'path', 'copilot', 'avante', 'snippets', 'buffer', 'emoji' },
 
@@ -87,6 +103,10 @@
                 module = "blink-copilot",
                 score_offset = 100,
                 async = true,
+                opts = {
+                  max_completions = 10,  -- Show up to 10 copilot suggestions (default: 3)
+                  max_attempts = 11,     -- Recommended: max_completions + 1
+                },
               },
 
               -- Provider: https://github.com/Kaiser-Yang/blink-cmp-avante/
