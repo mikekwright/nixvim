@@ -31,6 +31,6 @@ lib.makeIncludes
     "tools.testing"
 
     "ai"
-    "ai.avante"
+    "ai.claude"
   ];
 }

@@ -1,6 +1,14 @@
 { pkgs, ... }:
 
 {
+  lua = /*lua*/ ''
+    -- Register picker buttons with the greeter
+    register_dashboard_action("s", "Search files", ":lua Snacks.picker.files()<CR>")
+    register_dashboard_action("h", "Recently opened files", ":lua Snacks.picker.recent()<CR>")
+    register_dashboard_action("b", "Find buffer", ":lua Snacks.picker.buffers()<CR>")
+    register_dashboard_action("p", "Find project", ":lua Snacks.picker.projects()<CR>")
+  '';
+
   config = /*lua*/ ''
     {
       prompt = " ",

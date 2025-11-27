@@ -33,6 +33,9 @@ let
   words = (import ./snacks/words.nix) { inherit pkgs; };
 
   lua = /*lua*/ ''
+    -- Register picker buttons before setting up snacks
+    ${picker.lua}
+
     snacks = require('snacks')
     snacks.setup({
       toggle = ${toggle.config},

@@ -48,6 +48,8 @@ in
     ./testing.nix
 
     ./bookmarks.nix
+
+    ./electronics
   ];
 
   packages = with pkgs; [
@@ -80,4 +82,3 @@ in
     ]);
 
 }
-

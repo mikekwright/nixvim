@@ -2,6 +2,25 @@
 
 let
   greeterLua = /*lua*/ ''
+    -- Initialize global table for custom greeter buttons
+    _G.alpha_custom_buttons = _G.alpha_custom_buttons or {}
+
+    function register_dashboard_action(key, title, action)
+      table.insert(_G.alpha_custom_buttons, {
+        key = key,
+        title = '  ' .. title,
+        action = action
+      })
+    end
+
+    -- Register default dashboard actions
+    register_dashboard_action("e", "Open Tree", ":NvimTreeToggle<CR>")
+    register_dashboard_action("n", "New file", ":enew<CR>")
+    register_dashboard_action("q", "Quit", ":q<CR>")
+  '';
+
+  greeterAfterLua = /*lua*/ ''
+    -- Setup alpha dashboard with all registered buttons
     local greeter = require('alpha')
     local dashboard = require('alpha.themes.dashboard')
 
@@ -14,18 +33,20 @@ let
       "╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝",
     }
 
-    dashboard.section.buttons.val = {
-      dashboard.button("e", "  Open Tree", ":NvimTreeToggle<CR>"),
-      dashboard.button("n", "  New file", ":enew<CR>"),
-      dashboard.button("s", "  Search", ":Telescope find_files<CR>"),
-      dashboard.button("h", "  Recently opened files", ":Telescope oldfiles<CR>"),
-      dashboard.button("b", "  Find buffer", ":Telescope buffers<CR>"),
-      dashboard.button("p", "  Find project", ":Telescope projects<CR>"),
-      dashboard.button("q", " Quit", ":q<CR>")
-    }
+    -- Sort actions by key before building buttons list
+    table.sort(_G.alpha_custom_buttons, function(a, b)
+      return a.key < b.key
+    end)
+
+    -- Build buttons list from all registered actions
+    local buttons = {}
+    for _, custom_btn in ipairs(_G.alpha_custom_buttons) do
+      local btn = dashboard.button(custom_btn.key, custom_btn.title, custom_btn.action)
+      table.insert(buttons, btn)
+    end
+    dashboard.section.buttons.val = buttons
 
     require('alpha').setup(dashboard.config)
-
     vim.cmd([[autocmd FileType alpha setlocal nofoldenable]])
   '';
 in
@@ -33,6 +54,7 @@ in
   common = true;
 
   lua = greeterLua;
+  afterLua = greeterAfterLua;
 
   vimPackages = let
     alpha-nvim = pkgs.vimUtils.buildVimPlugin {

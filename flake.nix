@@ -22,10 +22,14 @@
       ];
 
       perSystem = {
-        pkgs,
+        config,
         system,
         ...
       }: let
+        pkgs = import inputs.nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+        };
         # This should go away at some point
         extra-pkgs = {};
 

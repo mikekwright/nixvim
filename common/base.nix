@@ -83,6 +83,9 @@ let
     function tkeymap(key, action)
       vim.keymap.set("t", key, action, { silent = true, noremap = true })
     end
+    function tkeymapd(key, desc, action)
+      vim.keymap.set("t", key, action, { silent = true, noremap = true, desc = desc })
+    end
 
     -- Visual mode keys
     function xkeymapd(key, desc, action)
@@ -90,6 +93,11 @@ let
     end
     function vkeymapd(key, desc, action)
       vim.keymap.set("v", key, action, { silent = true, noremap = true, desc = desc})
+    end
+
+    -- Insert mode keys
+    function ikeymapd(key, desc, action)
+      vim.keymap.set("i", key, action, { silent = true, noremap = true, desc = desc})
     end
 
     local run_in_debug = false
@@ -103,6 +111,9 @@ let
       run_in_debug = not run_in_debug
       print("Custom debugging is now: " .. tostring(run_in_debug))
     end)
+
+    -- Reload current buffer from disk
+    keymapd("<leader>er", "Reload buffer from disk", ":e<CR>")
 
     function print_table(name, t)
       if type(t) == 'table' then
