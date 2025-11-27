@@ -11,6 +11,12 @@ let
     -- Register Claude button with the greeter
     register_dashboard_action("c", "Claude AI", ":lua open_claude_terminal()<CR>")
 
+    -- Register completion disable check for Claude prompt window
+    register_completion_disable_check(function()
+      local ok, is_claude_prompt = pcall(vim.api.nvim_buf_get_var, 0, "is_claude_prompt")
+      return ok and is_claude_prompt
+    end, "Claude prompt window")
+
     -- Helper function to find Claude terminal buffer
     local function find_claude_buffer()
       for _, buf in ipairs(vim.api.nvim_list_bufs()) do
@@ -424,6 +430,13 @@ let
       -- Set buffer options
       vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
       vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
+
+      -- Set window options for text wrapping
+      vim.api.nvim_win_set_option(win, "wrap", true)
+      vim.api.nvim_win_set_option(win, "linebreak", true)
+
+      -- Mark this buffer as the Claude prompt window
+      vim.api.nvim_buf_set_var(buf, "is_claude_prompt", true)
 
       -- Function to close the floating window
       local function close_prompt()

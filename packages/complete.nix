@@ -32,5 +32,6 @@ lib.makeIncludes
 
     "ai"
     "ai.claude"
+    "ai.copilot"
   ];
 }

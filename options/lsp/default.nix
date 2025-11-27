@@ -21,13 +21,42 @@
         local blink_cmp = require('blink.cmp')
         _G.blink_enabled = true
 
+        -- Table to store custom completion disable checks
+        _G.blink_disable_checks = {}
+
+        -- Function to register custom completion disable scenarios
+        function register_completion_disable_check(check_fn, description)
+          table.insert(_G.blink_disable_checks, {
+            check = check_fn,
+            desc = description or "Custom check"
+          })
+        end
+
+        -- Register default disable scenarios
+        register_completion_disable_check(function()
+          -- Disable in terminal buffers
+          return vim.bo.buftype == 'terminal'
+        end, "Terminal buffers")
+
         blink_cmp.setup({
           enabled = function()
-            return _G.blink_enabled
+            -- Check if globally disabled
+            if not _G.blink_enabled then
+              return false
+            end
+
+            -- Run through all registered disable checks
+            for _, check_entry in ipairs(_G.blink_disable_checks) do
+              if check_entry.check() then
+                return false
+              end
+            end
+
+            return true
           end,
 
           sources = {
-            default = { 'lsp', 'path', 'avante', 'snippets', 'buffer', 'emoji' },
+            default = { 'lsp', 'path', 'copilot', 'avante', 'snippets', 'buffer', 'emoji' },
 
             providers = {
               -- Provider: https://github.com/moyiz/blink-emoji.nvim/
@@ -50,6 +79,14 @@
                 --     vim.o.filetype
                 --   )
                 -- end,
+              },
+
+              -- Provider: https://github.com/fang2hou/blink-copilot
+              copilot = {
+                name = "copilot",
+                module = "blink-copilot",
+                score_offset = 100,
+                async = true,
               },
 
               -- Provider: https://github.com/Kaiser-Yang/blink-cmp-avante/
@@ -246,7 +283,6 @@ in {
     ./markdown.nix
     ./formatting.nix
 
-    ./copilot.nix
     ./neotest.nix
     ./dap.nix
 

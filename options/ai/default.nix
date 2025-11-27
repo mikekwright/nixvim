@@ -11,5 +11,7 @@ in
     #   but we will have to see.
     # ./avante.nix
     ./claude.nix
+
+    ./copilot.nix
   ];
 }
