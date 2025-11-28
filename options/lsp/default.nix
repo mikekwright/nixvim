@@ -314,6 +314,7 @@ in {
     ./kotlin.nix
     ./typescript.nix
     ./zig.nix
+    ./dlang.nix
   ];
 
   vimPackages = let

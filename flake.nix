@@ -62,9 +62,13 @@
 
           complete-includes = import ./packages/complete.nix {inherit lib;};
           minimal-includes = import ./packages/minimal.nix {inherit lib;};
+          python-includes = import ./packages/python.nix {inherit lib;};
+          ai-incudes = import ./packages/ai.nix {inherit lib;};
         in rec {
           complete = buildPackage complete-includes;
           minimal = buildPackage minimal-includes;
+          python = buildPackage python-includes;
+          ai = buildPackage ai-incudes;
 
           # Lets you run `nix run .` to start custom neovim
           default = complete;

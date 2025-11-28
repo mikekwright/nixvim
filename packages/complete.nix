@@ -6,7 +6,6 @@ lib.makeIncludes
     "lsp"
     "lsp.markdown"
     "lsp.formatting"
-    "lsp.copilot"
     "lsp.dap"
     "lsp.golang"
     "lsp.haskell"
