@@ -4,18 +4,17 @@ let
   name = "lsp.nix";
 
   lua = /*lua*/ ''
-    lspconfig.nixd.setup {
-      capabilities = lsp_cmp_capabilities,
-      extraOptions = {
-        cmd = { "${pkgs.nixd}/bin/nixd" };
-      };
-
-      --capabilities = vim.lsp.protocol.make_client_capabilities()
-      -- Server-specific settings. See `:help lspconfig-setup`
+    -- Configure nixd LSP using vim.lsp.config (Neovim 0.11+)
+    vim.lsp.config('nixd', {
+      cmd = { "${pkgs.nixd}/bin/nixd" },
+      -- Server-specific settings. See `:help vim.lsp.config`
       settings = {
-        ['rust-analyzer'] = {},
+        nixd = {},
       },
-    }
+    })
+
+    -- Enable nixd LSP
+    vim.lsp.enable('nixd')
   '';
 in
 {

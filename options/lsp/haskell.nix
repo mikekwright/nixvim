@@ -6,13 +6,14 @@
     lua
     */
     ''
-      lspconfig.hls.setup({
+      -- Configure Haskell Language Server using vim.lsp.config (Neovim 0.11+)
+      vim.lsp.config('hls', {
+        cmd = { '${pkgs.haskell-language-server}/bin/haskell-language-server-wrapper', '--lsp' },
         filetypes = { 'haskell', 'lhaskell', 'cabal', 'hs' },
-        capabilities = lsp_cmp_capabilities,
-        extraOptions = {
-          cmd = { '${pkgs.haskell-language-server}/bin/haskell-language-server-wrapper', '--lsp' },
-        },
       })
+
+      -- Enable Haskell Language Server
+      vim.lsp.enable('hls')
     '';
 in {
   inherit lua name;

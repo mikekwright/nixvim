@@ -1,4 +1,5 @@
 import os
+import fastapi 
 
 
 def test():
@@ -7,3 +8,7 @@ def test():
     """
     if os.path.exists("Test"):
         pass
+
+    app = fastapi.FastAPI()
+
+    print(app)

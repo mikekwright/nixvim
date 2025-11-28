@@ -4,13 +4,14 @@ let
   name = "lsp.golang";
 
   lua = /*lua*/ ''
-    lspconfig.gopls.setup({
+    -- Configure gopls LSP using vim.lsp.config (Neovim 0.11+)
+    vim.lsp.config('gopls', {
+      cmd = { '${pkgs.gopls}/bin/gopls' },
       filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
-      capabilities = lsp_cmp_capabilities,
-      extraOptions = {
-        cmd = { '${pkgs.gopls}/bin/gopls' },
-      },
     })
+
+    -- Enable gopls LSP
+    vim.lsp.enable('gopls')
 
     local golang_neotest_config = { -- Specify configuration
       go_test_args = {

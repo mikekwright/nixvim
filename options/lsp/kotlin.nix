@@ -6,14 +6,14 @@
     lua
     */
     ''
-    lspconfig.kotlin_language_server.setup({
-      filetypes = { "kotlin" , "kt", "kts"},
-      capabilities = lsp_cmp_capabilities,
-      -- If you don't update you $PATH
-      extraOptions = {
-        cmd = { "${pkgs.kotlin-language-server}/bin/kotlin-language-server" },
-      },
+    -- Configure Kotlin Language Server using vim.lsp.config (Neovim 0.11+)
+    vim.lsp.config('kotlin_language_server', {
+      cmd = { "${pkgs.kotlin-language-server}/bin/kotlin-language-server" },
+      filetypes = { "kotlin", "kt", "kts" },
     })
+
+    -- Enable Kotlin Language Server
+    vim.lsp.enable('kotlin_language_server')
   '';
 in {
   inherit lua name;

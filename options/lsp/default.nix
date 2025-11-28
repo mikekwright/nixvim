@@ -9,8 +9,8 @@
     lua
     */
     ''
-        -- For help check out (:h lspconfig-setup)
-        local lspconfig = require('lspconfig')
+        -- For help check out (:h vim.lsp.config and :h vim.lsp.enable)
+        -- Migration from lspconfig to vim.lsp.config (Neovim 0.11+)
 
         -- require('cmp').setup({
         --   sources = {
@@ -171,8 +171,14 @@
           end
         end)
 
-        -- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
-        local lsp_cmp_capabilities = require('cmp_nvim_lsp').default_capabilities()
+        -- Merge default LSP capabilities with cmp capabilities
+        -- The nvim-cmp almost supports LSP's capabilities so we should advertise it to LSP servers
+        local lsp_cmp_capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+        -- Set global default capabilities for all LSP clients
+        vim.lsp.config('*', {
+          capabilities = lsp_cmp_capabilities,
+        })
 
       --local __lspServers = {
       --  {
