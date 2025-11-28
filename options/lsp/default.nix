@@ -12,12 +12,6 @@
         -- For help check out (:h vim.lsp.config and :h vim.lsp.enable)
         -- Migration from lspconfig to vim.lsp.config (Neovim 0.11+)
 
-        -- require('cmp').setup({
-        --   sources = {
-        --     { name = 'nvim_lsp' }
-        --   }
-        -- })
-
         local blink_cmp = require('blink.cmp')
         _G.blink_enabled = true
 

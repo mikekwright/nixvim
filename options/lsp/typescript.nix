@@ -6,14 +6,11 @@
     lua
     */
     ''
-      -- Configure ESLint LSP using vim.lsp.config (Neovim 0.11+)
       vim.lsp.config('eslint', {
         settings = {
           packageManager = 'yarn'
         },
       })
-
-      -- Enable ESLint LSP
       vim.lsp.enable('eslint')
 
       require("typescript-tools").setup {

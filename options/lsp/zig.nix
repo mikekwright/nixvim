@@ -4,15 +4,12 @@ let
   name = "lsp.zig";
 
   lua = /*lua*/ ''
-    -- Configure Zig Language Server using vim.lsp.config (Neovim 0.11+)
     vim.lsp.config('zls', {
       cmd = { "zls" },
       filetypes = { "zig", "zir" },
       root_markers = { "build.zig", ".git" },
       single_file_support = true,
     })
-
-    -- Enable Zig Language Server
     vim.lsp.enable('zls')
   '';
 in

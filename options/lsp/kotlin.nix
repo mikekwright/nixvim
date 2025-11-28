@@ -6,13 +6,10 @@
     lua
     */
     ''
-    -- Configure Kotlin Language Server using vim.lsp.config (Neovim 0.11+)
     vim.lsp.config('kotlin_language_server', {
       cmd = { "${pkgs.kotlin-language-server}/bin/kotlin-language-server" },
       filetypes = { "kotlin", "kt", "kts" },
     })
-
-    -- Enable Kotlin Language Server
     vim.lsp.enable('kotlin_language_server')
   '';
 in {
