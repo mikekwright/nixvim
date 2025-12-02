@@ -117,7 +117,7 @@ let
         })
       end
 
-      keymapd("<leader>ml", "Debug", bookmarks_picker)
+      keymapd("<leader>ml", "Bookmark picker", bookmarks_picker)
     end
   '';
 in

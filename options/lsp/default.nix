@@ -1,7 +1,5 @@
-{
-  pkgs,
-  ...
-}: let
+{ pkgs, ... }: 
+let
   name = "lsp";
 
   lua =
@@ -215,7 +213,7 @@
             local client = vim.lsp.get_client_by_id(args.data.client_id)
             dprint('    Checking LSP capabilities for ' .. client.name .. ' (' .. args.data.client_id .. ')')
 
-            local function feature_enable_check(key, name, feature, lsp_option, desc)
+            local function feature_enable_check(key, name, feature, lsp_option, desc, opts)
               if not feature or not name or not lsp_option then
                 dprint("LSP (NS) - " .. name .. ": " .. client.name .. "(" .. args.data.client_id .. ")")
                 return
@@ -230,8 +228,19 @@
                 return
               end
 
+              -- Default options
+              opts = opts or {}
+              local modes = opts.modes or 'n'
+              local visual_key = opts.visual_key or nil
+
               dprint("LSP ( S) - " .. name .. ": " .. client.name .. "(" .. args.data.client_id .. ") - " .. key)
-              vim.keymap.set('n', key, lsp_option, { buffer = args.buf, desc = desc})
+              vim.keymap.set(modes, key, lsp_option, { buffer = args.buf, desc = desc})
+
+              -- If visual_key is provided, also create a visual mode binding
+              if visual_key then
+                dprint("LSP ( S) - " .. name .. " (visual): " .. client.name .. "(" .. args.data.client_id .. ") - " .. visual_key)
+                vim.keymap.set('v', visual_key, lsp_option, { buffer = args.buf, desc = desc .. " (visual)"})
+              end
             end
 
             print_table(client.name .. " server_capabilities", client.server_capabilities)
@@ -257,9 +266,9 @@
             feature_enable_check('<leader>lD', 'declaration', client.server_capabilities.declarationProvider, vim.lsp.buf.declaration, "LSP: Goto Declaration")
             feature_enable_check('<leader>lh', 'hover', client.server_capabilities.hoverProvider, vim.lsp.buf.hover, "LSP: Open Hover")
             feature_enable_check('<leader>lH', 'highlight', client.server_capabilities.documentHighlightProvider, vim.lsp.buf.document_highlight, "LSP: Highlight")
-            feature_enable_check('<leader>lf', 'format', client.server_capabilities.document_formatting, vim.lsp.buf.formatting, "LSP: Format")
+            feature_enable_check('<leader>lf', 'format', client.server_capabilities.documentFormattingProvider, vim.lsp.buf.format, "LSP: Format", { visual_key = '<leader>lf' })
             feature_enable_check('<leader>ls', 'signature', client.server_capabilities.signatureHelpProvider, vim.lsp.buf.signature_help, "LSP: Signature Help")
-            feature_enable_check('<leader>la', 'action', client.server_capabilities.code_action_provider, vim.lsp.buf.code_action, "LSP: Code Action")
+            feature_enable_check('<leader>la', 'action', client.server_capabilities.codeActionProvider, vim.lsp.buf.code_action, "LSP: Code Action", { visual_key = '<leader>la' })
             feature_enable_check('<leader>lr', 'rename', client.server_capabilities.renameProvider, vim.lsp.buf.rename, "LSP: Rename")
 
             -- feature_enable_check('<leader>lL', 'document_link', client.server_capabilities.documentLinkProvider, vim.lsp.buf.document_link)
@@ -352,6 +361,9 @@ in {
     blink-cmp
     blink-emoji-nvim
     blink-cmp-avante
+
+    # Plugin for the :Refactor option (extract method, extract variable, etc)
+    refactoring-nvim
   ]);
 
   packages = with pkgs; [
