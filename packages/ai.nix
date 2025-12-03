@@ -21,7 +21,8 @@ lib.makeIncludes
 
   complete = [
     "ai"
-    "ai.claude"
+    # "ai.claude"
+    "ai.copilot-cli"
     "ai.copilot"
 
     "tools"
