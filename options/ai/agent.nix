@@ -1,26 +1,66 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 let
   name = "ai.agent";
 
+  # Agent configuration list
+  # Each agent should have: package, name, description, command
+  agents = [
+    {
+      package = pkgs.claude-code;
+      id = "claude";
+      name = "Claude Code";
+      description = "Anthropic's Claude AI assistant for coding";
+      command = "claude";
+    }
+    {
+      package = pkgs.github-copilot-cli;
+      id = "copilot";
+      name = "Copilot CLI";
+      description = "GitHub Copilot command-line interface";
+      command = "copilot";
+    }
+    {
+      package = pkgs.cursor-cli;
+      id = "cursor";
+      name = "Cursor CLI";
+      description = "Cursor AI code editor CLI";
+      command = "cursor-cli";
+    }
+    {
+      package = pkgs.chatgpt-cli;
+      id = "chatgpt";
+      name = "ChatGPT CLI";
+      description = "OpenAI's ChatGPT command-line interface";
+      command = "chatgpt";
+    }
+    {
+      package = pkgs.gemini-cli;
+      id = "gemini";
+      name = "Gemini CLI";
+      description = "Google's Gemini AI command-line interface";
+      command = "gemini";
+    }
+  ];
+
+  # Generate Lua agent definitions from Nix agent list
+  agentDefsLua = builtins.concatStringsSep ",\n      " (
+    map (agent: ''
+      ${agent.id} = {
+        name = "${agent.name}",
+        command = "${agent.command}",
+        marker = "is_${agent.id}_terminal"
+      }'') agents
+  );
+
   # Unified AI agent module supporting multiple AI assistants
-  # Supports: Claude Code, Copilot CLI
   lua = /*lua*/ ''
     -- AI Agent Configuration Module
     -- This module manages multiple AI agents and provides a unified interface
 
     -- Available AI agents
     local AI_AGENTS = {
-      claude = {
-        name = "Claude Code",
-        command = "claude",
-        marker = "is_claude_terminal"
-      },
-      copilot = {
-        name = "Copilot CLI",
-        command = "copilot",
-        marker = "is_copilot_terminal"
-      }
+      ${agentDefsLua}
     }
 
     -- Global state for current agent
@@ -72,6 +112,13 @@ let
         if AI_AGENTS[agent] then
           current_agent = agent
           print("AI Agent set to: " .. AI_AGENTS[agent].name)
+        else
+          -- Agent configured but not available, fallback to claude
+          current_agent = "claude"
+          vim.notify(
+            string.format("Configured agent '%s' not found or not available.\nFalling back to Claude Code.", agent),
+            vim.log.levels.WARN
+          )
         end
       else
         -- Default to claude if not configured
@@ -615,8 +662,6 @@ in
 {
   inherit name lua;
 
-  packages = with pkgs; [
-    claude-code
-    github-copilot-cli
-  ];
+  # Dynamically include all agent packages
+  packages = map (agent: agent.package) agents;
 }
