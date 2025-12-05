@@ -120,6 +120,13 @@ let
       return AI_AGENTS[current_agent]
     end
 
+    -- Function to show current agent
+    local function show_current_agent()
+      local agent = get_current_agent()
+      local cwd = vim.fn.getcwd()
+      vim.notify("Current AI Agent: " .. agent.name .. " (" .. current_agent .. ")\nWorking Directory: " .. cwd, vim.log.levels.INFO)
+    end
+    
     -- Helper function to find agent terminal buffer
     local function find_agent_buffer()
       local agent = get_current_agent()
@@ -596,6 +603,7 @@ let
     keymapd("<leader>ac", "Clear AI agent terminal screen", clear_agent_terminal)
     keymapd("<leader>ah", "Send /help to AI agent", send_agent_help)
     keymapd("<leader>ae", "Exit AI agent terminal", exit_agent)
+    keymapd("<leader>as", "Show current AI agent", show_current_agent)
     vkeymapd("<leader>as", "Send selection to AI agent", send_selection_to_agent)
     keymapd("<leader>af", "Send current file path to AI agent", send_filepath_to_agent)
     keymapd("<leader>ai", "Interrupt AI agent command (Ctrl-C)", interrupt_agent)
