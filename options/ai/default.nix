@@ -10,8 +10,7 @@ in
     # There is a big change in the tooling, I think a terminal solution is actually going to provide better support
     #   but we will have to see.
     # ./avante.nix
-    ./claude.nix
-    ./copilot-cli.nix
+    ./agent.nix
 
     ./copilot.nix
   ];

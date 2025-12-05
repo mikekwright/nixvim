@@ -30,7 +30,7 @@ lib.makeIncludes
     "tools.testing"
 
     "ai"
-    "ai.claude"
+    "ai.agent"
     "ai.copilot"
   ];
 }
