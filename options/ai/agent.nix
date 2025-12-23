@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, extra-pkgs, ... }:
 
 let
   name = "ai.agent";
@@ -40,6 +40,13 @@ let
       name = "Gemini CLI";
       description = "Google's Gemini AI command-line interface";
       command = "gemini";
+    }
+    {
+      package = extra-pkgs.opencode.opencode;
+      id = "opencode";
+      name = "OpenCode";
+      description = "OpenCode AI assistant for coding";
+      command = "opencode";
     }
   ];
 

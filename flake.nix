@@ -7,6 +7,9 @@
 
     # Flake parts for 2025-11-12
     flake-parts.url = "github:hercules-ci/flake-parts/52a2caecc898d0b46b2b905f058ccc5081f842da";
+
+    # Opencode
+    opencode.url = "github:nixos/nixpkgs/306ea70f9eb0fb4e040f8540e2deab32ed7e2055";
   };
 
   outputs = {
@@ -30,8 +33,9 @@
           inherit system;
           config.allowUnfree = true;
         };
-        # This should go away at some point
-        extra-pkgs = {};
+        extra-pkgs = {
+          opencode = import inputs.opencode {inherit system;};
+        };
 
         debug = import ./lib/debug.nix {inherit pkgs extra-pkgs system;};
         lib = import ./lib/importer.nix {inherit debug extra-pkgs pkgs system;};
