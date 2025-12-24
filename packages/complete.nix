@@ -32,5 +32,6 @@ lib.makeIncludes
     "ai"
     "ai.agent"
     "ai.copilot"
+    "ai.opencode"
   ];
 }

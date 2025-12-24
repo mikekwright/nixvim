@@ -13,5 +13,6 @@ in
     ./agent.nix
 
     ./copilot.nix
+    ./opencode.nix
   ];
 }
