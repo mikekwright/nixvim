@@ -3,6 +3,9 @@
 let
   name = "ai.agent";
 
+  # Import custom opencode wrapper
+  opencode-agent = import ./agents/opencode-agent.nix { inherit pkgs extra-pkgs; };
+
   # Agent configuration list
   # Each agent should have: package, name, description, command
   agents = [
@@ -42,7 +45,7 @@ let
       command = "gemini";
     }
     {
-      package = extra-pkgs.opencode.opencode;
+      package = opencode-agent;
       id = "opencode";
       name = "OpenCode";
       description = "OpenCode AI assistant for coding";
