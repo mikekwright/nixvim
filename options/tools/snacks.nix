@@ -32,6 +32,10 @@ let
 
   words = (import ./snacks/words.nix) { inherit pkgs; };
 
+  terminal = (import ./snacks/terminal.nix) { inherit pkgs; };
+
+  input = (import ./snacks/input.nix) { inherit pkgs; };
+
   lua = /*lua*/ ''
     -- Register picker buttons before setting up snacks
     ${picker.lua}
@@ -47,6 +51,8 @@ let
       indent = ${indent.config},
       zen = ${zen.config},
       words = ${words.config},
+      terminal = ${terminal.config},
+      input = ${input.config},
     })
 
     --
@@ -89,5 +95,17 @@ in
     # Snacks searcher uses rg
     ripgrep
     sqlite
+
+    # Alternative to find (used by snacks)
+    fd
+
+    # Rendering for pdfs
+    ghostscript
+
+    # LaTex support
+    tectonic
+
+    # Mermaid CLI for diagrams
+    mermaid-cli
   ];
 }
