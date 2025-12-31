@@ -114,6 +114,11 @@ let
 
     -- Reload current buffer from disk
     keymapd("<leader>er", "Reload buffer from disk", ":e<CR>")
+    keymapd("<leader>bh", "Hide the current buffer", ":hide<CR>")
+    keymapd("<leader>bn", "Next buffer", ":bnext<CR>")
+    keymapd("<leader>bp", "Previous buffer", ":bprevious<CR>")
+    keymapd("<leader>bd", "Delete current buffer", ":bdelete<CR>")
+    keymapd("<leader>bl", "List buffers", ":ls<CR>")
 
     function print_table(name, t)
       if type(t) == 'table' then

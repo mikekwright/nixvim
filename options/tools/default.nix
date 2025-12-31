@@ -15,13 +15,13 @@ let
     })
     require("luasnip").config.set_config({})
 
-    require('bufferline').setup({
-      options = {
-        hover = {
-          enabled = false
-        }
-      }
-    })
+    -- require('bufferline').setup({
+    --   options = {
+    --     hover = {
+    --       enabled = false
+    --     }
+    --   }
+    -- })
 
     local commentApi = require('Comment.api')
     local commentVvar = vim.api.nvim_get_vvar
