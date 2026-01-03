@@ -358,6 +358,19 @@ let
     -- Forward declaration for open_agent_prompt
     local open_agent_prompt
 
+    -- Helper function to find agent prompt buffer (even if hidden)
+    local function find_agent_prompt_buffer()
+      for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.api.nvim_buf_is_valid(buf) then
+          local ok, is_prompt = pcall(vim.api.nvim_buf_get_var, buf, "is_agent_prompt")
+          if ok and is_prompt then
+            return buf
+          end
+        end
+      end
+      return nil
+    end
+
     -- Helper function to find agent prompt window
     local function find_agent_prompt()
       for _, win in ipairs(vim.api.nvim_list_wins()) do
@@ -486,7 +499,35 @@ let
     -- Function to open floating prompt window for agent
     open_agent_prompt = function(initial_text)
       local agent = get_current_agent()
-      local buf = vim.api.nvim_create_buf(false, true)
+
+      -- Check if prompt window is already visible
+      local existing_win, existing_buf = find_agent_prompt()
+      if existing_win then
+        -- Window is already open, just focus it
+        vim.api.nvim_set_current_win(existing_win)
+
+        -- If initial text provided, insert it
+        if initial_text and initial_text ~= "" then
+          local lines = vim.split(initial_text, "\n", { plain = true })
+          vim.api.nvim_put(lines, "c", true, true)
+        end
+
+        -- Only start in insert mode if no initial text was provided
+        if not initial_text or initial_text == "" then
+          vim.cmd('startinsert')
+        end
+        return
+      end
+
+      -- Check if a hidden prompt buffer exists
+      local buf = find_agent_prompt_buffer()
+      local is_new_buffer = false
+
+      if not buf then
+        -- Create new buffer if none exists
+        buf = vim.api.nvim_create_buf(false, true)
+        is_new_buffer = true
+      end
 
       local width = vim.api.nvim_get_option("columns")
       local height = vim.api.nvim_get_option("lines")
@@ -511,13 +552,15 @@ let
 
       local win = vim.api.nvim_open_win(buf, true, opts)
 
-      vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
-      vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
+      -- Only set buffer options for new buffers
+      if is_new_buffer then
+        vim.api.nvim_buf_set_option(buf, "bufhidden", "hide")
+        vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
+        vim.api.nvim_buf_set_var(buf, "is_agent_prompt", true)
+      end
 
       vim.api.nvim_win_set_option(win, "wrap", true)
       vim.api.nvim_win_set_option(win, "linebreak", true)
-
-      vim.api.nvim_buf_set_var(buf, "is_agent_prompt", true)
 
       -- If initial text provided, insert it
       if initial_text and initial_text ~= "" then
@@ -526,9 +569,10 @@ let
         vim.api.nvim_put(lines, "c", true, true)
       end
 
+      -- Define callbacks (always set, even for reused buffers, to update closured variables)
       local function close_prompt()
         if vim.api.nvim_win_is_valid(win) then
-          vim.api.nvim_win_close(win, true)
+          vim.api.nvim_win_close(win, false)
         end
       end
 
@@ -537,6 +581,11 @@ let
         local text = table.concat(lines, "\n")
 
         close_prompt()
+
+        -- Delete the buffer after submission
+        if vim.api.nvim_buf_is_valid(buf) then
+          vim.api.nvim_buf_delete(buf, { force = true })
+        end
 
         with_agent_terminal(function(job_id, agent_buf)
           vim.fn.chansend(job_id, text)
@@ -555,6 +604,12 @@ let
           print("Failed to send text: " .. error_msg)
         end)
       end
+
+      -- Clear existing keymaps and set new ones (for reused buffers)
+      pcall(vim.api.nvim_buf_del_keymap, buf, "i", "<C-x>")
+      pcall(vim.api.nvim_buf_del_keymap, buf, "i", "<C-s>")
+      pcall(vim.api.nvim_buf_del_keymap, buf, "n", "<leader>ax")
+      pcall(vim.api.nvim_buf_del_keymap, buf, "n", "<leader>as")
 
       vim.api.nvim_buf_set_keymap(buf, "i", "<C-x>", "", {
         callback = close_prompt,
@@ -586,6 +641,18 @@ let
       end
     end
 
+    -- Function to hide agent prompt window if visible
+    local function hide_agent_prompt()
+      local prompt_win, prompt_buf = find_agent_prompt()
+      if not prompt_win then
+        return
+      end
+
+      if vim.api.nvim_win_is_valid(prompt_win) then
+        vim.api.nvim_win_close(prompt_win, false)
+      end
+    end
+
     -- Register agent prompt completion disable check
     register_completion_disable_check(function()
       local ok, is_agent_prompt = pcall(vim.api.nvim_buf_get_var, 0, "is_agent_prompt")
@@ -601,6 +668,7 @@ let
     -- Keyboard shortcuts for AI agent terminal
     keymapd("<leader>aa", "Open/Switch to AI agent terminal", open_agent_terminal)
     keymapd("<leader>app", "Open AI agent prompt window", open_agent_prompt)
+    keymapd("<leader>aph", "Hide AI agent prompt window", hide_agent_prompt)
     ikeymapd("<C-p>", "Open AI agent prompt window", open_agent_prompt)
     tkeymapd("<C-p>", "Open AI agent prompt window", open_agent_prompt)
     keymapd("<leader>ar", "Restart AI agent in terminal", restart_agent_terminal)
