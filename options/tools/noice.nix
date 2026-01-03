@@ -79,6 +79,13 @@ let
     })
 
 
+    require("notify").setup({
+      stages = "fade",
+      timeout = 3000,
+      background_colour = "#000000",
+      top_down = false,
+    })
+
     require("noice").setup({
       -- you can enable a preset for easier configuration
       ---@type NoicePresets
@@ -276,7 +283,15 @@ let
       },
       throttle = 1000 / 30, -- how frequently does Noice need to check for ui updates? This has no effect when in blocking mode.
       ---@type NoiceConfigViews
-      views = {}, ---@see section on views
+      views = {
+        notify = {
+          backend = "notify",
+          fallback = "mini",
+          format = "notify",
+          replace = false,
+          merge = false,
+        },
+      }, ---@see section on views
       ---@type NoiceRouteConfig[]
       routes = {}, --- @see section on routes
       ---@type table<string, NoiceFilter>
