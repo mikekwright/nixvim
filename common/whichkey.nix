@@ -38,6 +38,7 @@ let
 
       --   a -- AI
       { "<leader>a", group = "AI", desc = "AI Tools" },
+      { "<leader>ap", group = "Agent Prompt Window", desc = "Agent Prompt Window" },
 
       -- { "<leader>g", group = "buffers", expand = function()
       --     return require("which-key.extras").expand.buf()

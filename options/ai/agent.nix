@@ -177,13 +177,6 @@ let
       return AI_AGENTS[current_agent]
     end
 
-    -- Function to show current agent
-    local function show_current_agent()
-      local agent = get_current_agent()
-      local cwd = vim.fn.getcwd()
-      vim.notify("Current AI Agent: " .. agent.name .. " (" .. current_agent .. ")\nWorking Directory: " .. cwd, vim.log.levels.INFO)
-    end
-    
     -- Helper function to find agent terminal buffer
     local function find_agent_buffer()
       local agent = get_current_agent()
@@ -282,24 +275,6 @@ let
       end, 100)
     end
 
-    -- Function to close agent terminal
-    local function close_agent_terminal()
-      local agent = get_current_agent()
-      local agent_buf = find_agent_buffer()
-      if not agent_buf then
-        print(agent.name .. " terminal not found")
-        return
-      end
-
-      local agent_win = find_window_for_buffer(agent_buf)
-      if agent_win then
-        vim.api.nvim_win_close(agent_win, false)
-      end
-
-      vim.api.nvim_buf_delete(agent_buf, { force = true })
-      print(agent.name .. " terminal closed")
-    end
-
     -- Function to restart agent in the terminal
     local function restart_agent_terminal()
       local agent = get_current_agent()
@@ -330,23 +305,6 @@ let
       print(agent.name .. " terminal restarted")
     end
 
-    -- Function to toggle agent terminal visibility
-    local function toggle_agent_terminal()
-      local agent_buf = find_agent_buffer()
-      if not agent_buf then
-        open_agent_terminal()
-        return
-      end
-
-      local agent_win = find_window_for_buffer(agent_buf)
-      if agent_win then
-        vim.api.nvim_win_close(agent_win, false)
-      else
-        vim.cmd('split')
-        vim.api.nvim_set_current_buf(agent_buf)
-      end
-    end
-
     -- Function to open agent terminal in vertical split
     local function open_agent_terminal_vertical()
       local agent_buf = find_agent_buffer()
@@ -365,21 +323,6 @@ let
         vim.fn.termopen(agent.command)
         vim.api.nvim_buf_set_var(buf, agent.marker, true)
         vim.cmd('startinsert')
-      end
-    end
-
-    -- Function to clear agent terminal screen
-    local function clear_agent_terminal()
-      local agent = get_current_agent()
-      local agent_buf = find_agent_buffer()
-      if not agent_buf then
-        print(agent.name .. " terminal not found")
-        return
-      end
-
-      local job_id = vim.api.nvim_buf_get_var(agent_buf, "terminal_job_id")
-      if job_id then
-        vim.fn.chansend(job_id, "clear\n")
       end
     end
 
@@ -412,7 +355,42 @@ let
       end
     end
 
-    -- Function to send selected text to agent terminal
+    -- Forward declaration for open_agent_prompt
+    local open_agent_prompt
+
+    -- Helper function to find agent prompt window
+    local function find_agent_prompt()
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        if vim.api.nvim_win_is_valid(win) then
+          local buf = vim.api.nvim_win_get_buf(win)
+          local ok, is_prompt = pcall(vim.api.nvim_buf_get_var, buf, "is_agent_prompt")
+          if ok and is_prompt then
+            return win, buf
+          end
+        end
+      end
+      return nil, nil
+    end
+
+    -- Helper function to insert text into prompt window at cursor
+    local function insert_text_into_prompt(text)
+      local prompt_win, prompt_buf = find_agent_prompt()
+
+      -- Split text into lines for proper insertion
+      local lines = vim.split(text, "\n", { plain = true })
+
+      -- If prompt window doesn't exist, create it with text
+      if not prompt_win then
+        open_agent_prompt(text)
+      else
+        -- Focus the existing prompt window and insert text
+        vim.api.nvim_set_current_win(prompt_win)
+        -- Insert text at cursor (nvim_put expects array of lines)
+        vim.api.nvim_put(lines, "c", true, true)
+      end
+    end
+
+    -- Function to send selected text to agent prompt
     local function send_selection_to_agent()
       -- Get visual selection marks
       local bufnr = vim.api.nvim_get_current_buf()
@@ -452,18 +430,17 @@ let
         return
       end
 
-      with_agent_terminal(function(job_id, agent_buf)
-        for _, line in ipairs(lines) do
-          vim.fn.chansend(job_id, line .. "\n")
-        end
-        local agent = get_current_agent()
-        print("Selection sent to " .. agent.name .. " terminal")
-      end, function(error_msg)
-        print("Failed to send selection: " .. error_msg)
-      end)
+      -- Join lines with newlines for multi-line selections
+      local text = table.concat(lines, "\n")
+
+      -- Wrap in code block with triple backticks
+      text = "```\n" .. text .. "\n```"
+
+      -- Insert into prompt window
+      insert_text_into_prompt(text)
     end
 
-    -- Function to send current file path to agent
+    -- Function to send current file path to agent prompt
     local function send_filepath_to_agent()
       local filepath = vim.fn.expand("%:p")
       if filepath == "" then
@@ -471,13 +448,8 @@ let
         return
       end
 
-      with_agent_terminal(function(job_id, agent_buf)
-        vim.fn.chansend(job_id, filepath)
-        local agent = get_current_agent()
-        print("File path sent to " .. agent.name .. " terminal: " .. filepath)
-      end, function(error_msg)
-        print("Failed to send filepath: " .. error_msg)
-      end)
+      -- Insert filepath into prompt window
+      insert_text_into_prompt(filepath)
     end
 
     -- Function to interrupt current agent command
@@ -496,26 +468,6 @@ let
       end
     end
 
-    -- Function to maximize agent terminal window
-    local function maximize_agent_terminal()
-      local agent = get_current_agent()
-      local agent_buf = find_agent_buffer()
-      if not agent_buf then
-        print(agent.name .. " terminal not found, creating new one...")
-        open_agent_terminal()
-        return
-      end
-
-      local agent_win = find_window_for_buffer(agent_buf)
-      if not agent_win then
-        vim.cmd('tabnew')
-        vim.api.nvim_set_current_buf(agent_buf)
-      else
-        vim.api.nvim_set_current_win(agent_win)
-        vim.cmd('only')
-      end
-    end
-
     -- Function to send newline to agent
     local function send_newline_to_agent()
       local agent = get_current_agent()
@@ -531,20 +483,8 @@ let
       end
     end
 
-    -- Function to open agent web interface
-    local function open_agent_web()
-      local agent = get_current_agent()
-      if current_agent == "claude" then
-        vim.fn.system("xdg-open https://claude.ai")
-        print("Opening claude.ai in default browser")
-      elseif current_agent == "copilot" then
-        vim.fn.system("xdg-open https://github.com/features/copilot")
-        print("Opening GitHub Copilot page in default browser")
-      end
-    end
-
     -- Function to open floating prompt window for agent
-    local function open_agent_prompt()
+    open_agent_prompt = function(initial_text)
       local agent = get_current_agent()
       local buf = vim.api.nvim_create_buf(false, true)
 
@@ -578,6 +518,13 @@ let
       vim.api.nvim_win_set_option(win, "linebreak", true)
 
       vim.api.nvim_buf_set_var(buf, "is_agent_prompt", true)
+
+      -- If initial text provided, insert it
+      if initial_text and initial_text ~= "" then
+        -- Split text into lines for proper insertion
+        local lines = vim.split(initial_text, "\n", { plain = true })
+        vim.api.nvim_put(lines, "c", true, true)
+      end
 
       local function close_prompt()
         if vim.api.nvim_win_is_valid(win) then
@@ -633,7 +580,10 @@ let
         silent = true,
       })
 
-      vim.cmd('startinsert')
+      -- Only start in insert mode if no initial text was provided
+      if not initial_text or initial_text == "" then
+        vim.cmd('startinsert')
+      end
     end
 
     -- Register agent prompt completion disable check
@@ -646,22 +596,17 @@ let
     init_agent_config()
 
     -- Register dashboard action (shows current agent)
-    register_dashboard_action("c", "AI Agent", ":lua open_agent_terminal()<CR>")
+    register_dashboard_action("a", "AI Agent", ":lua open_agent_terminal()<CR>")
 
     -- Keyboard shortcuts for AI agent terminal
     keymapd("<leader>aa", "Open/Switch to AI agent terminal", open_agent_terminal)
-    keymapd("<leader>ap", "Open AI agent prompt window", open_agent_prompt)
+    keymapd("<leader>app", "Open AI agent prompt window", open_agent_prompt)
     ikeymapd("<C-p>", "Open AI agent prompt window", open_agent_prompt)
     tkeymapd("<C-p>", "Open AI agent prompt window", open_agent_prompt)
-    keymapd("<leader>aq", "Close AI agent terminal", close_agent_terminal)
     keymapd("<leader>ar", "Restart AI agent in terminal", restart_agent_terminal)
-    keymapd("<leader>at", "Toggle AI agent terminal visibility", toggle_agent_terminal)
     keymapd("<leader>av", "Open AI agent terminal (vertical split)", open_agent_terminal_vertical)
-    keymapd("<leader>aw", "Open AI agent web interface", open_agent_web)
-    keymapd("<leader>ac", "Clear AI agent terminal screen", clear_agent_terminal)
     keymapd("<leader>ah", "Hide AI agent terminal", hide_agent_terminal)
     keymapd("<leader>ae", "Exit AI agent terminal", exit_agent)
-    keymapd("<leader>as", "Show current AI agent", show_current_agent)
     vim.keymap.set("x", "<leader>as", function()
       -- Store a reference to the function to be called after exiting visual mode
       vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", false)
@@ -671,7 +616,6 @@ let
     end, { silent = true, noremap = true, desc = "Send selection to AI agent" })
     keymapd("<leader>af", "Send current file path to AI agent", send_filepath_to_agent)
     keymapd("<leader>ai", "Interrupt AI agent command (Ctrl-C)", interrupt_agent)
-    keymapd("<leader>al", "Maximize AI agent terminal window", maximize_agent_terminal)
     keymapd("<leader>an", "Send newline to AI agent", send_newline_to_agent)
     keymapd("<leader>ax", "Select AI agent", show_agent_picker)
   '';
