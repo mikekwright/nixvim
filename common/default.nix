@@ -31,6 +31,9 @@ in
     # The common keymaps that should be used regardless of configuration
     ./keymaps.nix
 
+    # Terminal management for shared terminal buffer
+    ./terminal.nix
+
     # The greeter is always an important addition to any good neovim setup
     ./greeter.nix
 

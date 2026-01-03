@@ -210,32 +210,17 @@ let
       if agent_buf and agent_win then
         if is_alpha then
           vim.api.nvim_buf_delete(current_buf, { force = true })
-          vim.api.nvim_set_current_win(agent_win)
-        else
-          vim.api.nvim_set_current_win(agent_win)
         end
+        vim.api.nvim_set_current_win(agent_win)
       elseif agent_buf then
-        if is_alpha then
-          vim.api.nvim_set_current_buf(agent_buf)
-        else
-          vim.cmd('split')
-          vim.api.nvim_set_current_buf(agent_buf)
-        end
+        vim.api.nvim_set_current_buf(agent_buf)
+        vim.cmd('startinsert')
       else
-        if is_alpha then
-          local buf = vim.api.nvim_create_buf(true, false)
-          vim.api.nvim_set_current_buf(buf)
-          vim.fn.termopen(agent.command)
-          vim.api.nvim_buf_set_var(buf, agent.marker, true)
-          vim.cmd('startinsert')
-        else
-          vim.cmd('split')
-          local buf = vim.api.nvim_create_buf(true, false)
-          vim.api.nvim_set_current_buf(buf)
-          vim.fn.termopen(agent.command)
-          vim.api.nvim_buf_set_var(buf, agent.marker, true)
-          vim.cmd('startinsert')
-        end
+        local buf = vim.api.nvim_create_buf(true, false)
+        vim.api.nvim_set_current_buf(buf)
+        vim.fn.termopen(agent.command)
+        vim.api.nvim_buf_set_var(buf, agent.marker, true)
+        vim.cmd('startinsert')
       end
     end
 
@@ -398,23 +383,17 @@ let
       end
     end
 
-    -- Function to send help command to agent
-    local function send_agent_help()
+    -- Function to hide agent terminal if visible
+    local function hide_agent_terminal()
       local agent = get_current_agent()
       local agent_buf = find_agent_buffer()
       if not agent_buf then
-        print(agent.name .. " terminal not found")
         return
-      end
-
-      local job_id = vim.api.nvim_buf_get_var(agent_buf, "terminal_job_id")
-      if job_id then
-        vim.fn.chansend(job_id, "/help\n")
       end
 
       local agent_win = find_window_for_buffer(agent_buf)
       if agent_win then
-        vim.api.nvim_set_current_win(agent_win)
+        vim.api.nvim_win_close(agent_win, false)
       end
     end
 
@@ -435,20 +414,42 @@ let
 
     -- Function to send selected text to agent terminal
     local function send_selection_to_agent()
+      -- Get visual selection marks
+      local bufnr = vim.api.nvim_get_current_buf()
       local start_pos = vim.fn.getpos("'<")
       local end_pos = vim.fn.getpos("'>")
-      local lines = vim.fn.getline(start_pos[2], end_pos[2])
+      local start_line = start_pos[2]
+      local start_col = start_pos[3]
+      local end_line = end_pos[2]
+      local end_col = end_pos[3]
+
+      -- Validate that marks are set
+      if start_line == 0 or end_line == 0 then
+        print("No valid visual selection marks")
+        return
+      end
+
+      -- Get all lines in the selection range (0-indexed for nvim_buf_get_lines)
+      local lines = vim.api.nvim_buf_get_lines(bufnr, start_line - 1, end_line, false)
 
       if #lines == 0 then
         print("No text selected")
         return
       end
 
+      -- Handle single line selection
       if #lines == 1 then
-        lines[1] = string.sub(lines[1], start_pos[3], end_pos[3])
+        lines[1] = string.sub(lines[1], start_col, end_col)
       else
-        lines[1] = string.sub(lines[1], start_pos[3])
-        lines[#lines] = string.sub(lines[#lines], 1, end_pos[3])
+        -- Handle multi-line selection
+        lines[1] = string.sub(lines[1], start_col)
+        lines[#lines] = string.sub(lines[#lines], 1, end_col)
+      end
+
+      -- Filter out empty result
+      if #lines == 1 and lines[1] == "" then
+        print("No text selected")
+        return
       end
 
       with_agent_terminal(function(job_id, agent_buf)
@@ -658,10 +659,16 @@ let
     keymapd("<leader>av", "Open AI agent terminal (vertical split)", open_agent_terminal_vertical)
     keymapd("<leader>aw", "Open AI agent web interface", open_agent_web)
     keymapd("<leader>ac", "Clear AI agent terminal screen", clear_agent_terminal)
-    keymapd("<leader>ah", "Send /help to AI agent", send_agent_help)
+    keymapd("<leader>ah", "Hide AI agent terminal", hide_agent_terminal)
     keymapd("<leader>ae", "Exit AI agent terminal", exit_agent)
     keymapd("<leader>as", "Show current AI agent", show_current_agent)
-    vkeymapd("<leader>as", "Send selection to AI agent", send_selection_to_agent)
+    vim.keymap.set("x", "<leader>as", function()
+      -- Store a reference to the function to be called after exiting visual mode
+      vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", false)
+      vim.schedule(function()
+        send_selection_to_agent()
+      end)
+    end, { silent = true, noremap = true, desc = "Send selection to AI agent" })
     keymapd("<leader>af", "Send current file path to AI agent", send_filepath_to_agent)
     keymapd("<leader>ai", "Interrupt AI agent command (Ctrl-C)", interrupt_agent)
     keymapd("<leader>al", "Maximize AI agent terminal window", maximize_agent_terminal)

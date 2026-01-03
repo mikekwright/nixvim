@@ -119,6 +119,7 @@ let
     keymapd("<leader>bp", "Previous buffer", ":bprevious<CR>")
     keymapd("<leader>bd", "Delete current buffer", ":bdelete<CR>")
     keymapd("<leader>bl", "List buffers", ":ls<CR>")
+    keymapd("<leader>bf", "Maximize current buffer", ":only<CR>")
 
     function print_table(name, t)
       if type(t) == 'table' then
