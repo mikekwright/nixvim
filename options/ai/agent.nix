@@ -529,34 +529,54 @@ let
         is_new_buffer = true
       end
 
-      local width = vim.api.nvim_get_option("columns")
-      local height = vim.api.nvim_get_option("lines")
+      -- Check if prompt should be floating (default: true)
+      local is_floating = true
+      if not is_new_buffer then
+        local ok, floating = pcall(vim.api.nvim_buf_get_var, buf, "prompt_is_floating")
+        if ok then
+          is_floating = floating
+        end
+      end
 
-      local win_width = math.floor(width * 0.8)
-      local win_height = math.floor(height * 0.8)
+      local win
 
-      local row = math.floor((height - win_height) / 2)
-      local col = math.floor((width - win_width) / 2)
+      if is_floating then
+        -- Create floating window
+        local width = vim.api.nvim_get_option("columns")
+        local height = vim.api.nvim_get_option("lines")
 
-      local opts = {
-        relative = "editor",
-        width = win_width,
-        height = win_height,
-        row = row,
-        col = col,
-        style = "minimal",
-        border = "rounded",
-        title = " " .. agent.name .. " Prompt ",
-        title_pos = "center",
-      }
+        local win_width = math.floor(width * 0.8)
+        local win_height = math.floor(height * 0.8)
 
-      local win = vim.api.nvim_open_win(buf, true, opts)
+        local row = math.floor((height - win_height) / 2)
+        local col = math.floor((width - win_width) / 2)
+
+        local opts = {
+          relative = "editor",
+          width = win_width,
+          height = win_height,
+          row = row,
+          col = col,
+          style = "minimal",
+          border = "rounded",
+          title = " " .. agent.name .. " Prompt ",
+          title_pos = "center",
+        }
+
+        win = vim.api.nvim_open_win(buf, true, opts)
+      else
+        -- Create split window
+        vim.cmd('vsplit')
+        win = vim.api.nvim_get_current_win()
+        vim.api.nvim_win_set_buf(win, buf)
+      end
 
       -- Only set buffer options for new buffers
       if is_new_buffer then
         vim.api.nvim_buf_set_option(buf, "bufhidden", "hide")
         vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
         vim.api.nvim_buf_set_var(buf, "is_agent_prompt", true)
+        vim.api.nvim_buf_set_var(buf, "prompt_is_floating", true)
       end
 
       vim.api.nvim_win_set_option(win, "wrap", true)
@@ -653,6 +673,53 @@ let
       end
     end
 
+    -- Function to toggle floating mode for agent prompt
+    local function toggle_agent_prompt_float()
+      local prompt_win, prompt_buf = find_agent_prompt()
+
+      -- If no window is visible, try to find the buffer
+      if not prompt_buf then
+        prompt_buf = find_agent_prompt_buffer()
+      end
+
+      if not prompt_buf then
+        print("No agent prompt buffer exists")
+        return
+      end
+
+      -- Get current floating state
+      local ok, is_floating = pcall(vim.api.nvim_buf_get_var, prompt_buf, "prompt_is_floating")
+      if not ok then
+        is_floating = true
+      end
+
+      -- Toggle the state
+      local new_floating = not is_floating
+      vim.api.nvim_buf_set_var(prompt_buf, "prompt_is_floating", new_floating)
+
+      -- If window is currently open, close and reopen in new mode
+      if prompt_win then
+        -- Save cursor position
+        local cursor_pos = vim.api.nvim_win_get_cursor(prompt_win)
+
+        -- Close the window
+        vim.api.nvim_win_close(prompt_win, false)
+
+        -- Reopen in new mode
+        open_agent_prompt()
+
+        -- Restore cursor position
+        local new_win = find_agent_prompt()
+        if new_win then
+          pcall(vim.api.nvim_win_set_cursor, new_win, cursor_pos)
+        end
+
+        print("Prompt mode: " .. (new_floating and "floating" or "split"))
+      else
+        print("Prompt will open in " .. (new_floating and "floating" or "split") .. " mode next time")
+      end
+    end
+
     -- Register agent prompt completion disable check
     register_completion_disable_check(function()
       local ok, is_agent_prompt = pcall(vim.api.nvim_buf_get_var, 0, "is_agent_prompt")
@@ -669,6 +736,7 @@ let
     keymapd("<leader>aa", "Open/Switch to AI agent terminal", open_agent_terminal)
     keymapd("<leader>app", "Open AI agent prompt window", open_agent_prompt)
     keymapd("<leader>aph", "Hide AI agent prompt window", hide_agent_prompt)
+    keymapd("<leader>apf", "Toggle AI agent prompt floating mode", toggle_agent_prompt_float)
     ikeymapd("<C-p>", "Open AI agent prompt window", open_agent_prompt)
     tkeymapd("<C-p>", "Open AI agent prompt window", open_agent_prompt)
     keymapd("<leader>ar", "Restart AI agent in terminal", restart_agent_terminal)
