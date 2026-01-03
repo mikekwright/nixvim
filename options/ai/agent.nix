@@ -358,6 +358,86 @@ let
     -- Forward declaration for open_agent_prompt
     local open_agent_prompt
 
+    -- Helper function to setup keymaps for prompt buffer
+    local function setup_prompt_keymaps(buf, win)
+      local function close_prompt()
+        if vim.api.nvim_win_is_valid(win) then
+          vim.api.nvim_win_close(win, false)
+        end
+      end
+
+      local function submit_to_agent()
+        local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+        local text = table.concat(lines, "\n")
+
+        -- Check if prompt is in floating mode
+        local ok, is_floating = pcall(vim.api.nvim_buf_get_var, buf, "prompt_is_floating")
+        if not ok then
+          is_floating = true
+        end
+
+        if is_floating then
+          -- Floating mode: close window and delete buffer
+          close_prompt()
+          if vim.api.nvim_buf_is_valid(buf) then
+            vim.api.nvim_buf_delete(buf, { force = true })
+          end
+        else
+          -- Non-floating mode: clear buffer content but keep window open
+          if vim.api.nvim_buf_is_valid(buf) then
+            vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
+          end
+        end
+
+        with_agent_terminal(function(job_id, agent_buf)
+          vim.fn.chansend(job_id, text)
+          vim.fn.chansend(job_id, "\n")
+
+          local agent_win = find_window_for_buffer(agent_buf)
+          if agent_win then
+            vim.api.nvim_set_current_win(agent_win)
+          else
+            vim.cmd('split')
+            vim.api.nvim_set_current_buf(agent_buf)
+          end
+
+          vim.cmd('stopinsert')
+        end, function(error_msg)
+          print("Failed to send text: " .. error_msg)
+        end)
+      end
+
+      -- Clear existing keymaps and set new ones
+      pcall(vim.api.nvim_buf_del_keymap, buf, "i", "<C-x>")
+      pcall(vim.api.nvim_buf_del_keymap, buf, "i", "<C-s>")
+      pcall(vim.api.nvim_buf_del_keymap, buf, "n", "<leader>ax")
+      pcall(vim.api.nvim_buf_del_keymap, buf, "n", "<leader>as")
+
+      vim.api.nvim_buf_set_keymap(buf, "i", "<C-x>", "", {
+        callback = close_prompt,
+        noremap = true,
+        silent = true,
+      })
+
+      vim.api.nvim_buf_set_keymap(buf, "i", "<C-s>", "", {
+        callback = submit_to_agent,
+        noremap = true,
+        silent = true,
+      })
+
+      vim.api.nvim_buf_set_keymap(buf, "n", "<leader>ax", "", {
+        callback = close_prompt,
+        noremap = true,
+        silent = true,
+      })
+
+      vim.api.nvim_buf_set_keymap(buf, "n", "<leader>as", "", {
+        callback = submit_to_agent,
+        noremap = true,
+        silent = true,
+      })
+    end
+
     -- Helper function to find agent prompt buffer (even if hidden)
     local function find_agent_prompt_buffer()
       for _, buf in ipairs(vim.api.nvim_list_bufs()) do
@@ -589,71 +669,8 @@ let
         vim.api.nvim_put(lines, "c", true, true)
       end
 
-      -- Define callbacks (always set, even for reused buffers, to update closured variables)
-      local function close_prompt()
-        if vim.api.nvim_win_is_valid(win) then
-          vim.api.nvim_win_close(win, false)
-        end
-      end
-
-      local function submit_to_agent()
-        local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-        local text = table.concat(lines, "\n")
-
-        close_prompt()
-
-        -- Delete the buffer after submission
-        if vim.api.nvim_buf_is_valid(buf) then
-          vim.api.nvim_buf_delete(buf, { force = true })
-        end
-
-        with_agent_terminal(function(job_id, agent_buf)
-          vim.fn.chansend(job_id, text)
-          vim.fn.chansend(job_id, "\n")
-
-          local agent_win = find_window_for_buffer(agent_buf)
-          if agent_win then
-            vim.api.nvim_set_current_win(agent_win)
-          else
-            vim.cmd('split')
-            vim.api.nvim_set_current_buf(agent_buf)
-          end
-
-          vim.cmd('stopinsert')
-        end, function(error_msg)
-          print("Failed to send text: " .. error_msg)
-        end)
-      end
-
-      -- Clear existing keymaps and set new ones (for reused buffers)
-      pcall(vim.api.nvim_buf_del_keymap, buf, "i", "<C-x>")
-      pcall(vim.api.nvim_buf_del_keymap, buf, "i", "<C-s>")
-      pcall(vim.api.nvim_buf_del_keymap, buf, "n", "<leader>ax")
-      pcall(vim.api.nvim_buf_del_keymap, buf, "n", "<leader>as")
-
-      vim.api.nvim_buf_set_keymap(buf, "i", "<C-x>", "", {
-        callback = close_prompt,
-        noremap = true,
-        silent = true,
-      })
-
-      vim.api.nvim_buf_set_keymap(buf, "i", "<C-s>", "", {
-        callback = submit_to_agent,
-        noremap = true,
-        silent = true,
-      })
-
-      vim.api.nvim_buf_set_keymap(buf, "n", "<leader>ax", "", {
-        callback = close_prompt,
-        noremap = true,
-        silent = true,
-      })
-
-      vim.api.nvim_buf_set_keymap(buf, "n", "<leader>as", "", {
-        callback = submit_to_agent,
-        noremap = true,
-        silent = true,
-      })
+      -- Setup keymaps for the prompt buffer
+      setup_prompt_keymaps(buf, win)
 
       -- Only start in insert mode if no initial text was provided
       if not initial_text or initial_text == "" then
@@ -720,6 +737,78 @@ let
       end
     end
 
+    -- Function to setup agent mode layout
+    local function setup_agent_mode()
+      -- Save the current window
+      local original_win = vim.api.nvim_get_current_win()
+
+      -- Get total width
+      local total_width = vim.api.nvim_get_option("columns")
+      local right_width = math.floor(total_width * 0.25)
+
+      -- Create vertical split on the right
+      vim.cmd('rightbelow vsplit')
+      local right_win = vim.api.nvim_get_current_win()
+
+      -- Set the width of the right window
+      vim.api.nvim_win_set_width(right_win, right_width)
+
+      -- Get the height for splitting
+      local win_height = vim.api.nvim_win_get_height(right_win)
+      local terminal_height = math.floor(win_height * 0.75)
+
+      -- Open agent terminal in the right window
+      local agent = get_current_agent()
+      local agent_buf = find_agent_buffer()
+
+      if not agent_buf then
+        -- Create new agent terminal
+        local buf = vim.api.nvim_create_buf(true, false)
+        vim.api.nvim_win_set_buf(right_win, buf)
+        vim.fn.termopen(agent.command)
+        vim.api.nvim_buf_set_var(buf, agent.marker, true)
+      else
+        -- Use existing agent terminal
+        vim.api.nvim_win_set_buf(right_win, agent_buf)
+      end
+
+      -- Create horizontal split for prompt (below terminal)
+      vim.cmd('belowright split')
+      local prompt_win = vim.api.nvim_get_current_win()
+
+      -- Set terminal window height (go back to terminal window to set its height)
+      vim.api.nvim_set_current_win(right_win)
+      vim.api.nvim_win_set_height(right_win, terminal_height)
+      vim.api.nvim_set_current_win(prompt_win)
+
+      -- Setup prompt buffer in bottom split
+      local prompt_buf = find_agent_prompt_buffer()
+
+      if not prompt_buf then
+        -- Create new prompt buffer
+        prompt_buf = vim.api.nvim_create_buf(false, true)
+        vim.api.nvim_buf_set_option(prompt_buf, "bufhidden", "hide")
+        vim.api.nvim_buf_set_option(prompt_buf, "filetype", "markdown")
+        vim.api.nvim_buf_set_var(prompt_buf, "is_agent_prompt", true)
+        vim.api.nvim_buf_set_var(prompt_buf, "prompt_is_floating", false)
+      else
+        -- Update existing buffer to non-floating mode
+        vim.api.nvim_buf_set_var(prompt_buf, "prompt_is_floating", false)
+      end
+
+      vim.api.nvim_win_set_buf(prompt_win, prompt_buf)
+      vim.api.nvim_win_set_option(prompt_win, "wrap", true)
+      vim.api.nvim_win_set_option(prompt_win, "linebreak", true)
+
+      -- Setup keymaps for the prompt buffer
+      setup_prompt_keymaps(prompt_buf, prompt_win)
+
+      -- Return focus to original window
+      vim.api.nvim_set_current_win(original_win)
+
+      print("Agent mode layout activated")
+    end
+
     -- Register agent prompt completion disable check
     register_completion_disable_check(function()
       local ok, is_agent_prompt = pcall(vim.api.nvim_buf_get_var, 0, "is_agent_prompt")
@@ -734,6 +823,7 @@ let
 
     -- Keyboard shortcuts for AI agent terminal
     keymapd("<leader>aa", "Open/Switch to AI agent terminal", open_agent_terminal)
+    keymapd("<leader>am", "Setup AI agent mode layout", setup_agent_mode)
     keymapd("<leader>app", "Open AI agent prompt window", open_agent_prompt)
     keymapd("<leader>aph", "Hide AI agent prompt window", hide_agent_prompt)
     keymapd("<leader>apf", "Toggle AI agent prompt floating mode", toggle_agent_prompt_float)
