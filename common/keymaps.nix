@@ -17,7 +17,8 @@ let
 
     -- This key opens a new terminal
     keymap("<C-t>", ":new<CR>:terminal<CR>i")  -- The extra i should put it in insert mode for the terminal
-    keymapd("<leader>tt", "Open terminal", ":new<CR>:terminal<CR>i")
+    keymapd("<leader>tt", "Open terminal", ":terminal<CR>i")
+    keymapd("<leader>tn", "Open terminal (split)", ":new<CR>:terminal<CR>i")
 
     keymapd("<leader>cs", "Clear search highlights", ":nohlsearch<CR>")
 
