@@ -535,7 +535,12 @@ let
 
     -- Function to send current file path to agent prompt
     local function send_filepath_to_agent()
-      local filepath = vim.fn.expand("%:p")
+      -- - %:p - Full absolute path (current behavior)
+      -- - %:. - Path relative to current working directory
+      -- - %:~ - Path relative to home directory
+      -- - %:t - Filename only (tail)
+      -- - %:h - Directory name only (head)
+      local filepath = vim.fn.expand("%:.")
       if filepath == "" then
         print("No file in current buffer")
         return
