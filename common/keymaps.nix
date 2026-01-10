@@ -12,8 +12,10 @@ let
     tkeymap("<C-w>k", "<C-\\><C-n><C-w>k")
     tkeymap("<C-w>l", "<C-\\><C-n><C-w>l")
     tkeymap("<C-w>n", "<C-\\><C-n>:bnext<CR>")
+    tkeymap("<C-w>p", "<C-\\><C-n>:bprevious<CR>")
     tkeymap("<C-t>", "<C-\\><C-n>")
     keymap("<C-w>n", ":bnext<CR>")
+    keymap("<C-w>p", ":bprevious<CR>")
 
     keymapd("<leader>cs", "Clear search highlights", ":nohlsearch<CR>")
 

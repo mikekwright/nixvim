@@ -78,6 +78,8 @@ let
     end
 
     keymap("<C-t>", open_or_switch_terminal_fullscreen)
+    keymap("<C-w>t", open_or_switch_terminal_fullscreen)
+    tkeymap("<C-w>t", "<C-\\><C-n><C-w>t")
     keymapd("<leader>tt", "Open terminal", open_or_switch_terminal_fullscreen)
     keymapd("<leader>tn", "Open terminal (split)", open_or_show_terminal_split)
     keymapd("<leader>tv", "Open terminal (VSCode style)", open_or_show_terminal_vscode)
