@@ -288,7 +288,7 @@ and OpenCode. Each agent runs in a persistent terminal buffer that can be manage
 
 You can configure different AI agents on a per-project basis. The system remembers your agent preference for each working
 directory and automatically restores it when you return to that project. Agent preferences are stored in a configuration
-file at `~/.nvim-ai-config`.
+file at `~/.config/nvim-ai-config.json`.
 
 Use the agent picker to switch between available agents at any time. Your selection will be saved and persist across
 Neovim sessions for the current project directory.

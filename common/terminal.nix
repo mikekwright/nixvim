@@ -77,9 +77,16 @@ let
       end
     end
 
+    local function escape_terminal_and_switch()
+      vim.cmd("stopinsert")
+      vim.schedule(function()
+        open_or_switch_terminal_fullscreen()
+      end)
+    end
+
     keymap("<C-t>", open_or_switch_terminal_fullscreen)
     keymap("<C-w>t", open_or_switch_terminal_fullscreen)
-    tkeymap("<C-w>t", "<C-\\><C-n><C-w>t")
+    tkeymap("<C-w>t", escape_terminal_and_switch)
     keymapd("<leader>tt", "Open terminal", open_or_switch_terminal_fullscreen)
     keymapd("<leader>tn", "Open terminal (split)", open_or_show_terminal_split)
     keymapd("<leader>tv", "Open terminal (VSCode style)", open_or_show_terminal_vscode)

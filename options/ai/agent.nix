@@ -74,8 +74,8 @@ let
     }
 
     -- Global state for current agent
-    local current_agent = "claude"  -- default
-    local config_file = vim.fn.expand("~/.nvim-ai-config")
+    local current_agent = "opencode"  -- default
+    local config_file = vim.fn.expand("~/.config/nvim-ai-config.json")
 
     -- Helper function to read JSON config file
     local function read_config()
@@ -100,12 +100,34 @@ let
       end
     end
 
-    -- Helper function to write JSON config file
+    -- Helper function to write JSON config file with pretty formatting
     local function write_config(config)
-      local json = vim.fn.json_encode(config)
+      -- Build JSON manually for pretty formatting with 2-space indent
+      local lines = {"{"}
+      local entries = {}
+
+      for path, agent in pairs(config) do
+        table.insert(entries, {path = path, agent = agent})
+      end
+
+      -- Sort entries by path for consistent output
+      table.sort(entries, function(a, b) return a.path < b.path end)
+
+      for i, entry in ipairs(entries) do
+        local path_json = vim.fn.json_encode(entry.path)
+        local agent_json = vim.fn.json_encode(entry.agent)
+        local line = "  " .. path_json .. ": " .. agent_json
+        if i < #entries then
+          line = line .. ","
+        end
+        table.insert(lines, line)
+      end
+
+      table.insert(lines, "}")
+
       local file = io.open(config_file, "w")
       if file then
-        file:write(json)
+        file:write(table.concat(lines, "\n"))
         file:close()
         return true
       end
@@ -123,16 +145,16 @@ let
           current_agent = agent
           print("AI Agent set to: " .. AI_AGENTS[agent].name)
         else
-          -- Agent configured but not available, fallback to claude
-          current_agent = "claude"
+          -- Agent configured but not available, fallback to opencode
+          current_agent = "opencode"
           vim.notify(
-            string.format("Configured agent '%s' not found or not available.\nFalling back to Claude Code.", agent),
+            string.format("Configured agent '%s' not found or not available.\nFalling back to OpenCode.", agent),
             vim.log.levels.WARN
           )
         end
       else
-        -- Default to claude if not configured
-        current_agent = "claude"
+        -- Default to opencode if not configured
+        current_agent = "opencode"
       end
     end
 
@@ -823,6 +845,25 @@ let
     -- Initialize agent configuration on startup
     init_agent_config()
 
+    -- Function to clear the agent prompt buffer
+    local function clear_agent_prompt()
+      local prompt_buf = find_agent_prompt_buffer()
+      if prompt_buf and vim.api.nvim_buf_is_valid(prompt_buf) then
+        vim.api.nvim_buf_set_lines(prompt_buf, 0, -1, false, {})
+        print("Agent prompt buffer cleared")
+      else
+        print("No agent prompt buffer found")
+      end
+    end
+
+    -- Wrapper function to escape terminal mode and open agent terminal
+    local function escape_terminal_and_open_agent()
+      vim.cmd("stopinsert")
+      vim.schedule(function()
+        open_agent_terminal()
+      end)
+    end
+
     -- Register dashboard action (shows current agent)
     register_dashboard_action("a", "AI Agent", ":lua open_agent_terminal()<CR>")
 
@@ -832,6 +873,7 @@ let
     keymapd("<leader>app", "Open AI agent prompt window", open_agent_prompt)
     keymapd("<leader>aph", "Hide AI agent prompt window", hide_agent_prompt)
     keymapd("<leader>apf", "Toggle AI agent prompt floating mode", toggle_agent_prompt_float)
+    keymapd("<leader>apc", "Clear AI agent prompt buffer", clear_agent_prompt)
     ikeymapd("<C-p>", "Open AI agent prompt window", open_agent_prompt)
     tkeymapd("<C-p>", "Open AI agent prompt window", open_agent_prompt)
     keymapd("<leader>ar", "Restart AI agent in terminal", restart_agent_terminal)
@@ -849,6 +891,8 @@ let
     keymapd("<leader>ai", "Interrupt AI agent command (Ctrl-C)", interrupt_agent)
     keymapd("<leader>an", "Send newline to AI agent", send_newline_to_agent)
     keymapd("<leader>ax", "Select AI agent", show_agent_picker)
+    keymapd("<C-w>a", "Navigate to Agent", open_agent_terminal)
+    tkeymapd("<C-w>a", "Navigate to Agent from terminal", escape_terminal_and_open_agent)
   '';
 in
 {
