@@ -9,7 +9,8 @@
     flake-parts.url = "github:hercules-ci/flake-parts/52a2caecc898d0b46b2b905f058ccc5081f842da";
 
     # Opencode
-    opencode.url = "github:nixos/nixpkgs/306ea70f9eb0fb4e040f8540e2deab32ed7e2055";
+    # opencode.url = "github:nixos/nixpkgs/306ea70f9eb0fb4e040f8540e2deab32ed7e2055";
+    opencode.url = "github:nixos/nixpkgs/bde09022887110deb780067364a0818e89258968";
   };
 
   outputs = {
