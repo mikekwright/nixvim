@@ -1,0 +1,273 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    NIXVIM PROJECT STRUCTURE OVERVIEW
+═══════════════════════════════════════════════════════════════════════════════
+
+EXECUTION FLOW
+─────────────────────────────────────────────────────────────────────────────
+
+  User runs: nix run .
+  
+       ↓
+       
+  flake.nix loads
+  ├─ Imports: nixpkgs, devenv, flake-parts
+  └─ Defines 4 packages: complete, minimal, python, ai
+  
+       ↓
+       
+  lib/importer.nix (orchestrates everything)
+  ├─ Loads all .nix modules
+  ├─ Resolves imports recursively
+  ├─ Filters by package (via lib/options.nix)
+  ├─ Concatenates Lua code in order
+  ├─ Collects plugins
+  └─ Gathers system packages
+  
+       ↓
+       
+  Single init.lua + Plugin list + Package list
+  
+       ↓
+       
+  neovimUtils.makeNeovimConfig assembles Neovim derivation
+  ├─ All plugins auto-loaded
+  └─ All packages in PATH
+  
+       ↓
+       
+  Custom wrapper script handles debug output
+  
+       ↓
+       
+  Final result: /nix/store/.../bin/nvim
+
+
+DIRECTORY ORGANIZATION
+─────────────────────────────────────────────────────────────────────────────
+
+  nixvim/
+  │
+  ├─ flake.nix ────────────────────┐
+  │                                 │
+  ├─ lib/ ─────────────────────────┼─→ Module System Infrastructure
+  │  ├─ importer.nix (CORE)         │
+  │  ├─ options.nix (Feature flags) │
+  │  └─ debug.nix                   │
+  │                                 │
+  ├─ common/ ──────────────────────┤─→ Always Loaded Features
+  │  ├─ base.nix (Keymap helpers)   │
+  │  ├─ whichkey.nix (Help menu)    │
+  │  ├─ keymaps.nix                 │
+  │  ├─ theme.nix                   │
+  │  ├─ terminal.nix                │
+  │  ├─ greeter.nix                 │
+  │  ├─ tree.nix                    │
+  │  ├─ funcs.nix                   │
+  │  └─ git/                        │
+  │                                 │
+  ├─ options/ ─────────────────────┤─→ Optional (by package)
+  │  ├─ lsp/ (Rust, Python, etc)    │
+  │  ├─ ai/ (Copilot, Agents)       │
+  │  └─ tools/ (Snacks, Noice, etc) │
+  │                                 │
+  ├─ packages/ ────────────────────┤─→ Configuration Variants
+  │  ├─ complete.nix (All features) │
+  │  ├─ minimal.nix (Core only)     │
+  │  ├─ python.nix (Python-focused) │
+  │  └─ ai.nix (AI-centric)         │
+  │                                 │
+  └─ docs/
+     ├─ STRUCTURE.md (Detailed)
+     └─ QUICK_REFERENCE.md
+
+
+MODULE ANATOMY
+─────────────────────────────────────────────────────────────────────────────
+
+  options/tools/noice.nix
+  
+  { pkgs, ... }:
+  
+  let
+    name = "tools.noice";           ◄─ Unique identifier
+    
+    lua = /*lua*/ ''                ◄─ Lua executed at startup
+      require('noice').setup({...})
+    '';
+    
+  in
+  {
+    inherit name lua;
+    
+    vimPackages = [                 ◄─ Plugins to include
+      noice-nvim
+      nvim-notify
+    ];
+    
+    packages = [                    ◄─ System packages
+      ripgrep
+    ];
+    
+    imports = [];                   ◄─ Child modules
+  }
+
+
+MODULE LOADING SEQUENCE
+─────────────────────────────────────────────────────────────────────────────
+
+  1. common/default.nix imports:
+     ├─ common/base.nix
+     ├─ common/whichkey.nix
+     ├─ common/keymaps.nix
+     ├─ common/theme.nix
+     ├─ common/terminal.nix
+     ├─ common/greeter.nix
+     ├─ common/tree.nix
+     ├─ common/funcs.nix
+     └─ common/git/*
+  
+  2. options/default.nix imports:
+     ├─ options/lsp/*
+     ├─ options/ai/*
+     └─ options/tools/*
+  
+  3. flake.nix loads everything:
+     ├─ common/* (always)
+     └─ options/* (filtered by package)
+  
+  4. lib/importer.nix merges:
+     ├─ Resolves circular dependencies
+     ├─ Merges Lua code (with markers)
+     ├─ Combines vimPackages
+     ├─ Gathers packages
+     └─ Produces single init.lua
+
+
+KEY COMPONENTS & THEIR ROLES
+─────────────────────────────────────────────────────────────────────────────
+
+  COMPONENT              LOCATION              PURPOSE
+  ─────────────────────  ──────────────────────────────────────────────────
+  Keymap Helpers         common/base.nix       keymap(), keymapd(), nkeymap()
+  Which-Key Groups       common/whichkey.nix   <leader>a, <leader>b, etc.
+  Notification System    options/tools/noice.nix  vim.notify(), routing
+  LSP Config             options/lsp/*.nix     Per-language setup
+  AI Agents              options/ai/agent.nix  Claude Code, Copilot, etc.
+  Snacks Hub             options/tools/snacks.nix  Picker, zen, indent, etc.
+  File Explorer          common/tree.nix       nvim-tree setup
+  Terminal Buffer        common/terminal.nix   Persistent terminal
+  Plugin Management      lib/importer.nix      Collects, includes plugins
+  Feature Filtering      lib/options.nix       Conditional by package
+
+
+ADDING NEW FUNCTIONALITY
+─────────────────────────────────────────────────────────────────────────────
+
+  SCENARIO 1: Add to existing module
+  ──────────────────────────────────
+  
+  File: options/tools/noice.nix
+  
+  lua = /*lua*/ ''
+    -- Existing code...
+    
+    keymapd("<leader>xx", "New Feature", function()
+      vim.notify("Working!")
+    end)
+  '';
+  
+  ✓ No other changes needed
+  ✓ Already imported by package
+
+
+  SCENARIO 2: Create new module
+  ──────────────────────────────
+  
+  1. Create: options/tools/my-feature.nix
+     { pkgs, ... }:
+     let
+       name = "tools.my-feature";
+       lua = /*lua*/ ''...''
+     in
+     { inherit name lua; ... }
+  
+  2. Update: packages/complete.nix
+     complete = [
+       "tools"
+       "tools.my-feature"  ◄─ Add here
+     ];
+  
+  3. Test: nix run .
+
+
+NOTIFICATION SYSTEM (NOICE)
+─────────────────────────────────────────────────────────────────────────────
+
+  Configured in: options/tools/noice.nix
+  
+  Send notification:
+    vim.notify("Message", vim.log.levels.INFO)
+  
+  Features:
+    • Bottom-aligned display
+    • Fade in/out animations
+    • 3-second timeout
+    • Treesitter highlighting
+    • LSP progress in mini window
+    • Customizable routing
+  
+  View history:
+    <leader>hn  (Show all details)
+
+
+KEYMAP SYSTEM
+─────────────────────────────────────────────────────────────────────────────
+
+  Helper Function          Mode      Special Feature
+  ──────────────────────   ────────  ──────────────────────────────
+  keymap(key, action)      normal    silent, noremap=false
+  keymapd(key, desc, act)  normal    + which-key description
+  nkeymap(key, action)     normal    noremap=true
+  tkeymap(key, action)     terminal  noremap=true
+  tkeymapd(key, desc, act) terminal  + which-key description
+  xkeymapd(key, desc, act) visual    + which-key description
+  vkeymapd(key, desc, act) v-block   + which-key description
+  ikeymapd(key, desc, act) insert    + which-key description
+  
+  ✓ Use keymapd() to auto-appear in which-key
+  ✓ Always provide descriptions for discoverable keymaps
+
+
+TESTING & DEBUGGING
+─────────────────────────────────────────────────────────────────────────────
+
+  Normal run:
+    nix run .
+  
+  Specific variant:
+    nix run .#minimal
+    nix run .#python
+    nix run .#ai
+  
+  Debug output (see generated Lua):
+    NVIM_DEBUG=1 nix run . | less
+  
+  Build standalone:
+    nix build .
+    ./result/bin/nvim
+
+
+KEY PATTERNS TO REMEMBER
+─────────────────────────────────────────────────────────────────────────────
+
+  ✓ Modules are declarative (pure Nix)
+  ✓ Lua code is embedded in Nix strings (/*lua*/ '' ... '')
+  ✓ All modules automatically merged and compiled
+  ✓ No runtime configuration files needed
+  ✓ All plugins pre-built into the binary
+  ✓ System packages available in PATH automatically
+  ✓ Which-key provides discoverable menus
+  ✓ Notifications via vim.notify()
+
+
+═══════════════════════════════════════════════════════════════════════════════
