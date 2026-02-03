@@ -235,6 +235,8 @@ let
         vim.api.nvim_set_current_buf(buf)
         vim.fn.termopen(agent.command)
         vim.api.nvim_buf_set_var(buf, agent.marker, true)
+        vim.api.nvim_buf_set_var(buf, "agent_name", agent.name)
+        register_agent_notification_handler(buf, agent.name)
         vim.cmd('startinsert')
       end
     end
@@ -344,6 +346,8 @@ let
         local agent = get_current_agent()
         vim.fn.termopen(agent.command)
         vim.api.nvim_buf_set_var(buf, agent.marker, true)
+        vim.api.nvim_buf_set_var(buf, "agent_name", agent.name)
+        register_agent_notification_handler(buf, agent.name)
         vim.cmd('startinsert')
       end
     end
@@ -794,6 +798,8 @@ let
         vim.api.nvim_win_set_buf(right_win, buf)
         vim.fn.termopen(agent.command)
         vim.api.nvim_buf_set_var(buf, agent.marker, true)
+        vim.api.nvim_buf_set_var(buf, "agent_name", agent.name)
+        register_agent_notification_handler(buf, agent.name)
       else
         -- Use existing agent terminal
         vim.api.nvim_win_set_buf(right_win, agent_buf)
