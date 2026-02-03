@@ -17,7 +17,16 @@ let
       debug = false,
 
       patterns = {
-        opencode = { "User:", "Waiting for input" },
+        opencode = {
+          "Permission required",  -- Permission dialog header
+          "Allow once",           -- Permission option
+          "Allow always",         -- Permission option
+          "Reject",               -- Permission option
+          "⇆ select",            -- Selection indicator
+          "enter confirm",        -- Confirmation indicator
+          "User:",                -- Direct user prompt
+          "Waiting for input"     -- Generic waiting message
+        },
         claude = {
           "❯",                    -- Selection arrow
           "%d+%.",                -- Numbered menu items (1., 2., 3., etc)
@@ -58,12 +67,18 @@ let
       end
 
       if config.use_system and check_notify_send() then
+        -- local cmd = string.format(
+        --   'notify-send -u critical -t %d -i dialog-information "%s" "%s"',
+        --   config.timeout_ms,
+        --   vim.fn.shellescape(agent_name),
+        --   vim.fn.shellescape(message)
+        -- )
         local cmd = string.format(
-          'notify-send -u normal -t %d -i dialog-information "%s" "%s"',
-          config.timeout_ms,
+          'notify-send -u critical -i dialog-information "%s" "%s"',
           vim.fn.shellescape(agent_name),
           vim.fn.shellescape(message)
         )
+
         vim.fn.system(cmd)
       else
         vim.notify(message, vim.log.levels.INFO, {
