@@ -10,7 +10,7 @@ let
   # Each agent should have: package, name, description, command
   agents = [
     {
-      package = pkgs.claude-code;
+      package = extra-pkgs.claude-code.claude-code;
       id = "claude";
       name = "Claude Code";
       description = "Anthropic's Claude AI assistant for coding";

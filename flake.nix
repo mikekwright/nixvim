@@ -8,9 +8,15 @@
     # Flake parts for 2025-11-12
     flake-parts.url = "github:hercules-ci/flake-parts/52a2caecc898d0b46b2b905f058ccc5081f842da";
 
-    # Opencode
-    # opencode.url = "github:nixos/nixpkgs/306ea70f9eb0fb4e040f8540e2deab32ed7e2055";
-    opencode.url = "github:nixos/nixpkgs/bde09022887110deb780067364a0818e89258968";
+    # Track: 
+    #   master - https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/op/opencode/package.nix
+    #   unstable - https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/op/opencode/package.nix
+    opencode.url = "github:nixos/nixpkgs/0b500c8d3a0ea31d46b88bc20d274e7c4c4931f4";
+
+    # Track:
+    #   master - https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/cl/claude-code/package.nix
+    #   unstable - https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/cl/claude-code/package.nix 
+    claude-code.url = "github:nixos/nixpkgs/d6bac3662d7682ae471411fa49bb3e7744a4a3da";
   };
 
   outputs = {
@@ -35,7 +41,8 @@
           config.allowUnfree = true;
         };
         extra-pkgs = {
-          opencode = import inputs.opencode {inherit system;};
+          opencode = import inputs.opencode {inherit system; };
+          claude-code = import inputs.claude-code { inherit system; config.allowUnfree = true; };
         };
 
         debug = import ./lib/debug.nix {inherit pkgs extra-pkgs system;};

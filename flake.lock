@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "claude-code": {
+      "locked": {
+        "lastModified": 1771487527,
+        "narHash": "sha256-9QP1jrGbz49GhshG3Q4gCbKPWe43oObzBiBiFbC0WNo=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "d6bac3662d7682ae471411fa49bb3e7744a4a3da",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "d6bac3662d7682ae471411fa49bb3e7744a4a3da",
+        "type": "github"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": "nixpkgs-lib"
@@ -52,22 +68,23 @@
     },
     "opencode": {
       "locked": {
-        "lastModified": 1768783163,
-        "narHash": "sha256-tLj4KcRDLakrlpvboTJDKsrp6z2XLwyQ4Zmo+w8KsY4=",
+        "lastModified": 1771257968,
+        "narHash": "sha256-O6pVICJbwU9zOQcrIszbbUWyx+J3xdY6NyMxCdbkme4=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "bde09022887110deb780067364a0818e89258968",
+        "rev": "0b500c8d3a0ea31d46b88bc20d274e7c4c4931f4",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "bde09022887110deb780067364a0818e89258968",
+        "rev": "0b500c8d3a0ea31d46b88bc20d274e7c4c4931f4",
         "type": "github"
       }
     },
     "root": {
       "inputs": {
+        "claude-code": "claude-code",
         "flake-parts": "flake-parts",
         "nixpkgs": "nixpkgs",
         "opencode": "opencode"
