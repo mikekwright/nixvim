@@ -3,14 +3,15 @@
 let
   name = "ai.agent";
 
-  # Import custom opencode wrapper
+  # Import custom wrappers
   opencode-agent = import ./agents/opencode-agent.nix { inherit pkgs extra-pkgs; };
+  claude-agent = import ./agents/claude-agent.nix { inherit pkgs extra-pkgs; };
 
   # Agent configuration list
   # Each agent should have: package, name, description, command
   agents = [
     {
-      package = extra-pkgs.claude-code.claude-code;
+      package = claude-agent;
       id = "claude";
       name = "Claude Code";
       description = "Anthropic's Claude AI assistant for coding";

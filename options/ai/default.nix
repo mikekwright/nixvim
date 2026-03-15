@@ -12,6 +12,7 @@ in
     # ./avante.nix
     ./agent.nix
 
+    ./claude.nix
     ./copilot.nix
     ./opencode.nix
   ];
