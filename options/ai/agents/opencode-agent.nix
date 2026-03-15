@@ -118,21 +118,23 @@ let
   opencode-wrapper = pkgs.writeShellScriptBin "opencode-nixvim" ''
     export FORCE_NIXVIM_OPENCODE=''${FORCE_NIXVIM_OPENCODE:-0}
 
+    echo $PWD
+
     # Check for system-installed opencode (excluding this wrapper)
     system_opencode=$(command -v opencode 2>/dev/null || true)
     if [[ "''${FORCE_NIXVIM_OPENCODE}" == "0" && -n "$system_opencode" && "$system_opencode" != "${placeholder "out"}/bin/opencode" ]]; then
-      if [[ ! -z "''${OPENCODE_SERVE_URL}" ]]; then
-        exec "$system_opencode" attach "''${OPENCODE_SERVE_URL}" "$@"
-      else
-        exec "$system_opencode" "$@"
-      fi
+      # if [[ ! -z "''${OPENCODE_SERVE_URL}" ]]; then
+      #   exec "$system_opencode" attach "''${OPENCODE_SERVE_URL}" --dir $PWD "$@"
+      # else
+      exec "$system_opencode" "$@"
+      # fi
     else
       export OPENCODE_CONFIG="${configFile}"
       export OPENCODE_NO_UPDATE_CHECK="1"
       export OPENCODE_LOG_LEVEL="info"
 
       if [[ ! -z "''${OPENCODE_SERVE_URL}" ]]; then
-        exec ${nixvimOpencode} attach "''${OPENCODE_SERVE_URL}" "$@"
+        exec ${nixvimOpencode} attach "''${OPENCODE_SERVE_URL}" --dir $PWD "$@"
       else
         # Fall back to bundled version
         exec ${nixvimOpencode} "$@"
