@@ -113,13 +113,30 @@ let
 
   configFile = pkgs.writeText "opencode-nvim-config.json" (builtins.toJSON opencodeConfig);
 
+  nixvimOpencode = "${extra-pkgs.opencode.opencode}/bin/opencode";
+
   opencode-wrapper = pkgs.writeShellScriptBin "opencode" ''
     export OPENCODE_CONFIG="${configFile}"
     export OPENCODE_NO_UPDATE_CHECK="1"
     export OPENCODE_LOG_LEVEL="info"
-    # export OPENCODE_CONFIG="/tmp/test.json"
+    export FORCE_NIXVIM_OPENCODE=''${FORCE_NIXVIM_OPENCODE:-0}
 
-    exec ${extra-pkgs.opencode.opencode}/bin/opencode "$@"
+    # Check for system-installed opencode (excluding this wrapper)
+    system_opencode=$(command -v opencode 2>/dev/null || true)
+    if [[ "''${FORCE_NIXVIM_OPENCODE}" == "0" && -n "$system_opencode" && "$system_opencode" != "${placeholder "out"}/bin/opencode" ]]; then
+      if [[ ! -z "''${OPENCODE_SERVE_URL}" ]]; then
+        exec "$system_opencode" attach "''${OPENCODE_SERVE_URL}" "$@"
+      else
+        exec "$system_opencode" "$@"
+      fi
+    else
+      if [[ ! -z "''${OPENCODE_SERVE_URL}" ]]; then
+        exec ${nixvimOpencode} attach "''${OPENCODE_SERVE_URL}" "$@"
+      else
+        # Fall back to bundled version
+        exec ${nixvimOpencode} "$@"
+      fi
+    fi
   '';
 in
   opencode-wrapper
