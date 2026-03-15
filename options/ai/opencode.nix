@@ -24,8 +24,6 @@ in
 {
   inherit name lua;
   
-
-  
   vimPackages = with pkgs.vimPlugins; 
     let
       local-opencode-nvim = pkgs.vimUtils.buildVimPlugin {

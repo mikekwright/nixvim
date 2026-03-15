@@ -115,10 +115,7 @@ let
 
   nixvimOpencode = "${extra-pkgs.opencode.opencode}/bin/opencode";
 
-  opencode-wrapper = pkgs.writeShellScriptBin "opencode" ''
-    export OPENCODE_CONFIG="${configFile}"
-    export OPENCODE_NO_UPDATE_CHECK="1"
-    export OPENCODE_LOG_LEVEL="info"
+  opencode-wrapper = pkgs.writeShellScriptBin "opencode-nixvim" ''
     export FORCE_NIXVIM_OPENCODE=''${FORCE_NIXVIM_OPENCODE:-0}
 
     # Check for system-installed opencode (excluding this wrapper)
@@ -130,6 +127,10 @@ let
         exec "$system_opencode" "$@"
       fi
     else
+      export OPENCODE_CONFIG="${configFile}"
+      export OPENCODE_NO_UPDATE_CHECK="1"
+      export OPENCODE_LOG_LEVEL="info"
+
       if [[ ! -z "''${OPENCODE_SERVE_URL}" ]]; then
         exec ${nixvimOpencode} attach "''${OPENCODE_SERVE_URL}" "$@"
       else
