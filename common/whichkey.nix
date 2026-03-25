@@ -21,6 +21,7 @@ let
       { "<leader>h", group = "Help", desc = "General Help" },
       --   l -- Language (LSP support)  
       { "<leader>l", group = "LSP", desc = "Commands for working with LSP" },
+      { "<leader>lm", group = "Markdown", desc = "Markdown tools" },
       --   d -- Debug
       { "<leader>d", group = "Debug", desc = "Debug commands" },
       --   r -- Run
@@ -52,7 +53,7 @@ let
       --   { "<leader>q", "<cmd>q<cr>", desc = "Quit" }, -- no need to specify mode since it's inherited
       --   { "<leader>w", "<cmd>w<cr>", desc = "Write" },
       -- }
-      -- { "<leader>le", group = "LSP: Tool Enabling", desc = "Toggle LSP Tooling" },
+      { "<leader>le", group = "LSP: Tool Enabling", desc = "Toggle LSP Tooling" },
     })
 
   keymapd("<leader>?", "Show all keys from whick-hey", function()
