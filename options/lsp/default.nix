@@ -319,6 +319,8 @@ in {
     ./nix.nix
     ./python.nix
     ./haskell.nix
+    ./elixir.nix
+    ./erlang.nix
     ./golang.nix
     ./kotlin.nix
     ./typescript.nix

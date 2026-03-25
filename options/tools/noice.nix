@@ -20,6 +20,7 @@ let
     "python"
     "rust"
     "d"
+    "elixir"
     "erlang"
     "fish"
     "go"
@@ -318,4 +319,3 @@ in
     nvim-treesitter
   ] ++ (map (p: pkgs.vimPlugins.nvim-treesitter-parsers.${p}) treesitter-parsers);
 }
-

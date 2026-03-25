@@ -7,6 +7,8 @@ lib.makeIncludes
     "lsp.markdown"
     "lsp.formatting"
     "lsp.dap"
+    "lsp.elixir"
+    "lsp.erlang"
     "lsp.golang"
     "lsp.haskell"
     "lsp.kotlin"
