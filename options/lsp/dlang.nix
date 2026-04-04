@@ -15,28 +15,88 @@ let
     };
   };
 
-  lua = /*lua*/ ''
-    -- Configure serve-d LSP using vim.lsp.config (Neovim 0.11+)
-    vim.lsp.config('serve_d', {
-      cmd = { "${pkgs.serve-d}/bin/serve-d" },
-      filetypes = { "d", "di" },
-      root_markers = { "dub.json", "dub.sdl", ".git" },
-      single_file_support = true,
-      -- Server-specific settings for serve-d
-      settings = {
-        d = {
-          -- Enable auto-formatting
-          enableFormatting = true,
-          -- Enable code actions
-          enableCodeActions = true,
-          -- Enable auto-imports
-          enableAutoImports = true,
-        },
-      },
-    })
+  lua = /* lua */ ''
+        local register_debug_language = _G.register_debug_language or function(spec)
+          if type(spec) ~= 'table' or type(spec.id) ~= 'string' then
+            return
+          end
 
-    -- Enable serve-d LSP
-    vim.lsp.enable('serve_d')
+          _G.debug_language_registry = _G.debug_language_registry or {}
+          _G.debug_filetype_registry = _G.debug_filetype_registry or {}
+          _G.debug_language_registry[spec.id] = spec
+
+          for _, filetype in ipairs(spec.filetypes or {}) do
+            _G.debug_filetype_registry[filetype] = spec.id
+          end
+        end
+
+        register_debug_language({
+          id = 'dlang',
+          label = 'D',
+          filetypes = { 'd', 'di' },
+          root_markers = { 'dub.json', 'dub.sdl' },
+          launch_types = { 'lldb', 'cppdbg', 'dlang' },
+          guidance = table.concat({
+            'D debugging:',
+            '  - D debugging usually depends on an LLDB or GDB adapter plus your dub or ldc build output.',
+            '  - Use <leader>dC to create project-local config and point it at your built executable.',
+            '  - Build the project first so the binary exists under your selected build output path.',
+          }, '\n'),
+          templates = {
+            ['dap.lua'] = [=[return function(ctx)
+      local dap = ctx.dap
+      local root = ctx.root
+
+      dap.configurations.d = {
+        {
+          type = "lldb",
+          request = "launch",
+          name = "D executable",
+          program = root .. "/bin/your-app",
+          cwd = root,
+          stopOnEntry = false,
+        },
+      }
+    end
+    ]=],
+            ['launch.json'] = [=[{
+      "version": "0.2.0",
+      "configurations": [
+        {
+          "name": "D executable",
+          "type": "lldb",
+          "request": "launch",
+          "program": "''${workspaceFolder}/bin/your-app",
+          "cwd": "''${workspaceFolder}",
+          "stopOnEntry": false
+        }
+      ]
+    }
+    ]=],
+          },
+        })
+
+        -- Configure serve-d LSP using vim.lsp.config (Neovim 0.11+)
+        vim.lsp.config('serve_d', {
+          cmd = { "${pkgs.serve-d}/bin/serve-d" },
+          filetypes = { "d", "di" },
+          root_markers = { "dub.json", "dub.sdl", ".git" },
+          single_file_support = true,
+          -- Server-specific settings for serve-d
+          settings = {
+            d = {
+              -- Enable auto-formatting
+              enableFormatting = true,
+              -- Enable code actions
+              enableCodeActions = true,
+              -- Enable auto-imports
+              enableAutoImports = true,
+            },
+          },
+        })
+
+        -- Enable serve-d LSP
+        vim.lsp.enable('serve_d')
   '';
 in
 {
