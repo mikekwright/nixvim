@@ -1,7 +1,6 @@
 ---
 description: Agent responsible for writing code and implementing solutions
 mode: subagent
-model: openai/codex-mini-latest
 temperature: 0.4
 permission:
   edit: allow

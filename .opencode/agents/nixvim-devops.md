@@ -1,7 +1,6 @@
 ---
 description: Agent responsible for builds, project setup and command scripts for working with a Nix project.
 mode: subagent
-model: openai/codex-mini-latest
 temperature: 0.2
 permission:
   edit: allow

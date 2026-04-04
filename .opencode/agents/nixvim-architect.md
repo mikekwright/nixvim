@@ -1,7 +1,6 @@
 ---
 description: Agent responsible for designing the architecture and maintaining the final solution architecture and creating plans
 mode: subagent
-model: openai/gpt-5.4
 temperature: 0.2
 permission:
   edit: allow

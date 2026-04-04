@@ -1,7 +1,6 @@
 ---
 description: Team lead for all Nix project management and development of nixvim
 mode: primary
-model: openai/gpt-5.4
 temperature: 0.1
 permission:
   edit: allow
