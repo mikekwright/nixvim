@@ -1,24 +1,24 @@
 { lib, ... }:
 
-lib.makeIncludes
-{
+lib.makeIncludes {
   complete = [
-    "lsp"
+    "lsp.coc"
+    "lsp.coc.elixir"
+    "lsp.coc.erlang"
+    "lsp.coc.golang"
+    "lsp.coc.haskell"
+    "lsp.coc.kotlin"
+    "lsp.coc.markdown"
+    "lsp.coc.nix"
+    "lsp.coc.python"
+    "lsp.coc.rust"
+    "lsp.coc.typescript"
+    "lsp.coc.zig"
+
     "lsp.markdown"
     "lsp.formatting"
     "lsp.dap"
-    "lsp.elixir"
-    "lsp.erlang"
-    "lsp.golang"
-    "lsp.haskell"
-    "lsp.kotlin"
-    "lsp.markdown"
     "lsp.neotest"
-    "lsp.nix"
-    "lsp.python"
-    "lsp.rust"
-    "lsp.typescript"
-    "lsp.zig"
 
     "tools"
     "tools.agent-notifications"
@@ -34,7 +34,7 @@ lib.makeIncludes
 
     "ai"
     "ai.agent"
-    "ai.copilot"
+    "ai.copilot-coc"
     "ai.opencode"
   ];
 }

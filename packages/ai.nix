@@ -1,31 +1,31 @@
 { lib, ... }:
 
-lib.makeIncludes
-{
+lib.makeIncludes {
   extensions = [
-    "lsp"
+    "lsp.coc"
+    "lsp.coc.elixir"
+    "lsp.coc.erlang"
+    "lsp.coc.golang"
+    "lsp.coc.haskell"
+    "lsp.coc.kotlin"
+    "lsp.coc.markdown"
+    "lsp.coc.nix"
+    "lsp.coc.python"
+    "lsp.coc.rust"
+    "lsp.coc.typescript"
+    "lsp.coc.zig"
+
     "lsp.markdown"
     "lsp.formatting"
     "lsp.dap"
-    "lsp.elixir"
-    "lsp.erlang"
-    "lsp.golang"
-    "lsp.haskell"
-    "lsp.kotlin"
-    "lsp.markdown"
     "lsp.neotest"
-    "lsp.nix"
-    "lsp.python"
-    "lsp.rust"
-    "lsp.typescript"
-    "lsp.zig"
   ];
 
   complete = [
     "ai"
     # "ai.claude"
     "ai.copilot-cli"
-    "ai.copilot"
+    "ai.copilot-coc"
 
     "tools"
     "tools.agent-notifications"

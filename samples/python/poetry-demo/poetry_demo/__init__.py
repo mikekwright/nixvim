@@ -10,5 +10,4 @@ def test():
         pass
 
     app = fastapi.FastAPI()
-
     print(app)

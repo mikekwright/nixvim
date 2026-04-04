@@ -68,6 +68,11 @@ any of these packages directly using Nix:
   - Complete AI tooling but excludes some specialized tools
   - Balanced between features and startup time
 
+- **coc**: Alternative `coc.nvim` completion/LSP backend
+  - Preserves the existing tools and AI modules while swapping the core completion/LSP stack
+  - Uses CoC extensions, including `coc-copilot`, for autocomplete
+  - Good for testing the CoC path without changing the default packages
+
 **Running from GitHub**:
 
 You can run any package variant directly from the GitHub repository without cloning:
@@ -80,6 +85,7 @@ nix run github:mikekwright/nixvim
 nix run github:mikekwright/nixvim#minimal
 nix run github:mikekwright/nixvim#python
 nix run github:mikekwright/nixvim#ai
+nix run github:mikekwright/nixvim#coc
 ```
 
 **Local Development**:
@@ -94,6 +100,7 @@ nix run .
 nix run .#minimal
 nix run .#python
 nix run .#ai
+nix run .#coc
 
 # Enable debug output to see generated Lua config
 NVIM_DEBUG=1 nix run .
@@ -225,6 +232,9 @@ globally.
 
 GitHub Copilot integration provides AI-powered code suggestions through the completion system. Copilot runs as a background
 service and contributes suggestions to the unified completion menu alongside LSP and other sources.
+
+An alternative `coc.nvim` backend is also available through `nix run .#coc`. That variant uses `coc-copilot` instead of the
+default Blink/Copilot integration path.
 
 **Configuration**:
 - Copilot suggestions appear in the completion menu with high priority

@@ -1,12 +1,11 @@
 { lib, ... }:
 
-lib.makeIncludes
-{
+lib.makeIncludes {
   complete = [
-    "lsp"
+    "lsp.coc"
+    "lsp.coc.python"
     "lsp.markdown"
     "lsp.formatting"
-    "lsp.python"
 
     "tools"
     "tools.bookmarks"
@@ -21,6 +20,6 @@ lib.makeIncludes
 
     "ai"
     "ai.claude"
-    "ai.copilot"
+    "ai.copilot-coc"
   ];
 }

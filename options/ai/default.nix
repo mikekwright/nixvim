@@ -14,6 +14,7 @@ in
 
     ./claude.nix
     ./copilot.nix
+    ./copilot-coc.nix
     ./opencode.nix
   ];
 }

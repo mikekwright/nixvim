@@ -1,4 +1,9 @@
-{ pkgs, lib, extra-pkgs, ... }:
+{
+  pkgs,
+  lib,
+  extra-pkgs,
+  ...
+}:
 
 let
   name = "ai.agent";
@@ -65,7 +70,7 @@ let
   );
 
   # Unified AI agent module supporting multiple AI assistants
-  lua = /*lua*/ ''
+  lua = /* lua */ ''
     -- AI Agent Configuration Module
     -- This module manages multiple AI agents and provides a unified interface
 
@@ -844,10 +849,12 @@ let
     end
 
     -- Register agent prompt completion disable check
-    register_completion_disable_check(function()
-      local ok, is_agent_prompt = pcall(vim.api.nvim_buf_get_var, 0, "is_agent_prompt")
-      return ok and is_agent_prompt
-    end, "AI Agent prompt window")
+    if type(register_completion_disable_check) == 'function' then
+      register_completion_disable_check(function()
+        local ok, is_agent_prompt = pcall(vim.api.nvim_buf_get_var, 0, "is_agent_prompt")
+        return ok and is_agent_prompt
+      end, "AI Agent prompt window")
+    end
 
     -- Initialize agent configuration on startup
     init_agent_config()
