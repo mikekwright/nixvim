@@ -1,12 +1,10 @@
 { lib, ... }:
 
-lib.makeIncludes
-{
+lib.makeIncludes {
   extensions = [
     "lsp"
     "lsp.markdown"
     "lsp.formatting"
-    "lsp.dap"
     "lsp.elixir"
     "lsp.erlang"
     "lsp.golang"
