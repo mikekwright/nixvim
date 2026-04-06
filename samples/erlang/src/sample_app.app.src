@@ -1,0 +1,7 @@
+{application, sample_app,
+ [{description, "Sample Erlang application"},
+  {vsn, "0.1.0"},
+  {modules, [sample_app]},
+  {registered, []},
+  {applications, [kernel, stdlib]},
+  {env, []}]}.

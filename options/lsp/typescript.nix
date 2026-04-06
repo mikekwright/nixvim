@@ -40,6 +40,7 @@ let
           name = "Node current file",
       program = "''${file}",
           cwd = root,
+          console = "integratedTerminal",
           sourceMaps = true,
         },
       }
@@ -57,6 +58,7 @@ let
           "request": "launch",
           "program": "''${file}",
           "cwd": "''${workspaceFolder}",
+          "console": "integratedTerminal",
           "sourceMaps": true
         }
       ]
@@ -88,6 +90,7 @@ let
           name = "TypeScript current file",
       program = "''${file}",
           cwd = root,
+          console = "integratedTerminal",
           sourceMaps = true,
         },
       }
@@ -105,6 +108,7 @@ let
           "request": "launch",
           "program": "''${file}",
           "cwd": "''${workspaceFolder}",
+          "console": "integratedTerminal",
           "sourceMaps": true
         }
       ]
@@ -135,6 +139,7 @@ let
                 name = 'Node: Current file',
                 program = "''${file}",
                 cwd = "''${workspaceFolder}",
+                console = 'integratedTerminal',
                 sourceMaps = true,
               },
               {

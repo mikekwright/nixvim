@@ -54,6 +54,7 @@ let
           name = "D executable",
           program = root .. "/bin/your-app",
           cwd = root,
+          runInTerminal = true,
           stopOnEntry = false,
         },
       }
@@ -68,6 +69,7 @@ let
           "request": "launch",
           "program": "''${workspaceFolder}/bin/your-app",
           "cwd": "''${workspaceFolder}",
+          "runInTerminal": true,
           "stopOnEntry": false
         }
       ]

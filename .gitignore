@@ -4,3 +4,5 @@ result*
 target/
 .claude
 **/*.local.*
+.zig-cache
+

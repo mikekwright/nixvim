@@ -42,6 +42,7 @@ let
           name = "Mix task",
           task = "phx.server",
           projectDir = root,
+          console = "integratedTerminal",
         },
       }
     end
@@ -54,7 +55,8 @@ let
           "type": "mix_task",
           "request": "launch",
           "task": "phx.server",
-          "projectDir": "''${workspaceFolder}"
+          "projectDir": "''${workspaceFolder}",
+          "console": "integratedTerminal"
         }
       ]
     }

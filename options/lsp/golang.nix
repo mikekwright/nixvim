@@ -42,6 +42,7 @@ let
           name = "Project package",
           program = root,
           cwd = root,
+          console = "integratedTerminal",
         },
       }
     end
@@ -54,7 +55,8 @@ let
           "type": "go",
           "request": "launch",
           "program": "''${workspaceFolder}",
-          "cwd": "''${workspaceFolder}"
+          "cwd": "''${workspaceFolder}",
+          "console": "integratedTerminal"
         }
       ]
     }
@@ -84,6 +86,7 @@ let
                   request = 'launch',
                   program = "''${file}",
                   cwd = "''${workspaceFolder}",
+                  console = 'integratedTerminal',
                 },
                 {
                   type = 'go',
@@ -91,6 +94,7 @@ let
                   request = 'launch',
                   program = "''${workspaceFolder}",
                   cwd = "''${workspaceFolder}",
+                  console = 'integratedTerminal',
                 },
                 {
                   type = 'go',
@@ -99,6 +103,7 @@ let
                   mode = 'test',
                   program = "''${file}",
                   cwd = "''${workspaceFolder}",
+                  console = 'integratedTerminal',
                 },
               }
             end

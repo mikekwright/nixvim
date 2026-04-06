@@ -42,6 +42,7 @@ let
           name = "Zig executable",
           program = root .. "/zig-out/bin/your-app",
           cwd = root,
+          runInTerminal = true,
           stopOnEntry = false,
         },
       }
@@ -56,6 +57,7 @@ let
           "request": "launch",
           "program": "''${workspaceFolder}/zig-out/bin/your-app",
           "cwd": "''${workspaceFolder}",
+          "runInTerminal": true,
           "stopOnEntry": false
         }
       ]
@@ -112,6 +114,7 @@ let
                 cwd = function()
                   return vim.fn.getcwd()
                 end,
+                runInTerminal = true,
                 stopOnEntry = false,
               },
             }

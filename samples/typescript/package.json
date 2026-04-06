@@ -1,0 +1,13 @@
+{
+  "name": "nixvim-typescript-sample",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "npm run build && node dist/index.js",
+    "debug": "npm run build && node --inspect-brk dist/index.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0"
+  }
+}

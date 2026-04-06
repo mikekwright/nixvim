@@ -42,6 +42,7 @@ let
           name = "Erlang node",
           cwd = root,
           program = root .. "/_build/default/rel/app/bin/app",
+          console = "integratedTerminal",
         },
       }
     end
@@ -54,7 +55,8 @@ let
           "type": "erlang",
           "request": "launch",
           "cwd": "''${workspaceFolder}",
-          "program": "''${workspaceFolder}/_build/default/rel/app/bin/app"
+          "program": "''${workspaceFolder}/_build/default/rel/app/bin/app",
+          "console": "integratedTerminal"
         }
       ]
     }

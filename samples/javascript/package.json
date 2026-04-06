@@ -1,0 +1,10 @@
+{
+  "name": "nixvim-javascript-sample",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/index.js",
+    "debug": "node --inspect-brk src/index.js"
+  }
+}

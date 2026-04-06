@@ -46,6 +46,7 @@ let
           name = "Haskell executable",
           workspace = root,
           startup = root .. "/app/Main.hs",
+          terminal = "integrated",
           stopOnEntry = false,
         },
       }
@@ -60,6 +61,7 @@ let
           "request": "launch",
           "workspace": "''${workspaceFolder}",
           "startup": "''${workspaceFolder}/app/Main.hs",
+          "terminal": "integrated",
           "stopOnEntry": false
         }
       ]

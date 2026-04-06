@@ -42,6 +42,7 @@ let
           cwd = root,
           mainClass = "MainKt",
           projectName = vim.fn.fnamemodify(root, ':t'),
+          console = "integratedTerminal",
         },
       }
     end
@@ -55,7 +56,8 @@ let
           "request": "launch",
           "cwd": "''${workspaceFolder}",
           "mainClass": "MainKt",
-          "projectName": "your-project"
+          "projectName": "your-project",
+          "console": "integratedTerminal"
         }
       ]
     }

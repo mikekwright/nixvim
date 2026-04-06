@@ -41,6 +41,7 @@ let
           name = "Project binary",
           program = root .. "/target/debug/your-binary",
           cwd = root,
+          runInTerminal = true,
           stopOnEntry = false,
         },
       }
@@ -55,6 +56,7 @@ let
           "request": "launch",
           "program": "''${workspaceFolder}/target/debug/your-binary",
           "cwd": "''${workspaceFolder}",
+          "runInTerminal": true,
           "stopOnEntry": false
         }
       ]
@@ -123,6 +125,7 @@ let
                 cwd = function()
                   return vim.fn.getcwd()
                 end,
+                runInTerminal = true,
                 stopOnEntry = false,
               },
               {
@@ -135,6 +138,7 @@ let
                 cwd = function()
                   return vim.fn.getcwd()
                 end,
+                runInTerminal = true,
                 stopOnEntry = false,
               },
             }
