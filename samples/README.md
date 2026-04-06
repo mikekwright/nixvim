@@ -19,4 +19,4 @@ Available sample projects:
 - `typescript/` TypeScript package sample
 - `zig/` Zig build sample
 
-Sample launch configurations for running and debugging these projects live in `../.vscode/launch.json`.
+The repository root `.nvim/dap.lua` contains sample DAP configurations for the projects in this directory.
