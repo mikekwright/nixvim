@@ -354,6 +354,27 @@ let
       end, { buffer = buf, silent = true, desc = 'Close debug guidance' })
     end
 
+    local function goto_current_debug_location()
+      local session = dap.session()
+      if not session then
+        vim.notify('No active debug session', vim.log.levels.WARN)
+        return
+      end
+
+      local frame = session.current_frame
+      if not frame or not frame.source or not frame.source.path then
+        vim.notify('No paused debug location available', vim.log.levels.WARN)
+        return
+      end
+
+      local path = frame.source.path
+      local line = frame.line or 1
+
+      vim.cmd('edit ' .. vim.fn.fnameescape(path))
+      vim.api.nvim_win_set_cursor(0, { line, 0 })
+      vim.cmd('normal! zz')
+    end
+
     vim.api.nvim_create_user_command('DapLoadProjectConfig', function()
       load_project_debug_config(vim.api.nvim_get_current_buf(), true)
     end, { desc = 'Reload project DAP config files' })
@@ -376,7 +397,7 @@ let
     keymapd('<leader>db', 'Debug: Toggle breakpoint', function()
       dap.toggle_breakpoint()
     end)
-    keymapd('<leader>do', 'Debug: Step over', function()
+    keymapd('<leader>dn', 'Debug: Step over', function()
       dap.step_over()
     end)
     keymapd('<leader>di', 'Debug: Step into', function()
@@ -397,6 +418,7 @@ let
       end
     end)
     keymapd('<leader>dg', 'Debug: Show guidance', show_debug_guidance)
+    keymapd('<leader>dG', 'Debug: Go to current location', goto_current_debug_location)
     keymapd('<leader>dC', 'Debug: Create project config', create_project_debug_config)
   '';
 in
