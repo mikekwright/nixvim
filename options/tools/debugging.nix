@@ -425,6 +425,10 @@ in
 {
   inherit name lua;
 
+  imports = [
+    ./debugging-breakpoints.nix
+  ];
+
   vimPackages = with pkgs.vimPlugins; [
     nvim-dap
     nvim-dap-ui
