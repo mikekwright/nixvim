@@ -7,7 +7,7 @@ let
   #  builtins.concatStringsSep "," (map (f: "\"${f}\"") treesitter-parsers)
   #);
 
-  lua = debug.traceResult /*lua*/ ''
+  lua = debug.traceResult /* lua */ ''
     require("lualine").setup({
       options = {
         icons_enabled = true
@@ -46,6 +46,7 @@ in
     ./db.nix
 
     ./debugging.nix
+    ./project-extensions.nix
     ./testing.nix
 
     ./bookmarks.nix
@@ -68,9 +69,11 @@ in
           sha256 = "h0kPue5Eqd5aeu4VoLH45pF0DmWWo1d8SnLICSQ63zc=";
         };
       };
-    in [
+    in
+    [
       comment-nvim
-    ] ++ (with pkgs.vimPlugins; [
+    ]
+    ++ (with pkgs.vimPlugins; [
       lualine-nvim
       lualine-lsp-progress
 
