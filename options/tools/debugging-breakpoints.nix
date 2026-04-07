@@ -289,7 +289,7 @@ let
       desc = 'Load project debug breakpoints on buffer open',
     })
 
-    keymapd('<leader>dBB', 'Debug breakpoints: Picker', pick_project_breakpoint)
+    keymapd('<leader>dBb', 'Debug breakpoints: Picker', pick_project_breakpoint)
     keymapd('<leader>dBC', 'Debug breakpoints: Clear all', clear_project_breakpoints)
   '';
 in
