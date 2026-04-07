@@ -39,27 +39,42 @@ let
           guidance = table.concat({
             'D debugging:',
             '  - D debugging usually depends on an LLDB or GDB adapter plus your dub or ldc build output.',
-            '  - Use <leader>dC to create project-local .nvim/dap.lua and point it at your built executable.',
-            '  - Build the project first so the binary exists under your selected build output path.',
+            '  - Use <leader>dC to create project-local .nvim/dap.lua and wire in a build step before launch.',
+            '  - Update the output binary path to match your dub configuration.',
           }, '\n'),
           templates = {
             ['dap.lua'] = [=[return function(ctx)
-          local dap = ctx.dap
-          local root = ctx.root
+              local dap = ctx.dap
+              local root = ctx.root
+              local project_dir = root
+              local binary = "bin/your-app"
+              local project_name = "D executable"
 
-          dap.configurations.d = {
-            {
-              type = "lldb",
-              request = "launch",
-              name = "D executable",
-              program = root .. "/bin/your-app",
-              cwd = root,
-          runInTerminal = true,
-          stopOnEntry = false,
-        },
-      }
-    end
-    ]=],
+              dap.configurations.d = {
+                {
+                  type = "lldb",
+                  request = "launch",
+                  name = project_name,
+                  cwd = project_dir,
+                  program = function()
+                    vim.notify("Building " .. project_name .. "...")
+                    local result = vim.system(
+                      { "dub", "build", "--build=debug" },
+                      { cwd = project_dir, text = true }
+                    ):wait()
+
+                    if result.code ~= 0 then
+                      error("dub build failed:\n" .. (result.stderr or result.stdout or ""))
+                    end
+
+                    return project_dir .. "/" .. binary
+                  end,
+                  runInTerminal = false,
+                  stopOnEntry = false,
+                },
+              }
+            end
+            ]=],
           },
         })
 
@@ -102,6 +117,7 @@ in
 
     # DUB: Package and build manager for D programs and libraries
     dub
+    gdb
 
     # LDC: LLVM-based D compiler (alternative to DMD, often faster)
     ldc

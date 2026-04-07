@@ -29,26 +29,41 @@ let
             '  - Build the crate with cargo so the target binary exists.',
             '  - Add a codelldb or lldb-vscode dap adapter for this machine/project.',
             '  - Project-local overrides live in .nvim/dap.lua.',
-            '  - Start with <leader>dc after selecting the binary or launch configuration.',
+            '  - Build before launch when your project produces a known binary path.',
           }, '\n'),
           templates = {
             ['dap.lua'] = [=[return function(ctx)
-      local dap = ctx.dap
-      local root = ctx.root
+              local dap = ctx.dap
+              local root = ctx.root
+              local project_dir = root
+              local binary = "target/debug/your-binary"
+              local project_name = "Project binary"
 
-          dap.configurations.rust = {
-            {
-              type = "codelldb",
-              request = "launch",
-              name = "Project binary",
-              program = root .. "/target/debug/your-binary",
-              cwd = root,
-              runInTerminal = true,
-          stopOnEntry = false,
-        },
-      }
-    end
-    ]=],
+                  dap.configurations.rust = {
+                    {
+                      type = "codelldb",
+                      request = "launch",
+                      name = project_name,
+                      cwd = project_dir,
+                      program = function()
+                        vim.notify("Building " .. project_name .. "...")
+                        local result = vim.system(
+                          { "cargo", "build" },
+                          { cwd = project_dir, text = true }
+                        ):wait()
+
+                        if result.code ~= 0 then
+                          error("cargo build failed:\n" .. (result.stderr or result.stdout or ""))
+                        end
+
+                        return project_dir .. "/" .. binary
+                      end,
+                      runInTerminal = false,
+                  stopOnEntry = false,
+                },
+              }
+            end
+            ]=],
           },
         })
 

@@ -27,21 +27,38 @@ let
       guidance = table.concat({
         'Elixir debugging:',
         '  - Elixir debugging depends on a project-specific BEAM debug adapter setup.',
-        '  - Use <leader>dC to create project-local .nvim/dap.lua and point it at your Elixir adapter or task entrypoint.',
+        '  - Use <leader>dC to create project-local .nvim/dap.lua and compile with Mix before launch.',
         '  - Start from the Mix project root so mix.exs and your runtime environment are available.',
       }, '\n'),
       templates = {
         ['dap.lua'] = [=[return function(ctx)
           local dap = ctx.dap
           local root = ctx.root
+          local project_dir = root
+          local project_name = "Mix task"
+
+          local function build_project()
+            vim.notify("Compiling " .. project_name .. "...")
+            local result = vim.system(
+              { "mix", "compile" },
+              { cwd = project_dir, text = true }
+            ):wait()
+
+            if result.code ~= 0 then
+              error("mix compile failed:\n" .. (result.stderr or result.stdout or ""))
+            end
+          end
 
           dap.configurations.elixir = {
             {
               type = "mix_task",
               request = "launch",
-              name = "Mix task",
-              task = "phx.server",
-              projectDir = root,
+              name = project_name,
+              task = function()
+                build_project()
+                return "phx.server"
+              end,
+              projectDir = project_dir,
               console = "integratedTerminal",
             },
           }

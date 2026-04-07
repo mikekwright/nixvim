@@ -27,26 +27,40 @@ let
           guidance = table.concat({
             'Erlang debugging:',
             '  - Erlang debugging is adapter-specific and usually tied to your rebar or runtime setup.',
-            '  - Use <leader>dC to create project-local .nvim/dap.lua and point it at your Erlang debug adapter.',
+            '  - Use <leader>dC to create project-local .nvim/dap.lua and compile with rebar before launch.',
             '  - Start from the project root so rebar.config and compiled beams are available.',
           }, '\n'),
           templates = {
             ['dap.lua'] = [=[return function(ctx)
-          local dap = ctx.dap
-          local root = ctx.root
+              local dap = ctx.dap
+              local root = ctx.root
+              local project_dir = root
+              local project_name = "Erlang node"
 
-          dap.configurations.erlang = {
-            {
-              type = "erlang",
-              request = "launch",
-              name = "Erlang node",
-              cwd = root,
-              program = root .. "/_build/default/rel/app/bin/app",
-          console = "integratedTerminal",
-        },
-      }
-    end
-    ]=],
+              dap.configurations.erlang = {
+                {
+                  type = "erlang",
+                  request = "launch",
+                  name = project_name,
+                  cwd = project_dir,
+                  program = function()
+                    vim.notify("Compiling " .. project_name .. "...")
+                    local result = vim.system(
+                      { "rebar3", "compile" },
+                      { cwd = project_dir, text = true }
+                    ):wait()
+
+                    if result.code ~= 0 then
+                      error("rebar3 compile failed:\n" .. (result.stderr or result.stdout or ""))
+                    end
+
+                    return project_dir .. "/_build/default/rel/app/bin/app"
+                  end,
+                  console = "integratedTerminal",
+                },
+              }
+            end
+            ]=],
           },
         })
 
@@ -62,5 +76,6 @@ in
   packages = with pkgs; [
     erlang-language-platform
     erlang
+    rebar3
   ];
 }

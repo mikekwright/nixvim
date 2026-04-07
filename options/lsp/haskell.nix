@@ -26,32 +26,46 @@ let
                 guidance = table.concat({
                   'Haskell debugging:',
                   '  - Haskell DAP support is project-specific and usually depends on a haskell-debug-adapter setup.',
-                  '  - Use <leader>dC to create a project-local .nvim/dap.lua and point it at your adapter.',
+                  '  - Use <leader>dC to create a project-local .nvim/dap.lua and build before launch.',
                   '  - Build the project first so the target binary and package context exist.',
                 }, '\n'),
                 templates = {
                   ['dap.lua'] = [=[return function(ctx)
-          local dap = ctx.dap
-          local root = ctx.root
+                    local dap = ctx.dap
+                    local root = ctx.root
+                    local project_dir = root
+                    local project_name = "Haskell executable"
 
-          dap.adapters.haskell = {
-            type = "executable",
-            command = "haskell-debug-adapter",
-          }
+                    local function build_project()
+                      local command = vim.uv.fs_stat(project_dir .. "/stack.yaml") and { "stack", "build" } or { "cabal", "build" }
+                      vim.notify("Building " .. project_name .. "...")
+                      local result = vim.system(command, { cwd = project_dir, text = true }):wait()
+                      if result.code ~= 0 then
+                        error(table.concat(command, " ") .. " failed:\n" .. (result.stderr or result.stdout or ""))
+                      end
+                    end
 
-          dap.configurations.haskell = {
-            {
-              type = "haskell",
-              request = "launch",
-              name = "Haskell executable",
-              workspace = root,
-              startup = root .. "/app/Main.hs",
-              terminal = "integrated",
-              stopOnEntry = false,
-            },
-          }
-    end
-    ]=],
+                    dap.adapters.haskell = {
+                      type = "executable",
+                      command = "haskell-debug-adapter",
+                    }
+
+                    dap.configurations.haskell = {
+                      {
+                        type = "haskell",
+                        request = "launch",
+                        name = project_name,
+                        workspace = project_dir,
+                        startup = function()
+                          build_project()
+                          return project_dir .. "/app/Main.hs"
+                        end,
+                        terminal = "integrated",
+                        stopOnEntry = false,
+                      },
+                    }
+                  end
+                  ]=],
                 },
               })
 
@@ -73,5 +87,6 @@ in
     haskell-language-server
     cabal-install
     ghc
+    stack
   ];
 }

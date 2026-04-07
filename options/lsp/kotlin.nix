@@ -26,27 +26,41 @@ let
           guidance = table.concat({
             'Kotlin debugging:',
             '  - Kotlin usually uses a JVM debug adapter and a Gradle or Maven project entrypoint.',
-            '  - Use <leader>dC to create project-local .nvim/dap.lua and point it at your Java/Kotlin debug adapter.',
+            '  - Use <leader>dC to create project-local .nvim/dap.lua and build before launch.',
             '  - Build or import the project first so the runtime classpath and main class are known.',
           }, '\n'),
           templates = {
             ['dap.lua'] = [=[return function(ctx)
-          local dap = ctx.dap
-          local root = ctx.root
+              local dap = ctx.dap
+              local root = ctx.root
+              local project_dir = root
+              local project_name = "Kotlin main class"
 
-          dap.configurations.kotlin = {
-            {
-              type = "java",
-              request = "launch",
-              name = "Kotlin main class",
-              cwd = root,
-              mainClass = "MainKt",
-          projectName = vim.fn.fnamemodify(root, ':t'),
-          console = "integratedTerminal",
-        },
-      }
-    end
-    ]=],
+              local function build_project()
+                local command = vim.uv.fs_stat(project_dir .. "/gradlew") and { "./gradlew", "classes" } or { "gradle", "classes" }
+                vim.notify("Building " .. project_name .. "...")
+                local result = vim.system(command, { cwd = project_dir, text = true }):wait()
+                if result.code ~= 0 then
+                  error(table.concat(command, " ") .. " failed:\n" .. (result.stderr or result.stdout or ""))
+                end
+              end
+
+              dap.configurations.kotlin = {
+                {
+                  type = "java",
+                  request = "launch",
+                  name = project_name,
+                  cwd = project_dir,
+                  mainClass = function()
+                    build_project()
+                    return "MainKt"
+                  end,
+                  projectName = vim.fn.fnamemodify(project_dir, ':t'),
+                  console = "integratedTerminal",
+                },
+              }
+            end
+            ]=],
           },
         })
 

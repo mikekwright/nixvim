@@ -28,26 +28,43 @@ let
             'Go debugging:',
             '  - Install delve (`dlv`) and set up a dap adapter/configuration.',
             '  - Project-local overrides live in .nvim/dap.lua.',
-            '  - Debug the current package or test from the module root with <leader>dc.',
+            '  - Build a debug-friendly binary before launch when your project needs explicit build steps.',
             '  - Use <leader>db for breakpoints and <leader>du for scopes, stacks, and watches.',
           }, '\n'),
           templates = {
             ['dap.lua'] = [=[return function(ctx)
-      local dap = ctx.dap
-      local root = ctx.root
+              local dap = ctx.dap
+              local root = ctx.root
+              local project_dir = root
+              local binary = project_dir .. "/.nvim/debug/app"
+              local project_name = "Go project"
 
-          dap.configurations.go = {
-            {
-              type = "go",
-              request = "launch",
-              name = "Project package",
-              program = root,
-              cwd = root,
-          console = "integratedTerminal",
-        },
-      }
-    end
-    ]=],
+                  dap.configurations.go = {
+                    {
+                      type = "go",
+                      request = "launch",
+                      name = project_name,
+                      cwd = project_dir,
+                      mode = "exec",
+                      program = function()
+                        vim.notify("Building " .. project_name .. "...")
+                        vim.fn.mkdir(project_dir .. "/.nvim/debug", "p")
+                        local result = vim.system(
+                          { "go", "build", "-gcflags=all=-N -l", "-o", binary, "." },
+                          { cwd = project_dir, text = true }
+                        ):wait()
+
+                        if result.code ~= 0 then
+                          error("go build failed:\n" .. (result.stderr or result.stdout or ""))
+                        end
+
+                        return binary
+                      end,
+                      console = "integratedTerminal",
+                },
+              }
+            end
+            ]=],
           },
         })
 
@@ -130,6 +147,7 @@ in
   '';
 
   packages = with pkgs; [
+    go
     gotools
     delve
 
