@@ -2,6 +2,7 @@
 
 let
   name = "lsp.zig";
+  codelldb = pkgs.vscode-extensions.vadimcn.vscode-lldb.adapter;
 
   lua = /* lua */ ''
     local register_debug_language = _G.register_debug_language or function(spec)
@@ -63,11 +64,12 @@ let
         end
       end
 
-      local adapter_path = first_executable({
-        'codelldb',
-        '${pkgs.lldb}/bin/codelldb',
-        '${pkgs.lldb}/bin/lldb-dap',
-        '${pkgs.lldb}/bin/lldb-vscode',
+          local adapter_path = first_executable({
+            '${codelldb}/bin/codelldb',
+            'codelldb',
+            '${pkgs.lldb}/bin/codelldb',
+            '${pkgs.lldb}/bin/lldb-dap',
+            '${pkgs.lldb}/bin/lldb-vscode',
       })
 
       if adapter_path then
@@ -142,6 +144,7 @@ in
   packages = with pkgs; [
     zig
     zls
+    codelldb
     lldb
   ];
 }

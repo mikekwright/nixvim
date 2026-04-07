@@ -1,6 +1,7 @@
 { pkgs, ... }:
 let
   name = "lsp.rust";
+  codelldb = pkgs.vscode-extensions.vadimcn.vscode-lldb.adapter;
 
   lua = /* lua */ ''
             local register_debug_language = _G.register_debug_language or function(spec)
@@ -83,6 +84,7 @@ let
               end
 
               local codelldb_path = first_executable({
+                '${codelldb}/bin/codelldb',
                 'codelldb',
                 '${pkgs.lldb}/bin/codelldb',
                 '${pkgs.lldb}/bin/lldb-vscode',
@@ -146,6 +148,7 @@ in
     rustc
     #rustup
     cargo
+    codelldb
     lldb
   ];
 }

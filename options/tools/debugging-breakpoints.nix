@@ -83,7 +83,8 @@ let
       local result = {}
       local all_breakpoints = dap_breakpoints.get()
 
-      for file_path, file_breakpoints in pairs(all_breakpoints) do
+      for bufnr, file_breakpoints in pairs(all_breakpoints) do
+        local file_path = vim.api.nvim_buf_get_name(bufnr)
         local relative_path = make_relative(root, file_path)
         if relative_path then
           for _, breakpoint in ipairs(file_breakpoints) do
@@ -151,31 +152,56 @@ let
       _G._nixvim_breakpoint_cache = _G._nixvim_breakpoint_cache or {}
       local cache = _G._nixvim_breakpoint_cache
       local current_signature = build_cache_key(breakpoint_file)
-      if not force_reload and cache[breakpoint_file] == current_signature then
-        return
+      local cached = cache[breakpoint_file]
+      local decoded = cached and cached.decoded or nil
+
+      if force_reload or not cached or cached.signature ~= current_signature then
+        local lines = vim.fn.readfile(breakpoint_file)
+        local ok
+        ok, decoded = pcall(vim.json.decode, table.concat(lines, '\n'))
+        if ok and type(decoded) == 'table' and type(decoded.breakpoints) == 'table' then
+          cache[breakpoint_file] = {
+            signature = current_signature,
+            decoded = decoded,
+            loaded_buffers = {},
+          }
+          cached = cache[breakpoint_file]
+        else
+          dprint('Failed to decode breakpoint file: ' .. breakpoint_file)
+          return
+        end
       end
 
-      local lines = vim.fn.readfile(breakpoint_file)
-      local ok, decoded = pcall(vim.json.decode, table.concat(lines, '\n'))
-      if not ok or type(decoded) ~= 'table' or type(decoded.breakpoints) ~= 'table' then
+      if not decoded or type(decoded) ~= 'table' or type(decoded.breakpoints) ~= 'table' then
         dprint('Failed to decode breakpoint file: ' .. breakpoint_file)
         return
       end
 
+      cached.loaded_buffers = cached.loaded_buffers or {}
+      if not force_reload and cached.loaded_buffers[target_bufnr] then
+        return
+      end
+
+      local buffer_path = vim.api.nvim_buf_get_name(target_bufnr)
+      local buffer_relative = make_relative(root, buffer_path)
+      if not buffer_relative then
+        return
+      end
+
       for _, breakpoint in ipairs(decoded.breakpoints) do
-        if type(breakpoint.path) == 'string' and type(breakpoint.line) == 'number' then
-          local absolute_path = normalize_path(root .. '/' .. breakpoint.path)
-          local bp_bufnr = vim.fn.bufadd(absolute_path)
-          vim.fn.bufload(bp_bufnr)
-          dap_breakpoints.set({
-            condition = breakpoint.condition,
-            hitCondition = breakpoint.hitCondition,
-            logMessage = breakpoint.logMessage,
-          }, bp_bufnr, breakpoint.line)
+        if breakpoint.path == buffer_relative and type(breakpoint.line) == 'number' then
+          local line_count = vim.api.nvim_buf_line_count(target_bufnr)
+          if breakpoint.line <= line_count then
+            dap_breakpoints.set({
+              condition = breakpoint.condition,
+              hit_condition = breakpoint.hitCondition,
+              log_message = breakpoint.logMessage,
+            }, target_bufnr, breakpoint.line)
+          end
         end
       end
 
-      cache[breakpoint_file] = current_signature
+      cached.loaded_buffers[target_bufnr] = true
     end
 
     if not _G._nixvim_breakpoint_wrapped then
@@ -195,8 +221,19 @@ let
 
       local original_clear_breakpoints = dap.clear_breakpoints
       dap.clear_breakpoints = function(...)
+        local roots = {}
+        for bufnr, _ in pairs(dap_breakpoints.get()) do
+          local root = detect_breakpoint_root(bufnr)
+          if root then
+            roots[root] = true
+          end
+        end
+
         original_clear_breakpoints(...)
-        persist_current_project_breakpoints()
+
+        for root, _ in pairs(roots) do
+          write_project_breakpoints(root)
+        end
       end
     end
 
@@ -289,7 +326,7 @@ let
       desc = 'Load project debug breakpoints on buffer open',
     })
 
-    keymapd('<leader>dBb', 'Debug breakpoints: Picker', pick_project_breakpoint)
+    keymapd('<leader>dBB', 'Debug breakpoints: Picker', pick_project_breakpoint)
     keymapd('<leader>dBC', 'Debug breakpoints: Clear all', clear_project_breakpoints)
   '';
 in
