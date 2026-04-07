@@ -36,16 +36,46 @@ let
         ['dap.lua'] = [=[return function(ctx)
           local dap = ctx.dap
           local root = ctx.root
+          -- If the project is a subdir, add like belo
+          local project_dir = root .. "/hello-world"
+          -- local project_dir = root
+          -- This should be setup
+          local binary = "zig-out/bin/hello_world"
+          local project_name = "Hello World"
 
           dap.configurations.zig = {
             {
               type = "zig",
               request = "launch",
-              name = "Zig executable",
-              program = root .. "/zig-out/bin/your-app",
-              cwd = root,
-              runInTerminal = true,
-              stopOnEntry = false,
+              name = project_name,
+              cwd = project_dir,
+              program = function()
+                vim.notify("Building " .. project_name .. "...")
+                local result = vim.system(
+                  { "zig", "build", "-Doptimize=Debug" },
+                  { cwd = project_dir, text = true }
+                ):wait()
+
+                if result.code ~= 0 then
+                  error("zig build failed:\n" .. (result.stderr or result.stdout or ""))
+                end
+
+                if vim.uv.os_uname().sysname == "Darwin" then
+                  vim.notify("Generating DSymutil " .. project_name .. "...")
+                  local result = vim.system(
+                    { "dsymutil", binary },
+                    { cwd = project_dir, text = true }
+                  ):wait()
+
+                  if result.code ~= 0 then
+                    error("Failed to build symbols :\n" .. (result.stderr or result.stdout or ""))
+                  end
+                end
+
+                return project_dir .. "/" .. binary
+              end,
+              runInTerminal = false,
+              stopOnEntry = true,
             },
           }
         end

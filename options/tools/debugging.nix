@@ -113,6 +113,44 @@ let
       end
     end
 
+    local function get_project_dap_root(dap_file)
+      return vim.fs.dirname(vim.fs.dirname(dap_file))
+    end
+
+    local function snapshot_dap_configurations()
+      local snapshot = {}
+      for filetype, configurations in pairs(dap.configurations or {}) do
+        snapshot[filetype] = vim.deepcopy(configurations)
+      end
+      return snapshot
+    end
+
+    local function collect_project_configurations(before)
+      local project_configurations = {}
+
+      for filetype, configurations in pairs(dap.configurations or {}) do
+        if not vim.deep_equal(before[filetype], configurations) then
+          project_configurations[filetype] = vim.deepcopy(configurations)
+        end
+      end
+
+      return project_configurations
+    end
+
+    local function apply_project_baseline(project_state)
+      if not project_state or type(project_state.baseline) ~= 'table' then
+        return
+      end
+
+      for filetype, baseline_configurations in pairs(project_state.baseline) do
+        if baseline_configurations == vim.NIL then
+          dap.configurations[filetype] = nil
+        else
+          dap.configurations[filetype] = vim.deepcopy(baseline_configurations)
+        end
+      end
+    end
+
     local function load_project_dap_file(target_bufnr, force_reload)
       local bufnr = target_bufnr or vim.api.nvim_get_current_buf()
       local dap_file = find_project_dap_file(bufnr)
@@ -120,14 +158,20 @@ let
         return
       end
 
-      local root = vim.fs.dirname(vim.fs.dirname(dap_file))
+      local root = get_project_dap_root(dap_file)
 
       _G._nixvim_dap_file_cache = _G._nixvim_dap_file_cache or {}
+      _G._nixvim_project_dap_registry = _G._nixvim_project_dap_registry or {}
       local dap_file_cache = _G._nixvim_dap_file_cache
+      local project_registry = _G._nixvim_project_dap_registry
       local current_signature = build_cache_key(dap_file)
       if not force_reload and dap_file_cache[dap_file] == current_signature then
         return
       end
+
+      apply_project_baseline(project_registry[root])
+
+      local before_configurations = snapshot_dap_configurations()
 
       local chunk, err = loadfile(dap_file)
       if not chunk then
@@ -154,11 +198,111 @@ let
         end
       end
 
+      local project_configurations = collect_project_configurations(before_configurations)
+      local baseline = {}
+      for filetype, _ in pairs(project_configurations) do
+        baseline[filetype] = before_configurations[filetype] ~= nil and vim.deepcopy(before_configurations[filetype]) or vim.NIL
+      end
+
+      project_registry[root] = {
+        file = dap_file,
+        configurations = project_configurations,
+        baseline = baseline,
+      }
+
       dap_file_cache[dap_file] = current_signature
     end
 
     local function load_project_debug_config(bufnr, force_reload)
       load_project_dap_file(bufnr, force_reload)
+    end
+
+    local function get_project_config_items(bufnr)
+      local dap_file = find_project_dap_file(bufnr)
+      if not dap_file then
+        return {}
+      end
+
+      local root = get_project_dap_root(dap_file)
+      local registry = _G._nixvim_project_dap_registry or {}
+      local project_state = registry[root]
+      if not project_state or type(project_state.configurations) ~= 'table' then
+        return {}
+      end
+
+      local current_filetype = vim.bo[bufnr].filetype
+      local items = {}
+
+      for filetype, configurations in pairs(project_state.configurations) do
+        for _, configuration in ipairs(configurations or {}) do
+          table.insert(items, {
+            filetype = filetype,
+            label = (configuration.name or 'Unnamed config') .. ' [' .. filetype .. ']',
+            config = vim.deepcopy(configuration),
+            sort_priority = filetype == current_filetype and 0 or 1,
+          })
+        end
+      end
+
+      table.sort(items, function(left, right)
+        if left.sort_priority == right.sort_priority then
+          return left.label < right.label
+        end
+        return left.sort_priority < right.sort_priority
+      end)
+
+      return items
+    end
+
+    local function run_project_debug_config()
+      local bufnr = vim.api.nvim_get_current_buf()
+
+      if dap.session() then
+        dap.continue()
+        return
+      end
+
+      load_project_debug_config(bufnr, true)
+
+      local project_items = get_project_config_items(bufnr)
+      if #project_items == 0 then
+        vim.notify('No project DAP configurations found. Create .nvim/dap.lua with <leader>dC.', vim.log.levels.ERROR)
+        return
+      end
+
+      if #project_items == 1 then
+        dap.run(project_items[1].config)
+        return
+      end
+
+      local has_snacks, snacks = pcall(require, 'snacks')
+      if has_snacks and snacks.picker then
+        snacks.picker.pick({
+          source = 'project-dap-configurations',
+          items = project_items,
+          layout = 'vscode',
+          format = 'label',
+          title = 'Project debug configurations',
+          confirm = function(picker, item)
+            picker:close()
+            if item and item.config then
+              dap.run(item.config)
+            end
+          end,
+        })
+        return
+      end
+
+      vim.ui.select(project_items, {
+        prompt = 'Project debug configurations',
+        format_item = function(item)
+          return item.label
+        end,
+      }, function(item)
+        if item and item.config then
+          dap.run(item.config)
+        end
+      end)
     end
 
     local function get_language_choices(current_spec)
@@ -390,10 +534,7 @@ let
       desc = 'Load project DAP config on buffer open',
     })
 
-    keymapd('<leader>dc', 'Debug: Continue', function()
-      load_project_debug_config(vim.api.nvim_get_current_buf(), true)
-      dap.continue()
-    end)
+    keymapd('<leader>dc', 'Debug: Continue', run_project_debug_config)
     keymapd('<leader>db', 'Debug: Toggle breakpoint', function()
       dap.toggle_breakpoint()
     end)
