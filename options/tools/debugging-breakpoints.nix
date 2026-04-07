@@ -178,31 +178,30 @@ let
       end
 
       cached.loaded_buffers = cached.loaded_buffers or {}
-      if not force_reload and cached.loaded_buffers[target_bufnr] then
-        return
-      end
-
-      local buffer_path = vim.api.nvim_buf_get_name(target_bufnr)
-      local buffer_relative = make_relative(root, buffer_path)
-      if not buffer_relative then
+      if not force_reload and cached.loaded_buffers['__all__'] then
         return
       end
 
       for _, breakpoint in ipairs(decoded.breakpoints) do
-        if breakpoint.path == buffer_relative and type(breakpoint.line) == 'number' then
-          local line_count = vim.api.nvim_buf_line_count(target_bufnr)
+        if type(breakpoint.path) == 'string' and type(breakpoint.line) == 'number' then
+          local absolute_path = normalize_path(root .. '/' .. breakpoint.path)
+          local bp_bufnr = vim.fn.bufadd(absolute_path)
+          vim.fn.bufload(bp_bufnr)
+          local line_count = vim.api.nvim_buf_line_count(bp_bufnr)
           if breakpoint.line <= line_count then
             dap_breakpoints.set({
               condition = breakpoint.condition,
               hit_condition = breakpoint.hitCondition,
               log_message = breakpoint.logMessage,
-            }, target_bufnr, breakpoint.line)
+            }, bp_bufnr, breakpoint.line)
           end
         end
       end
 
-      cached.loaded_buffers[target_bufnr] = true
+      cached.loaded_buffers['__all__'] = true
     end
+
+    _G.load_project_breakpoints_for_project = load_project_breakpoints
 
     if not _G._nixvim_breakpoint_wrapped then
       _G._nixvim_breakpoint_wrapped = true
@@ -314,17 +313,6 @@ let
     vim.api.nvim_create_user_command('DapLoadProjectBreakpoints', function()
       load_project_breakpoints(vim.api.nvim_get_current_buf(), true)
     end, { desc = 'Reload project debug breakpoints' })
-
-    vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufNewFile' }, {
-      callback = function(args)
-        local buftype = vim.api.nvim_get_option_value('buftype', { buf = args.buf })
-        if buftype ~= "" then
-          return
-        end
-        load_project_breakpoints(args.buf, false)
-      end,
-      desc = 'Load project debug breakpoints on buffer open',
-    })
 
     keymapd('<leader>dBB', 'Debug breakpoints: Picker', pick_project_breakpoint)
     keymapd('<leader>dBC', 'Debug breakpoints: Clear all', clear_project_breakpoints)

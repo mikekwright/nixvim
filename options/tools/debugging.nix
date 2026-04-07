@@ -257,6 +257,10 @@ let
     local function run_project_debug_config()
       local bufnr = vim.api.nvim_get_current_buf()
 
+      if type(_G.load_project_breakpoints_for_project) == 'function' then
+        _G.load_project_breakpoints_for_project(bufnr, true)
+      end
+
       if dap.session() then
         dap.continue()
         return
