@@ -11,7 +11,24 @@ let
     require("lualine").setup({
       options = {
         icons_enabled = true
-      }
+      },
+      sections = {
+        lualine_x = {
+          {
+            function()
+              return _G.nixvim_debugging and _G.nixvim_debugging.helpers.debug_task_statusline()
+                or ""
+            end,
+            color = function()
+              return _G.nixvim_debugging and (_G.nixvim_debugging.helpers.debug_task_statusline_color() or {})
+                or {}
+            end,
+          },
+          'encoding',
+          'fileformat',
+          'filetype',
+        },
+      },
     })
     require("luasnip").config.set_config({})
 
@@ -45,7 +62,7 @@ in
 
     ./db.nix
 
-    ./debugging.nix
+    ./debugging
     ./project-extensions.nix
     ./testing.nix
 
