@@ -686,7 +686,7 @@ let
       return items
     end
 
-    dbg.vscode.run_project_debug_item = function(item)
+    dbg.vscode.run_project_debug_item = function(item, no_debug)
       local project_state = dbg.state.project_registry[item.project_root]
       if not project_state then
         vim.notify('Project debug state is not available', vim.log.levels.ERROR)
@@ -697,6 +697,9 @@ let
       local bufnr = vim.api.nvim_get_current_buf()
       local pre_launch_task = config.preLaunchTask
       local post_debug_task = config.postDebugTask
+      if no_debug then
+        config.noDebug = true
+      end
       config.preLaunchTask = nil
       config.postDebugTask = nil
 
@@ -727,12 +730,12 @@ let
       start_debug_session()
     end
 
-    dbg.vscode.run_project_debug_config = function()
+    dbg.vscode.run_project_debug_config = function(no_debug)
       local bufnr = vim.api.nvim_get_current_buf()
       if _G.load_project_breakpoints_for_project then
         _G.load_project_breakpoints_for_project(bufnr, true)
       end
-      if dap.session() then
+      if not no_debug and dap.session() then
         dap.continue()
         return
       end
@@ -744,7 +747,7 @@ let
         return
       end
       if #items == 1 then
-        dbg.vscode.run_project_debug_item(items[1])
+        dbg.vscode.run_project_debug_item(items[1], no_debug)
         return
       end
 
@@ -759,7 +762,7 @@ let
           confirm = function(picker, item)
             picker:close()
             if item and item.config then
-              dbg.vscode.run_project_debug_item(item)
+              dbg.vscode.run_project_debug_item(item, no_debug)
             end
           end,
         })
@@ -773,7 +776,7 @@ let
         end,
       }, function(item)
         if item and item.config then
-          dbg.vscode.run_project_debug_item(item)
+          dbg.vscode.run_project_debug_item(item, no_debug)
         end
       end)
     end

@@ -266,6 +266,11 @@ let
         dap.continue()
       end
     end)
+    keymapd('<leader>dr', 'Debug: Run without debugging', function()
+      if dbg.vscode.run_project_debug_config then
+        dbg.vscode.run_project_debug_config(true)
+      end
+    end)
     keymapd('<leader>db', 'Debug: Toggle breakpoint', function() dap.toggle_breakpoint() end)
     keymapd('<leader>dn', 'Debug: Step over', function() dap.step_over() end)
     keymapd('<leader>di', 'Debug: Step into', function() dap.step_into() end)
