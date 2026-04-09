@@ -12,8 +12,8 @@ let
       { '<leader>dB', group = 'Debug breakpoints', desc = 'Manage debug breakpoints' },
     })
 
-    dbg.breakpoints.detect_root = function(bufnr)
-      return dbg.helpers.detect_root(bufnr, {
+    dbg.breakpoints.detect_project_root = function(bufnr)
+      return dbg.helpers.detect_project_root(bufnr, {
         '.nvim/dap.lua',
         '.vscode/launch.json',
         '.vscode/tasks.json',
@@ -79,14 +79,14 @@ let
     end
 
     dbg.breakpoints.persist_current_project_breakpoints = function(bufnr)
-      local root = dbg.breakpoints.detect_root(bufnr or vim.api.nvim_get_current_buf())
+      local root = dbg.breakpoints.detect_project_root(bufnr or vim.api.nvim_get_current_buf())
       if root then
         dbg.breakpoints.write_project_breakpoints(root)
       end
     end
 
     dbg.breakpoints.load_project_breakpoints = function(bufnr, force_reload)
-      local root = dbg.breakpoints.detect_root(bufnr or vim.api.nvim_get_current_buf())
+      local root = dbg.breakpoints.detect_project_root(bufnr or vim.api.nvim_get_current_buf())
       if not root then
         return
       end
@@ -159,7 +159,7 @@ let
       dap.clear_breakpoints = function(...)
         local roots = {}
         for bufnr, _ in pairs(dap_breakpoints.get()) do
-          local root = dbg.breakpoints.detect_root(bufnr)
+          local root = dbg.breakpoints.detect_project_root(bufnr)
           if root then
             roots[root] = true
           end
@@ -172,7 +172,7 @@ let
     end
 
     dbg.breakpoints.get_project_breakpoint_items = function(bufnr)
-      local root = dbg.breakpoints.detect_root(bufnr or vim.api.nvim_get_current_buf())
+      local root = dbg.breakpoints.detect_project_root(bufnr or vim.api.nvim_get_current_buf())
       if not root then
         return {}, nil
       end
@@ -230,7 +230,7 @@ let
 
     dbg.breakpoints.clear_project_breakpoints = function()
       dap.clear_breakpoints()
-      local root = dbg.breakpoints.detect_root(vim.api.nvim_get_current_buf())
+      local root = dbg.breakpoints.detect_project_root(vim.api.nvim_get_current_buf())
       if root then
         local breakpoint_file = dbg.breakpoints.get_breakpoint_file(root)
         if vim.fn.filereadable(breakpoint_file) == 1 then
@@ -244,8 +244,15 @@ let
       dbg.breakpoints.load_project_breakpoints(vim.api.nvim_get_current_buf(), true)
     end, { desc = 'Reload project debug breakpoints' })
 
+    -- This should load the breakpoints for the current project 
+    --    immediately when system is opened
+    dbg.breakpoints.load_project_breakpoints(nil, true)
+
     keymapd('<leader>dBB', 'Debug breakpoints: Picker', dbg.breakpoints.pick_project_breakpoint)
     keymapd('<leader>dBC', 'Debug breakpoints: Clear all', dbg.breakpoints.clear_project_breakpoints)
+    keymapd('<leader>db', 'Debug: Toggle breakpoint', function() 
+      dap.toggle_breakpoint() 
+    end)
   '';
 in
 {

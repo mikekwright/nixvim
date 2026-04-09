@@ -11,29 +11,28 @@ let
       filetype_registry = {},
       project_registry = {},
       breakpoint_cache = {},
-      breakpoint_wrapped = false,
       session_task_registry = setmetatable({}, { __mode = 'k' }),
       active_task_runs = {},
       last_task_status = nil,
       last_completed_task_run = nil,
       next_task_run_id = 0,
       task_output = {
+        buf = nil,
         win = nil,
         mode = 'split',
-        current_run_id = nil,
       },
       task_defaults = {
         timeout_ms = 300000,
         statusline_ttl_ms = 10000,
-        recent_task_runs_limit = 20,
       },
-      recent_task_runs = {},
     }
 
     _G.nixvim_debugging.helpers = _G.nixvim_debugging.helpers or {}
     _G.nixvim_debugging.dap = _G.nixvim_debugging.dap or {}
     _G.nixvim_debugging.vscode = _G.nixvim_debugging.vscode or {}
     _G.nixvim_debugging.breakpoints = _G.nixvim_debugging.breakpoints or {}
+
+    local helpers = _G.nixvim_helpers
 
     _G.debug_language_registry = _G.nixvim_debugging.state.language_registry
     _G.debug_filetype_registry = _G.nixvim_debugging.state.filetype_registry
@@ -50,37 +49,11 @@ let
       end
     end
 
-    _G.nixvim_debugging.helpers.build_cache_key = function(path)
-      local stat = vim.uv.fs_stat(path)
-      if not stat or not stat.mtime then
-        return nil
-      end
+    _G.nixvim_debugging.helpers.build_cache_key = helpers.build_cache_key
 
-      return tostring(stat.mtime.sec) .. ':' .. tostring(stat.mtime.nsec or 0)
-    end
+    _G.nixvim_debugging.helpers.find_project_root_from_marker_path = helpers.find_project_root_from_marker_path
 
-    _G.nixvim_debugging.helpers.project_root_from_marker = function(path)
-      local normalized = vim.fs.normalize(path)
-      if normalized:match('/%.nvim/dap%.lua$')
-        or normalized:match('/%.vscode/launch%.json$')
-        or normalized:match('/%.vscode/tasks%.json$')
-        or normalized:match('/%.nvim/dap%-breakpoints%.json$') then
-        return vim.fs.dirname(vim.fs.dirname(normalized))
-      end
-
-      return vim.fs.dirname(normalized)
-    end
-
-    _G.nixvim_debugging.helpers.find_upward = function(bufnr, marker)
-      local buffer_name = vim.api.nvim_buf_get_name(bufnr)
-      local start_path = buffer_name ~= "" and vim.fs.dirname(buffer_name) or vim.uv.cwd()
-
-      return vim.fs.find(marker, {
-        path = start_path,
-        upward = true,
-        stop = vim.uv.os_homedir(),
-      })[1]
-    end
+    _G.nixvim_debugging.helpers.find_nearest_navigating_up = helpers.find_nearest_navigating_up
 
     _G.nixvim_debugging.helpers.get_root_markers = function(extra_markers)
       local markers = { '.git' }
@@ -105,20 +78,8 @@ let
       return markers
     end
 
-    _G.nixvim_debugging.helpers.detect_root = function(bufnr, extra_markers)
-      local buffer_name = vim.api.nvim_buf_get_name(bufnr)
-      local start_path = buffer_name ~= "" and vim.fs.dirname(buffer_name) or vim.uv.cwd()
-      local marker = vim.fs.find(_G.nixvim_debugging.helpers.get_root_markers(extra_markers), {
-        path = start_path,
-        upward = true,
-        stop = vim.uv.os_homedir(),
-      })[1]
-
-      if not marker then
-        return nil
-      end
-
-      return _G.nixvim_debugging.helpers.project_root_from_marker(marker)
+    _G.nixvim_debugging.helpers.detect_project_root = function(bufnr, extra_markers)
+      return helpers.detect_project_root(bufnr, _G.nixvim_debugging.helpers.get_root_markers(extra_markers))
     end
 
     _G.nixvim_debugging.helpers.get_registered_language_ids = function()
@@ -169,19 +130,10 @@ let
       _G.nixvim_debugging.helpers.refresh_statusline()
     end
 
-    _G.nixvim_debugging.helpers.ensure_task_output_buffer = function(run_id)
-      local run = run_id and _G.nixvim_debugging.state.active_task_runs[run_id]
-      if not run and run_id then
-        for _, item in ipairs(_G.nixvim_debugging.state.recent_task_runs) do
-          if item.id == run_id then
-            run = item
-            break
-          end
-        end
-      end
-
-      if run and run.output_buf and vim.api.nvim_buf_is_valid(run.output_buf) then
-        return run.output_buf
+    _G.nixvim_debugging.helpers.ensure_task_output_buffer = function()
+      local output = _G.nixvim_debugging.state.task_output
+      if output.buf and vim.api.nvim_buf_is_valid(output.buf) then
+        return output.buf
       end
 
       local buf = vim.api.nvim_create_buf(false, true)
@@ -189,22 +141,18 @@ let
       vim.api.nvim_set_option_value('bufhidden', 'hide', { buf = buf })
       vim.api.nvim_set_option_value('swapfile', false, { buf = buf })
       vim.api.nvim_set_option_value('filetype', 'log', { buf = buf })
-      if run then
-        run.output_buf = buf
-      end
+      output.buf = buf
       return buf
     end
 
-    _G.nixvim_debugging.helpers.open_task_output_window = function(run_id, mode)
+    _G.nixvim_debugging.helpers.open_task_output_window = function(mode)
       local output = _G.nixvim_debugging.state.task_output
-      local buf = _G.nixvim_debugging.helpers.ensure_task_output_buffer(run_id)
+      local buf = _G.nixvim_debugging.helpers.ensure_task_output_buffer()
       local target_mode = mode or output.mode or 'split'
       output.mode = target_mode
-      output.current_run_id = run_id or output.current_run_id
 
       if output.win and vim.api.nvim_win_is_valid(output.win) then
         vim.api.nvim_set_current_win(output.win)
-        vim.api.nvim_win_set_buf(output.win, buf)
         return output.win
       end
 
@@ -233,24 +181,24 @@ let
       return output.win
     end
 
-    _G.nixvim_debugging.helpers.show_task_output = function(run_id, mode)
-      _G.nixvim_debugging.helpers.open_task_output_window(run_id or _G.nixvim_debugging.state.task_output.current_run_id, mode)
+    _G.nixvim_debugging.helpers.show_task_output = function(mode)
+      _G.nixvim_debugging.helpers.open_task_output_window(mode)
     end
 
-    _G.nixvim_debugging.helpers.reset_task_output = function(run_id, title)
-      local buf = _G.nixvim_debugging.helpers.ensure_task_output_buffer(run_id)
+    _G.nixvim_debugging.helpers.reset_task_output = function(title)
+      local buf = _G.nixvim_debugging.helpers.ensure_task_output_buffer()
       vim.api.nvim_set_option_value('modifiable', true, { buf = buf })
       vim.api.nvim_buf_set_lines(buf, 0, -1, false, title and { title, "" } or {})
       vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
-      _G.nixvim_debugging.helpers.show_task_output(run_id)
+      _G.nixvim_debugging.helpers.show_task_output()
     end
 
-    _G.nixvim_debugging.helpers.append_task_output = function(run_id, stream, chunk)
+    _G.nixvim_debugging.helpers.append_task_output = function(stream, chunk)
       if type(chunk) ~= 'string' or chunk == "" then
         return
       end
 
-      local buf = _G.nixvim_debugging.helpers.ensure_task_output_buffer(run_id)
+      local buf = _G.nixvim_debugging.helpers.ensure_task_output_buffer()
       local prefix = stream == 'stderr' and '[stderr] ' or ""
       local lines = vim.split(chunk, '\n', { plain = true })
       if #lines > 0 and lines[#lines] == "" then
@@ -276,7 +224,7 @@ let
       end
 
       local output = _G.nixvim_debugging.state.task_output
-      if output.current_run_id == run_id and output.win and vim.api.nvim_win_is_valid(output.win) then
+      if output.win and vim.api.nvim_win_is_valid(output.win) then
         vim.api.nvim_win_set_cursor(output.win, { vim.api.nvim_buf_line_count(buf), 0 })
       end
     end
@@ -294,7 +242,6 @@ let
         stderr = nil,
         canceled = false,
         timed_out = false,
-        output_buf = nil,
       }, task or {})
       _G.nixvim_debugging.helpers.refresh_statusline()
       return id
@@ -304,10 +251,7 @@ let
       local run = _G.nixvim_debugging.state.active_task_runs[id]
       if run then
         run.status = status or 'completed'
-        run.message = message
-        run.level = level
         run.completed_at = vim.uv.now()
-        run.duration_ms = run.started_at and (run.completed_at - run.started_at) or nil
         if run.timer then
           pcall(run.timer.stop, run.timer)
           pcall(run.timer.close, run.timer)
@@ -316,10 +260,6 @@ let
         run.handle = nil
         run.stdout = nil
         run.stderr = nil
-        table.insert(_G.nixvim_debugging.state.recent_task_runs, 1, vim.deepcopy(run))
-        while #_G.nixvim_debugging.state.recent_task_runs > _G.nixvim_debugging.state.task_defaults.recent_task_runs_limit do
-          table.remove(_G.nixvim_debugging.state.recent_task_runs)
-        end
         _G.nixvim_debugging.state.last_completed_task_run = vim.deepcopy(run)
         _G.nixvim_debugging.state.active_task_runs[id] = nil
       end
@@ -341,9 +281,6 @@ let
       end
 
       local timer = vim.uv.new_timer()
-      if not timer then
-        return
-      end
       run.timer = timer
       timer:start(timeout_ms, 0, function()
         vim.schedule(function()
@@ -367,11 +304,11 @@ let
 
       run.canceled = true
       run.cancel_reason = reason or 'Canceled'
-      pcall(run.handle.kill, run.handle, 'SIGTERM')
+      pcall(run.handle.kill, run.handle, 'sigterm')
       vim.defer_fn(function()
         local current = _G.nixvim_debugging.helpers.get_active_task_run(id)
         if current and current.handle then
-          pcall(current.handle.kill, current.handle, 'SIGKILL')
+          pcall(current.handle.kill, current.handle, 'sigkill')
         end
       end, 1500)
       return true
@@ -396,90 +333,6 @@ let
         return left.started_at < right.started_at
       end)
       return tasks
-    end
-
-    _G.nixvim_debugging.helpers.get_recent_task_runs = function()
-      return vim.deepcopy(_G.nixvim_debugging.state.recent_task_runs)
-    end
-
-    _G.nixvim_debugging.helpers.open_recent_task_run = function(item)
-      if item and item.id then
-        _G.nixvim_debugging.helpers.show_task_output(item.id)
-      end
-    end
-
-    _G.nixvim_debugging.helpers.format_task_run_duration = function(duration_ms)
-      if type(duration_ms) ~= 'number' then
-        return 'n/a'
-      end
-      if duration_ms < 1000 then
-        return tostring(duration_ms) .. 'ms'
-      end
-      if duration_ms < 60000 then
-        return string.format('%.1fs', duration_ms / 1000)
-      end
-      return string.format('%.1fm', duration_ms / 60000)
-    end
-
-    _G.nixvim_debugging.helpers.format_task_run_timestamp = function(timestamp_ms)
-      if type(timestamp_ms) ~= 'number' then
-        return 'unknown'
-      end
-      return os.date('%Y-%m-%d %H:%M:%S', math.floor(timestamp_ms / 1000))
-    end
-
-    _G.nixvim_debugging.helpers.format_task_run_status = function(item)
-      local labels = {
-        completed = 'success',
-        failed = 'failed',
-        canceled = 'canceled',
-        timeout = 'timeout',
-      }
-      return labels[item.status] or (item.status or 'unknown')
-    end
-
-    _G.nixvim_debugging.helpers.pick_recent_task_run = function()
-      local items = _G.nixvim_debugging.helpers.get_recent_task_runs()
-      if #items == 0 then
-        vim.notify('No recent debug task runs found', vim.log.levels.INFO)
-        return
-      end
-
-      for _, item in ipairs(items) do
-        local phase = item.phase == 'preLaunchTask' and 'pre' or 'post'
-        item.text = string.format(
-          '%s %s: %s | %s | %s | %s',
-          _G.nixvim_debugging.helpers.format_task_run_status(item),
-          phase,
-          item.label or 'task',
-          _G.nixvim_debugging.helpers.format_task_run_duration(item.duration_ms),
-          item.project_root or 'unknown project',
-          _G.nixvim_debugging.helpers.format_task_run_timestamp(item.completed_at or item.started_at)
-        )
-      end
-
-      local has_snacks, snacks = pcall(require, 'snacks')
-      if has_snacks and snacks.picker then
-        snacks.picker.pick({
-          source = 'debug-task-runs',
-          items = items,
-          layout = 'vscode',
-          format = 'text',
-          title = 'Recent debug task runs',
-          confirm = function(picker, item)
-            picker:close()
-            _G.nixvim_debugging.helpers.open_recent_task_run(item)
-          end,
-        })
-        return
-      end
-
-      vim.ui.select(items, {
-        prompt = 'Recent debug task runs',
-        format_item = function(item)
-          return item.text
-        end,
-      }, _G.nixvim_debugging.helpers.open_recent_task_run)
     end
 
     _G.nixvim_debugging.helpers.debug_task_statusline = function()
@@ -516,7 +369,7 @@ let
       local last_run = _G.nixvim_debugging.state.last_completed_task_run
       local ttl_ms = _G.nixvim_debugging.state.task_defaults.statusline_ttl_ms
       if not last_run or not last_run.completed_at or (vim.uv.now() - last_run.completed_at) > ttl_ms then
-        return {}
+        return nil
       end
 
       local colors = {

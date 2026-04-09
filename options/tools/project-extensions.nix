@@ -8,45 +8,16 @@ let
       { '<leader>p', group = 'Project', desc = 'Project actions' },
     })
 
+    local helpers = _G.nixvim_helpers
+
     local function find_project_extension_file(bufnr)
-      local buffer_name = vim.api.nvim_buf_get_name(bufnr)
-      local start_path = buffer_name ~= "" and vim.fs.dirname(buffer_name) or vim.uv.cwd()
-
-      return vim.fs.find('.nvim/project.lua', {
-        path = start_path,
-        upward = true,
-        stop = vim.uv.os_homedir(),
-      })[1]
-    end
-
-    local function build_cache_key(path)
-      local stat = vim.uv.fs_stat(path)
-      if not stat or not stat.mtime then
-        return nil
-      end
-
-      return tostring(stat.mtime.sec) .. ':' .. tostring(stat.mtime.nsec or 0)
+      return helpers.find_nearest_navigating_up(bufnr, '.nvim/project.lua')
     end
 
     local function detect_project_root(bufnr)
-      local project_file = find_project_extension_file(bufnr)
-      if project_file then
-        return vim.fs.dirname(vim.fs.dirname(project_file))
-      end
-
-      local buffer_name = vim.api.nvim_buf_get_name(bufnr)
-      local start_path = buffer_name ~= "" and vim.fs.dirname(buffer_name) or vim.uv.cwd()
-      local found = vim.fs.find('.git', {
-        path = start_path,
-        upward = true,
-        stop = vim.uv.os_homedir(),
-      })[1]
-
-      if found then
-        return vim.fs.dirname(found)
-      end
-
-      return vim.uv.cwd()
+      return helpers.detect_project_root(bufnr, '.nvim/project.lua')
+        or helpers.detect_project_root(bufnr, '.git')
+        or vim.uv.cwd()
     end
 
     local function project_template()
@@ -69,7 +40,7 @@ let
 
       _G._nixvim_project_extension_cache = _G._nixvim_project_extension_cache or {}
       local cache = _G._nixvim_project_extension_cache
-      local signature = build_cache_key(project_file)
+      local signature = helpers.build_cache_key(project_file)
       if not force_reload and cache[project_file] == signature then
         return
       end
@@ -132,6 +103,9 @@ let
     })
 
     keymapd('<leader>pC', 'Project: Edit config', edit_project_extension)
+    keymapd('<leader>pt', 'Project: Run task', function()
+      vim.cmd('ProjectTasks')
+    end)
     keymapd('<leader>pr', 'Project: Reload config', function()
       load_project_extension(vim.api.nvim_get_current_buf(), true)
     end)

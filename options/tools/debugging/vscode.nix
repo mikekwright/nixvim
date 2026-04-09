@@ -8,11 +8,11 @@ let
     local dap = require('dap')
 
     dbg.vscode.find_project_launch_file = function(bufnr)
-      return dbg.helpers.find_upward(bufnr, '.vscode/launch.json')
+      return dbg.helpers.find_nearest_navigating_up(bufnr, '.vscode/launch.json')
     end
 
     dbg.vscode.find_project_tasks_file = function(bufnr)
-      return dbg.helpers.find_upward(bufnr, '.vscode/tasks.json')
+      return dbg.helpers.find_nearest_navigating_up(bufnr, '.vscode/tasks.json')
     end
 
     dbg.vscode.build_project_signature = function(paths)
@@ -576,6 +576,84 @@ let
       }, on_complete)
     end
 
+    dbg.vscode.get_project_task_items = function(bufnr)
+      local root = dbg.vscode.get_project_debug_root_for_buffer(bufnr)
+      local project_state = root and dbg.state.project_registry[root] or nil
+      if not project_state or not project_state.tasks or type(project_state.tasks.by_label) ~= 'table' then
+        return {}
+      end
+
+      local items = {}
+      for label, task in pairs(project_state.tasks.by_label) do
+        if not project_state.tasks.duplicate_labels[label] then
+          table.insert(items, {
+            label = label,
+            text = label,
+            task = vim.deepcopy(task),
+            project_root = root,
+          })
+        end
+      end
+
+      table.sort(items, function(left, right)
+        return left.label < right.label
+      end)
+
+      return items
+    end
+
+    dbg.vscode.run_project_task_picker = function()
+      local bufnr = vim.api.nvim_get_current_buf()
+      dbg.vscode.load_project_debug_config(bufnr, true)
+
+      local items = dbg.vscode.get_project_task_items(bufnr)
+      if #items == 0 then
+        vim.notify('No project tasks found. Add .vscode/tasks.json for this project.', vim.log.levels.ERROR)
+        return
+      end
+
+      local function run_item(item)
+        if not item then
+          return
+        end
+
+        local project_state = dbg.state.project_registry[item.project_root]
+        if not project_state then
+          vim.notify('Project task state is not available', vim.log.levels.ERROR)
+          return
+        end
+
+        dbg.vscode.run_project_task_async(project_state, item.label, 'task', bufnr, function(ok, err)
+          if not ok then
+            vim.notify('Task failed: ' .. tostring(err), vim.log.levels.ERROR)
+          end
+        end)
+      end
+
+      local has_snacks, snacks = pcall(require, 'snacks')
+      if has_snacks and snacks.picker then
+        snacks.picker.pick({
+          source = 'project-tasks',
+          items = items,
+          layout = 'vscode',
+          format = 'text',
+          title = 'Project tasks',
+          confirm = function(picker, item)
+            picker:close()
+            run_item(item)
+          end,
+        })
+        return
+      end
+
+      vim.ui.select(items, {
+        prompt = 'Project tasks',
+        format_item = function(item)
+          return item.text
+        end,
+      }, run_item)
+    end
+
     dbg.vscode.attach_post_debug_task = function(session, context)
       if session and context and context.task_label then
         dbg.state.session_task_registry[session] = { context = context, completed = false }
@@ -601,7 +679,7 @@ let
       local marker = dbg.dap.find_project_dap_file(bufnr)
         or dbg.vscode.find_project_launch_file(bufnr)
         or dbg.vscode.find_project_tasks_file(bufnr)
-      return marker and dbg.helpers.project_root_from_marker(marker) or nil
+      return marker and dbg.helpers.find_project_root_from_marker_path(marker) or nil
     end
 
     dbg.vscode.load_project_debug_config = function(bufnr, force_reload)
@@ -609,11 +687,11 @@ let
       local dap_file = dbg.dap.find_project_dap_file(target_bufnr)
       local launch_file = dbg.vscode.find_project_launch_file(target_bufnr)
       local tasks_file = dbg.vscode.find_project_tasks_file(target_bufnr)
-      if not dap_file and not launch_file then
+      if not dap_file and not launch_file and not tasks_file then
         return
       end
 
-      local root = dbg.helpers.project_root_from_marker(dap_file or launch_file)
+      local root = dbg.helpers.find_project_root_from_marker_path(dap_file or launch_file or tasks_file)
       local current_signature = dbg.vscode.build_project_signature({ dap_file, launch_file, tasks_file })
       if not force_reload and dbg.state.project_registry[root] and dbg.state.project_registry[root].signature == current_signature then
         return
@@ -792,6 +870,10 @@ let
     vim.api.nvim_create_user_command('DapTaskRuns', function()
       dbg.helpers.pick_recent_task_run()
     end, { desc = 'Show recent debug task runs' })
+
+    vim.api.nvim_create_user_command('ProjectTasks', function()
+      dbg.vscode.run_project_task_picker()
+    end, { desc = 'Run a project task from .vscode/tasks.json' })
 
     vim.api.nvim_create_user_command('DapCancelTask', function()
       if dbg.helpers.cancel_all_task_runs('Canceled by user') then

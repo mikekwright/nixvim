@@ -6,24 +6,36 @@ let
   lua = /* lua */ ''
     local dbg = _G.nixvim_debugging
     local dap = require('dap')
+
+    --
+    -- DapUI Elements
+    --
     local dapui = require('dapui')
 
     dapui.setup()
 
-    dap.listeners.before.attach.dapui_config = function()
-      dapui.open()
-    end
+    local open_dap_ui = function() dapui.open() end
+    local close_dap_ui = function() dapui.close() end
+    local toggle_dap_ui = function() dapui.toggle() end
 
-    dap.listeners.before.launch.dapui_config = function()
-      dapui.open()
-    end
+    dap.listeners.before.attach.dapui_config = open_dap_ui 
+    dap.listeners.before.launch.dapui_config = open_dap_ui
+    dap.listeners.before.event_terminated.dapui_config = close_dap_ui
+    dap.listeners.before.event_exited.dapui_config = close_dap_ui
+    dap.listeners.before.disconnect.dapui_config = close_dap_ui
+
+    keymapd('<leader>du', 'Debug: Toggle UI', toggle_dap_ui)
+
+    -- 
+    -- Nixvim Debug support flows
+    --
 
     dbg.dap.find_project_dap_file = function(bufnr)
-      return dbg.helpers.find_upward(bufnr, '.nvim/dap.lua')
+      return dbg.helpers.find_nearest_navigating_up(bufnr, '.nvim/dap.lua')
     end
 
     dbg.dap.detect_debug_root = function(bufnr)
-      return dbg.helpers.detect_root(bufnr, { '.vscode/launch.json', '.vscode/tasks.json', '.nvim/dap.lua' })
+      return dbg.helpers.detect_project_root(bufnr, { '.vscode/launch.json', '.vscode/tasks.json', '.nvim/dap.lua' })
     end
 
     dbg.dap.load_project_dap_file = function(dap_file, bufnr)
@@ -39,13 +51,13 @@ let
         return false
       end
 
-      if type(result) == 'function' then
-        local project_ok, project_err = pcall(result, {
-          dap = dap,
-          root = dbg.helpers.project_root_from_marker(dap_file),
-          bufnr = bufnr,
-          filetype = vim.bo[bufnr].filetype,
-        })
+        if type(result) == 'function' then
+          local project_ok, project_err = pcall(result, {
+            dap = dap,
+            root = dbg.helpers.find_project_root_from_marker_path(dap_file),
+            bufnr = bufnr,
+            filetype = vim.bo[bufnr].filetype,
+          })
         if not project_ok then
           dprint('Failed to run project dap.lua (' .. dap_file .. '): ' .. tostring(project_err))
           return false
@@ -271,12 +283,10 @@ let
         dbg.vscode.run_project_debug_config(true)
       end
     end)
-    keymapd('<leader>db', 'Debug: Toggle breakpoint', function() dap.toggle_breakpoint() end)
+    -- keymapd('<leader>db', 'Debug: Toggle breakpoint', function() dap.toggle_breakpoint() end)
     keymapd('<leader>dn', 'Debug: Step over', function() dap.step_over() end)
     keymapd('<leader>di', 'Debug: Step into', function() dap.step_into() end)
     keymapd('<leader>dO', 'Debug: Step out', function() dap.step_out() end)
-    keymapd('<leader>du', 'Debug: Toggle UI', function() dapui.toggle() end)
-    keymapd('<leader>dX', 'Debug: Close UI', function() dapui.close() end)
     keymapd('<leader>dx', 'Debug: Terminate/disconnect', function() if dap.session() then dap.terminate() end end)
     keymapd('<leader>do', 'Debug: Show task output', function()
       vim.cmd('DapTaskOutput')

@@ -1,20 +1,12 @@
 { ... }:
 
-let
-  lua = /*lua*/ ''
-    --
-    --
-    -- (Common section is complete)
-    --
-    --
-  '';
-in
 {
   common = true;
 
-  inherit lua;
-
   imports = [
+
+    # Shared runtime helpers that should be available to all common modules
+    ./helpers.nix
 
     # This is the starting point for most things
     ./base.nix
