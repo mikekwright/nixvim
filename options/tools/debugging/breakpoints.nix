@@ -25,13 +25,9 @@ let
       return root .. '/.nvim/dap-breakpoints.json'
     end
 
-    dbg.breakpoints.normalize_path = function(path)
-      return vim.fs.normalize(path)
-    end
-
     dbg.breakpoints.make_relative = function(root, path)
-      local normalized_root = dbg.breakpoints.normalize_path(root)
-      local normalized_path = dbg.breakpoints.normalize_path(path)
+      local normalized_root = vim.fs.normalize(root)
+      local normalized_path = vim.fs.normalize(path)
       local prefix = normalized_root .. '/'
       if normalized_path:sub(1, #prefix) == prefix then
         return normalized_path:sub(#prefix + 1)
@@ -122,7 +118,7 @@ let
 
       for _, breakpoint in ipairs(decoded.breakpoints) do
         if type(breakpoint.path) == 'string' and type(breakpoint.line) == 'number' then
-          local absolute_path = dbg.breakpoints.normalize_path(root .. '/' .. breakpoint.path)
+          local absolute_path = vim.fs.normalize(root .. '/' .. breakpoint.path)
           local bp_bufnr = vim.fn.bufadd(absolute_path)
           vim.fn.bufload(bp_bufnr)
           if breakpoint.line <= vim.api.nvim_buf_line_count(bp_bufnr) then
@@ -181,7 +177,7 @@ let
       for _, breakpoint in ipairs(dbg.breakpoints.collect_project_breakpoints(root)) do
         local suffix = breakpoint.condition or breakpoint.logMessage or breakpoint.hitCondition
         table.insert(items, {
-          file = dbg.breakpoints.normalize_path(root .. '/' .. breakpoint.path),
+          file = vim.fs.normalize(root .. '/' .. breakpoint.path),
           line = breakpoint.line,
           text = string.format('%s:%d', breakpoint.path, breakpoint.line) .. (suffix and ('  ' .. suffix) or ""),
         })
