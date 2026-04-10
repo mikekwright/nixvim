@@ -2,7 +2,16 @@
 
 let
   name = "lsp.python";
-  debugpyPython = pkgs.python311.withPackages (ps: [ ps.debugpy ]);
+
+  debugpyPython = pkgs.python313.withPackages (ps: [ 
+    ps.debugpy
+  ]);
+  # debugpyPython = pkgs.python311.withPackages (ps: [ 
+  #   (ps.debugpy.overridePythonAttrs (_: {
+  #     doCheck = false;
+  #     doInstallCheck = false;
+  #   }))
+  # ]);
 
   lua = /* lua */ ''
     local register_debug_language = _G.register_debug_language or function(spec)

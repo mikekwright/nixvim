@@ -1,7 +1,7 @@
 ---
 description: Agent responsible for acting as a second pair of eyes to review and verify the solution
 mode: subagent
-model: github-copilot/claude-opus-4.5
+model: github-copilot/claude-opus-4.6
 temperature: 0.4
 permission:
   edit: deny

@@ -1,7 +1,6 @@
 ---
 description: Agent responsible for analyzing the problem and project structure and other insights
 mode: subagent
-model: openai/gpt-5.3-codex-spark
 temperature: 0.1
 permission:
   edit: deny
