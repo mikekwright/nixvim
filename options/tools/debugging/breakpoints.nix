@@ -4,7 +4,7 @@ let
   name = "tools.debugging";
 
   lua = /* lua */ ''
-    local dbg = _G.nixvim_debugging
+    local dbg = _G.nixvim_debugger
     local dap = require('dap')
     local dap_breakpoints = require('dap.breakpoints')
 
@@ -14,10 +14,11 @@ let
 
     dbg.breakpoints.detect_project_root = function(bufnr)
       return dbg.helpers.detect_project_root(bufnr, {
-        '.nvim/dap.lua',
-        '.vscode/launch.json',
-        '.vscode/tasks.json',
-        '.nvim/dap-breakpoints.json',
+          '.nvim/dap.lua',
+          '.nvim/tasks.lua',
+          '.vscode/launch.json',
+          '.vscode/tasks.json',
+          '.nvim/dap-breakpoints.json',
       })
     end
 
@@ -200,22 +201,6 @@ let
         return
       end
 
-      local has_snacks, snacks = pcall(require, 'snacks')
-      if has_snacks and snacks.picker then
-        snacks.picker.pick({
-          source = 'dap-breakpoints',
-          items = items,
-          layout = 'vscode',
-          format = 'text',
-          title = 'Debug breakpoints',
-          confirm = function(picker, item)
-            picker:close()
-            dbg.breakpoints.open_breakpoint_item(item)
-          end,
-        })
-        return
-      end
-
       vim.ui.select(items, {
         prompt = 'Debug breakpoints',
         format_item = function(item)
@@ -246,8 +231,8 @@ let
 
     keymapd('<leader>dBB', 'Debug breakpoints: Picker', dbg.breakpoints.pick_project_breakpoint)
     keymapd('<leader>dBC', 'Debug breakpoints: Clear all', dbg.breakpoints.clear_project_breakpoints)
-    keymapd('<leader>db', 'Debug: Toggle breakpoint', function() 
-      dap.toggle_breakpoint() 
+    keymapd('<leader>db', 'Debug: Toggle breakpoint', function()
+      dap.toggle_breakpoint()
     end)
   '';
 in
