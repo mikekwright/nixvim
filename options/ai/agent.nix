@@ -276,7 +276,7 @@ let
                 print("Waiting for " .. agent.name .. " to initialize...")
                 vim.defer_fn(function()
                   callback(job_id, cb)
-                end, 5000)
+                end, 10000)
               else
                 callback(job_id, cb)
               end
