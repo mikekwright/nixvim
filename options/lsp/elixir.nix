@@ -78,6 +78,6 @@ in
 
   packages = with pkgs; [
     elixir-ls
-    elixir
+    beamPackages.elixir
   ];
 }

@@ -23,6 +23,7 @@ in
   packages = with pkgs; [
     nixd
 
-    statix
+    # statix tests are broken in the current nixpkgs pin; skip them
+    (statix.overrideAttrs (_: { doCheck = false; }))
   ];
 }

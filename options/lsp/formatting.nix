@@ -14,7 +14,7 @@
             command = "${pkgs.alejandra}/bin/alejandra",
           },
           prettier = {
-            command = "${pkgs.nodePackages.prettier}/bin/prettier",
+            command = "${pkgs.prettier}/bin/prettier",
           }
         },
 
@@ -48,7 +48,7 @@ in {
   
   packages = with pkgs; [
     alejandra # Uncompromissing nix formatter
-    nodePackages.prettier # For js,tsx,css,etc.
+    prettier # For js,tsx,css,etc.
   ];
 
   vimPackages = let

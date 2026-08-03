@@ -75,7 +75,7 @@ in
 
   packages = with pkgs; [
     erlang-language-platform
-    erlang
+    beamPackages.erlang
     rebar3
   ];
 }

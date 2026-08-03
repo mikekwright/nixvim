@@ -103,16 +103,14 @@ in {
 
       scriptText = fullModule.startScript;       # The actual neovim package solution.
 
-      neovimConfiguration = pkgs.neovimUtils.makeNeovimConfig {
-        #  Install all the needed plugins at this point.
-        packages.myVimPackage = {
-          start = fullModule.vimPackages;
-          opt = fullModule.vimOptPackages;
+      neovimPackage = pkgs.wrapNeovim pkgs.neovim-unwrapped {
+        configure = {
+          #  Install all the needed plugins at this point.
+          packages.myVimPackage = {
+            start = fullModule.vimPackages;
+            opt = fullModule.vimOptPackages;
+          };
         };
-      };
-
-      neovimPackage =  pkgs.neovim.override {
-        configure = neovimConfiguration;
       };
 
       neowrapper = pkgs.writeShellApplication {

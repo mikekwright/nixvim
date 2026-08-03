@@ -2,21 +2,21 @@
   description = "A neovim flake, mostly around lua";
 
   inputs = {
-    # Neovim version 0.11.5
-    nixpkgs.url = "github:nixos/nixpkgs/ffcdcf99d65c61956d882df249a9be53e5902ea5";
+    # Neovim version 0.12.4
+    nixpkgs.url = "github:nixos/nixpkgs/f6776b4d899bca9dc8f99ee9b2c6c12d778f9233";
 
-    # Flake parts for 2025-11-12
-    flake-parts.url = "github:hercules-ci/flake-parts/52a2caecc898d0b46b2b905f058ccc5081f842da";
+    # Flake parts for 2026-08-01
+    flake-parts.url = "github:hercules-ci/flake-parts/427bf4bd9435fdf21321c8cc628c24efc14c0f7a";
 
     # Track: 
     #   master - https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/op/opencode/package.nix
     #   unstable - https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/op/opencode/package.nix
-    opencode.url = "github:nixos/nixpkgs/0b500c8d3a0ea31d46b88bc20d274e7c4c4931f4";
+    opencode.url = "github:nixos/nixpkgs/9d590febde3a5eae8a2fbb70a45f5391bde62214";
 
     # Track:
     #   master - https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/cl/claude-code/package.nix
     #   unstable - https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/cl/claude-code/package.nix 
-    claude-code.url = "github:nixos/nixpkgs/d6bac3662d7682ae471411fa49bb3e7744a4a3da";
+    claude-code.url = "github:nixos/nixpkgs/0207bfa1f135caa7135303b34dcf64f739f390f7";
   };
 
   outputs = {
