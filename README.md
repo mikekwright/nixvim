@@ -47,10 +47,16 @@ any of these packages directly using Nix:
 
 **Available Packages**:
 
-- **complete** (default): Full-featured configuration with all LSP servers, AI agents, and development tools
-  - All language servers (Rust, Python, Go, TypeScript, Nix, Haskell, Kotlin, Zig, D)
+- **complete** (default): Full-featured configuration with most LSP servers, AI agents, and development tools
+  - Language servers for Rust, Python, Go, TypeScript, Nix, Kotlin, Zig, and D (Haskell lives in full — its toolchain adds ~9 GiB)
   - Complete AI integration (agent system, Copilot, OpenCode)
   - All development tools (debugging, testing, database, coverage)
+  - Uses the system-installed claude and opencode binaries rather than bundling them
+
+- **full**: Everything in complete, plus Haskell and bundled AI binaries
+  - Adds the Haskell language server and toolchain
+  - Includes wrapped claude-code and opencode packages so no system install is needed
+  - The wrappers still prefer a system-installed binary when one is found
 
 - **minimal**: Lightweight configuration with just essential tools
   - No LSP servers or AI features
@@ -77,6 +83,7 @@ You can run any package variant directly from the GitHub repository without clon
 nix run github:mikekwright/nixvim
 
 # Run a specific package variant
+nix run github:mikekwright/nixvim#full
 nix run github:mikekwright/nixvim#minimal
 nix run github:mikekwright/nixvim#python
 nix run github:mikekwright/nixvim#ai
@@ -91,6 +98,7 @@ When working on the configuration locally, use:
 nix run .
 
 # Run a specific variant
+nix run .#full
 nix run .#minimal
 nix run .#python
 nix run .#ai

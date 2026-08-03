@@ -11,6 +11,7 @@ in
     #   but we will have to see.
     # ./avante.nix
     ./agent.nix
+    ./binaries.nix
 
     ./claude.nix
     ./copilot.nix

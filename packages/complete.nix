@@ -8,7 +8,6 @@ lib.makeIncludes {
     "lsp.elixir"
     "lsp.erlang"
     "lsp.golang"
-    "lsp.haskell"
     "lsp.kotlin"
     "lsp.markdown"
     "lsp.neotest"

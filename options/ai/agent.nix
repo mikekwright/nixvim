@@ -3,15 +3,13 @@
 let
   name = "ai.agent";
 
-  # Import custom wrappers
-  opencode-agent = import ./agents/opencode-agent.nix { inherit pkgs extra-pkgs; };
-  claude-agent = import ./agents/claude-agent.nix { inherit pkgs extra-pkgs; };
-
   # Agent configuration list
   # Each agent should have: package, name, description, command
+  # The claude and opencode binaries live in ai.binaries (full mode only),
+  # so their entries here carry no package
   agents = [
     {
-      package = claude-agent;
+      package = null;
       id = "claude";
       name = "Claude Code";
       description = "Anthropic's Claude AI assistant for coding";
@@ -46,7 +44,7 @@ let
       command = "gemini";
     }
     {
-      package = opencode-agent;
+      package = null;
       id = "opencode";
       name = "OpenCode";
       description = "OpenCode AI assistant for coding";
@@ -906,5 +904,5 @@ in
   inherit name lua;
 
   # Dynamically include all agent packages
-  packages = map (agent: agent.package) agents;
+  packages = builtins.filter (p: p != null) (map (agent: agent.package) agents);
 }
