@@ -35,10 +35,6 @@ let
           "User:",                -- Direct user prompt
           ">>>"                   -- Command prompt
         },
-        copilot = { ">>> ", "> " },
-        chatgpt = { ">>> ", "User:" },
-        gemini = { ">>> ", "User:" },
-        cursor = { ">>> ", "User:" },
       }
     }
 
@@ -108,16 +104,6 @@ let
       local name_lower = agent_name:lower()
       if name_lower:match("claude") then
         return "claude"
-      elseif name_lower:match("opencode") then
-        return "opencode"
-      elseif name_lower:match("copilot") then
-        return "copilot"
-      elseif name_lower:match("chatgpt") then
-        return "chatgpt"
-      elseif name_lower:match("gemini") then
-        return "gemini"
-      elseif name_lower:match("cursor") then
-        return "cursor"
       else
         return "opencode"
       end

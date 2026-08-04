@@ -286,24 +286,18 @@ fuzzy search and preview capabilities.
 
 ## AI Agent
 
-This configuration includes comprehensive AI agent integration, allowing you to interact with various AI assistants directly
-from Neovim. All AI agent keymaps are organized under `<leader>a` and are discoverable through which-key.
+This configuration includes comprehensive AI agent integration, allowing you to interact with two AI assistants directly
+from Neovim: OpenCode and Claude Code. All AI agent keymaps are organized under `<leader>a` and are discoverable through
+which-key.
 
-The AI agent system supports multiple agents including Claude Code, GitHub Copilot CLI, Cursor CLI, ChatGPT CLI, Gemini CLI,
-and OpenCode. Each agent runs in a persistent terminal buffer that can be managed through various window layouts.
-
-### Agent Selection
-
-You can configure different AI agents on a per-project basis. The system remembers your agent preference for each working
-directory and automatically restores it when you return to that project. Agent preferences are stored in a configuration
-file at `~/.config/nvim-ai-config.json`.
-
-Use the agent picker to switch between available agents at any time. Your selection will be saved and persist across
-Neovim sessions for the current project directory.
+Each agent runs in its own uniquely named persistent terminal buffer (`AI:opencode` and `AI:claude-code`). Keymaps that
+target a specific agent follow a suffix convention: `a` for OpenCode and `c` for Claude Code (for example `<leader>aha`
+hides the OpenCode terminal while `<leader>ahc` hides the Claude Code terminal). `<leader>aa` opens the OpenCode terminal
+and `<leader>ac` opens the Claude Code one.
 
 ### Agent Terminal
 
-The agent terminal provides a dedicated buffer for interacting with your selected AI agent. The terminal can be opened in
+The agent terminals provide a dedicated buffer for interacting with each AI agent. A terminal can be opened in
 various modes:
 
 - Full-screen terminal that replaces the current buffer
@@ -315,7 +309,9 @@ agent, send interrupts, or exit the agent entirely through dedicated commands.
 
 ### Prompt Window
 
-The prompt window is a composable workspace for crafting messages to send to your AI agent. It operates in two modes:
+The prompt window is a single composable workspace shared by both agents for crafting larger-context messages. On
+submission you pick the destination: `<leader>asa` sends the content to OpenCode while `<leader>asc` sends it to Claude
+Code (`<C-s>a` / `<C-s>c` in insert mode). It operates in two modes:
 
 **Floating Mode**: Opens as a centered floating window (80% of screen size) with a rounded border, perfect for quick
 interactions without disrupting your layout.
@@ -335,7 +331,8 @@ combining code selections, file paths, and your own text.
 
 ### Agent Mode Layout
 
-Agent mode creates a specialized three-panel layout optimized for AI-assisted development:
+Agent mode creates a specialized three-panel layout optimized for AI-assisted development. It is opened per agent:
+`<leader>ama` builds the layout around OpenCode and `<leader>amc` builds it around Claude Code.
 
 **Layout Structure**:
 - Left side (75% width): Your main working buffer for editing code

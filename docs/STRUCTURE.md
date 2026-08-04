@@ -40,7 +40,7 @@ This is a **declarative Neovim configuration system** built entirely with Nix Fl
 │   │   ├── dap.nix          # Debugging (DAP protocol)
 │   │   └── neotest.nix      # Testing framework integration
 │   ├── ai/                  # AI agent and completion features
-│   │   ├── agent.nix        # AI agent system (Copilot CLI, Claude Code, etc.)
+│   │   ├── agent.nix        # AI agent system (OpenCode and Claude Code terminals)
 │   │   ├── copilot.nix      # GitHub Copilot integration
 │   │   ├── avante.nix       # Avante AI plugin
 │   │   ├── opencode.nix     # OpenCode AI integration
@@ -265,11 +265,10 @@ These are conditionally included based on package configuration.
 
 **Files**:
 - `agent.nix` - Main AI agent system
-  - Supports: Claude Code, GitHub Copilot CLI, Cursor CLI, ChatGPT, Gemini, OpenCode
-  - Persistent terminal buffer for conversation
-  - Prompt window for composing messages
-  - Agent mode layout (3-panel specialized view)
-  - Agent selection/persistence per project (`~/.config/nvim-ai-config.json`)
+  - Supports: OpenCode and Claude Code
+  - Persistent, uniquely named terminal buffer per agent (`AI:opencode`, `AI:claude-code`)
+  - Shared prompt window for composing messages, submitted to a specific agent
+  - Agent mode layout (3-panel specialized view) per agent
   
 - `copilot.nix` - GitHub Copilot integration
   - Inline completions in Blink.cmp

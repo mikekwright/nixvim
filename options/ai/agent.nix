@@ -1,206 +1,40 @@
-{ pkgs, lib, extra-pkgs, ... }:
+{ ... }:
 
 let
   name = "ai.agent";
 
-  # Agent configuration list
-  # Each agent should have: package, name, description, command
-  # The claude and opencode binaries live in ai.binaries (full mode only),
-  # so their entries here carry no package
-  agents = [
-    {
-      package = null;
-      id = "claude";
-      name = "Claude Code";
-      description = "Anthropic's Claude AI assistant for coding";
-      command = "claude";
-    }
-    {
-      package = pkgs.github-copilot-cli;
-      id = "copilot";
-      name = "Copilot CLI";
-      description = "GitHub Copilot command-line interface";
-      command = "copilot";
-    }
-    {
-      package = pkgs.cursor-cli;
-      id = "cursor";
-      name = "Cursor CLI";
-      description = "Cursor AI code editor CLI";
-      command = "cursor-cli";
-    }
-    {
-      package = pkgs.chatgpt-cli;
-      id = "chatgpt";
-      name = "ChatGPT CLI";
-      description = "OpenAI's ChatGPT command-line interface";
-      command = "chatgpt";
-    }
-    {
-      package = pkgs.gemini-cli;
-      id = "gemini";
-      name = "Gemini CLI";
-      description = "Google's Gemini AI command-line interface";
-      command = "gemini";
-    }
-    {
-      package = null;
-      id = "opencode";
-      name = "OpenCode";
-      description = "OpenCode AI assistant for coding";
-      command = "opencode";
-    }
-  ];
-
-  # Generate Lua agent definitions from Nix agent list
-  agentDefsLua = builtins.concatStringsSep ",\n      " (
-    map (agent: ''
-      ${agent.id} = {
-        name = "${agent.name}",
-        command = "${agent.command}",
-        marker = "is_${agent.id}_terminal"
-      }'') agents
-  );
-
-  # Unified AI agent module supporting multiple AI assistants
+  # Two fixed AI agents: opencode (default) and claude-code.
+  # The binaries live in ai.binaries (full mode only) or come from system installs.
   lua = /*lua*/ ''
     -- AI Agent Configuration Module
-    -- This module manages multiple AI agents and provides a unified interface
+    -- Hosts two AI agent terminals (OpenCode and Claude Code), each in its own
+    -- uniquely named buffer, plus a shared prompt buffer for larger contexts.
 
-    -- Available AI agents
     local AI_AGENTS = {
-      ${agentDefsLua}
+      opencode = {
+        id = "opencode",
+        name = "OpenCode",
+        command = "opencode",
+        marker = "is_opencode_terminal",
+        buffer_name = "AI:opencode",
+        init_wait_ms = 10000,
+      },
+      claude = {
+        id = "claude",
+        name = "Claude Code",
+        command = "claude",
+        marker = "is_claude_terminal",
+        buffer_name = "AI:claude-code",
+        init_wait_ms = 5000,
+      },
     }
 
-    -- Global state for current agent
-    local current_agent = "opencode"  -- default
-    local config_file = vim.fn.expand("~/.config/nvim-ai-config.json")
-
-    -- Helper function to read JSON config file
-    local function read_config()
-      local file = io.open(config_file, "r")
-      if not file then
-        return {}
-      end
-
-      local content = file:read("*all")
-      file:close()
-
-      if content == "" then
-        return {}
-      end
-
-      -- Parse JSON
-      local ok, config = pcall(vim.fn.json_decode, content)
-      if ok then
-        return config
-      else
-        return {}
-      end
+    local function get_agent(agent_id)
+      return AI_AGENTS[agent_id]
     end
 
-    -- Helper function to write JSON config file with pretty formatting
-    local function write_config(config)
-      -- Build JSON manually for pretty formatting with 2-space indent
-      local lines = {"{"}
-      local entries = {}
-
-      for path, agent in pairs(config) do
-        table.insert(entries, {path = path, agent = agent})
-      end
-
-      -- Sort entries by path for consistent output
-      table.sort(entries, function(a, b) return a.path < b.path end)
-
-      for i, entry in ipairs(entries) do
-        local path_json = vim.fn.json_encode(entry.path)
-        local agent_json = vim.fn.json_encode(entry.agent)
-        local line = "  " .. path_json .. ": " .. agent_json
-        if i < #entries then
-          line = line .. ","
-        end
-        table.insert(lines, line)
-      end
-
-      table.insert(lines, "}")
-
-      local file = io.open(config_file, "w")
-      if file then
-        file:write(table.concat(lines, "\n"))
-        file:close()
-        return true
-      end
-      return false
-    end
-
-    -- Initialize agent selection from config file
-    local function init_agent_config()
-      local config = read_config()
-      local cwd = vim.fn.getcwd()
-
-      if config[cwd] then
-        local agent = config[cwd]
-        if AI_AGENTS[agent] then
-          current_agent = agent
-          print("AI Agent set to: " .. AI_AGENTS[agent].name)
-        else
-          -- Agent configured but not available, fallback to opencode
-          current_agent = "opencode"
-          vim.notify(
-            string.format("Configured agent '%s' not found or not available.\nFalling back to OpenCode.", agent),
-            vim.log.levels.WARN
-          )
-        end
-      else
-        -- Default to opencode if not configured
-        current_agent = "opencode"
-      end
-    end
-
-    -- Save current directory's agent preference
-    local function save_agent_config(agent)
-      local config = read_config()
-      local cwd = vim.fn.getcwd()
-      config[cwd] = agent
-
-      if write_config(config) then
-        current_agent = agent
-        print("AI Agent set to: " .. AI_AGENTS[agent].name .. " for " .. cwd)
-      else
-        print("Failed to save agent configuration")
-      end
-    end
-
-    -- Function to show agent picker
-    local function show_agent_picker()
-      local choices = {}
-      local agent_keys = {}
-
-      for key, agent in pairs(AI_AGENTS) do
-        table.insert(choices, agent.name)
-        table.insert(agent_keys, key)
-      end
-
-      vim.ui.select(choices, {
-        prompt = "Select AI Agent:",
-        format_item = function(item)
-          return item
-        end,
-      }, function(choice, idx)
-        if choice and idx then
-          save_agent_config(agent_keys[idx])
-        end
-      end)
-    end
-
-    -- Get current agent config
-    local function get_current_agent()
-      return AI_AGENTS[current_agent]
-    end
-
-    -- Helper function to find agent terminal buffer
-    local function find_agent_buffer()
-      local agent = get_current_agent()
+    -- Helper function to find an agent's terminal buffer
+    local function find_agent_buffer(agent)
       for _, buf in ipairs(vim.api.nvim_list_bufs()) do
         if vim.api.nvim_buf_is_valid(buf) then
           local ok, is_agent = pcall(vim.api.nvim_buf_get_var, buf, agent.marker)
@@ -212,10 +46,22 @@ let
       return nil
     end
 
-    -- Function to open or switch to agent terminal
-    function open_agent_terminal()
-      local agent = get_current_agent()
-      local agent_buf = find_agent_buffer()
+    -- Helper function to create an agent terminal in the current window
+    local function create_agent_terminal(agent)
+      local buf = vim.api.nvim_create_buf(true, false)
+      vim.api.nvim_set_current_buf(buf)
+      vim.fn.termopen(agent.command)
+      pcall(vim.api.nvim_buf_set_name, buf, agent.buffer_name)
+      vim.api.nvim_buf_set_var(buf, agent.marker, true)
+      vim.api.nvim_buf_set_var(buf, "agent_name", agent.name)
+      register_agent_notification_handler(buf, agent.name)
+      return buf
+    end
+
+    -- Function to open or switch to an agent terminal
+    function open_agent_terminal(agent_id)
+      local agent = get_agent(agent_id)
+      local agent_buf = find_agent_buffer(agent)
       local agent_win = agent_buf and find_window_for_buffer(agent_buf) or nil
 
       local current_buf = vim.api.nvim_get_current_buf()
@@ -230,20 +76,15 @@ let
         vim.api.nvim_set_current_buf(agent_buf)
         vim.cmd('startinsert')
       else
-        local buf = vim.api.nvim_create_buf(true, false)
-        vim.api.nvim_set_current_buf(buf)
-        vim.fn.termopen(agent.command)
-        vim.api.nvim_buf_set_var(buf, agent.marker, true)
-        vim.api.nvim_buf_set_var(buf, "agent_name", agent.name)
-        register_agent_notification_handler(buf, agent.name)
+        create_agent_terminal(agent)
         vim.cmd('startinsert')
       end
     end
 
-    -- Helper function to ensure agent terminal exists and is ready
-    local function with_agent_terminal(callback, on_error)
-      local agent = get_current_agent()
-      local agent_buf = find_agent_buffer()
+    -- Helper function to ensure an agent terminal exists and is ready
+    local function with_agent_terminal(agent_id, callback, on_error)
+      local agent = get_agent(agent_id)
+      local agent_buf = find_agent_buffer(agent)
       local terminal_already_existed = agent_buf ~= nil
 
       if agent_buf then
@@ -256,7 +97,7 @@ let
 
       if not agent_buf then
         print(agent.name .. " terminal not found, creating one...")
-        open_agent_terminal()
+        open_agent_terminal(agent_id)
       end
 
       vim.defer_fn(function()
@@ -265,7 +106,7 @@ let
 
         local function try_callback()
           retry_count = retry_count + 1
-          local cb = find_agent_buffer()
+          local cb = find_agent_buffer(agent)
 
           if cb then
             local ok, job_id = pcall(vim.api.nvim_buf_get_var, cb, "terminal_job_id")
@@ -274,7 +115,7 @@ let
                 print("Waiting for " .. agent.name .. " to initialize...")
                 vim.defer_fn(function()
                   callback(job_id, cb)
-                end, 10000)
+                end, agent.init_wait_ms)
               else
                 callback(job_id, cb)
               end
@@ -298,13 +139,13 @@ let
       end, 100)
     end
 
-    -- Function to restart agent in the terminal
-    local function restart_agent_terminal()
-      local agent = get_current_agent()
-      local agent_buf = find_agent_buffer()
+    -- Function to restart an agent in its terminal
+    local function restart_agent_terminal(agent_id)
+      local agent = get_agent(agent_id)
+      local agent_buf = find_agent_buffer(agent)
       if not agent_buf then
         print(agent.name .. " terminal not found, creating new one...")
-        open_agent_terminal()
+        open_agent_terminal(agent_id)
         return
       end
 
@@ -328,9 +169,10 @@ let
       print(agent.name .. " terminal restarted")
     end
 
-    -- Function to open agent terminal in vertical split
-    local function open_agent_terminal_vertical()
-      local agent_buf = find_agent_buffer()
+    -- Function to open an agent terminal in vertical split
+    local function open_agent_terminal_vertical(agent_id)
+      local agent = get_agent(agent_id)
+      local agent_buf = find_agent_buffer(agent)
       local agent_win = agent_buf and find_window_for_buffer(agent_buf) or nil
 
       if agent_buf and agent_win then
@@ -340,21 +182,15 @@ let
         vim.api.nvim_set_current_buf(agent_buf)
       else
         vim.cmd('vsplit')
-        local buf = vim.api.nvim_create_buf(true, false)
-        vim.api.nvim_set_current_buf(buf)
-        local agent = get_current_agent()
-        vim.fn.termopen(agent.command)
-        vim.api.nvim_buf_set_var(buf, agent.marker, true)
-        vim.api.nvim_buf_set_var(buf, "agent_name", agent.name)
-        register_agent_notification_handler(buf, agent.name)
+        create_agent_terminal(agent)
         vim.cmd('startinsert')
       end
     end
 
-    -- Function to hide agent terminal if visible
-    local function hide_agent_terminal()
-      local agent = get_current_agent()
-      local agent_buf = find_agent_buffer()
+    -- Function to hide an agent terminal if visible
+    local function hide_agent_terminal(agent_id)
+      local agent = get_agent(agent_id)
+      local agent_buf = find_agent_buffer(agent)
       if not agent_buf then
         return
       end
@@ -365,10 +201,10 @@ let
       end
     end
 
-    -- Function to exit agent
-    local function exit_agent()
-      local agent = get_current_agent()
-      local agent_buf = find_agent_buffer()
+    -- Function to exit an agent
+    local function exit_agent(agent_id)
+      local agent = get_agent(agent_id)
+      local agent_buf = find_agent_buffer(agent)
       if not agent_buf then
         print(agent.name .. " terminal not found")
         return
@@ -377,6 +213,37 @@ let
       local job_id = vim.api.nvim_buf_get_var(agent_buf, "terminal_job_id")
       if job_id then
         vim.fn.chansend(job_id, "/exit\n")
+      end
+    end
+
+    -- Function to interrupt current agent command
+    local function interrupt_agent(agent_id)
+      local agent = get_agent(agent_id)
+      local agent_buf = find_agent_buffer(agent)
+      if not agent_buf then
+        print(agent.name .. " terminal not found")
+        return
+      end
+
+      local job_id = vim.api.nvim_buf_get_var(agent_buf, "terminal_job_id")
+      if job_id then
+        vim.fn.chansend(job_id, "\x03")
+        print("Sent interrupt signal to " .. agent.name)
+      end
+    end
+
+    -- Function to send newline to an agent
+    local function send_newline_to_agent(agent_id)
+      local agent = get_agent(agent_id)
+      local agent_buf = find_agent_buffer(agent)
+      if not agent_buf then
+        print(agent.name .. " terminal not found")
+        return
+      end
+
+      local job_id = vim.api.nvim_buf_get_var(agent_buf, "terminal_job_id")
+      if job_id then
+        vim.fn.chansend(job_id, "\n")
       end
     end
 
@@ -391,7 +258,7 @@ let
         end
       end
 
-      local function submit_to_agent()
+      local function submit_to_agent(agent_id)
         local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
         local text = table.concat(lines, "\n")
 
@@ -414,7 +281,7 @@ let
           end
         end
 
-        with_agent_terminal(function(job_id, agent_buf)
+        with_agent_terminal(agent_id, function(job_id, agent_buf)
           vim.fn.chansend(job_id, text)
           vim.fn.chansend(job_id, "\n")
 
@@ -432,35 +299,22 @@ let
         end)
       end
 
-      -- Clear existing keymaps and set new ones
-      pcall(vim.api.nvim_buf_del_keymap, buf, "i", "<C-x>")
-      pcall(vim.api.nvim_buf_del_keymap, buf, "i", "<C-s>")
-      pcall(vim.api.nvim_buf_del_keymap, buf, "n", "<leader>ax")
-      pcall(vim.api.nvim_buf_del_keymap, buf, "n", "<leader>as")
+      local function buf_keymap(mode, key, callback)
+        pcall(vim.api.nvim_buf_del_keymap, buf, mode, key)
+        vim.api.nvim_buf_set_keymap(buf, mode, key, "", {
+          callback = callback,
+          noremap = true,
+          silent = true,
+        })
+      end
 
-      vim.api.nvim_buf_set_keymap(buf, "i", "<C-x>", "", {
-        callback = close_prompt,
-        noremap = true,
-        silent = true,
-      })
+      buf_keymap("i", "<C-x>", close_prompt)
+      buf_keymap("n", "<leader>ax", close_prompt)
 
-      vim.api.nvim_buf_set_keymap(buf, "i", "<C-s>", "", {
-        callback = submit_to_agent,
-        noremap = true,
-        silent = true,
-      })
-
-      vim.api.nvim_buf_set_keymap(buf, "n", "<leader>ax", "", {
-        callback = close_prompt,
-        noremap = true,
-        silent = true,
-      })
-
-      vim.api.nvim_buf_set_keymap(buf, "n", "<leader>as", "", {
-        callback = submit_to_agent,
-        noremap = true,
-        silent = true,
-      })
+      buf_keymap("i", "<C-s>a", function() submit_to_agent("opencode") end)
+      buf_keymap("i", "<C-s>c", function() submit_to_agent("claude") end)
+      buf_keymap("n", "<leader>asa", function() submit_to_agent("opencode") end)
+      buf_keymap("n", "<leader>asc", function() submit_to_agent("claude") end)
     end
 
     -- Helper function to find agent prompt buffer (even if hidden)
@@ -508,7 +362,7 @@ let
       end
     end
 
-    -- Function to send selected text to agent prompt
+    -- Function to send selected text to the agent prompt buffer
     local function send_selection_to_agent()
       -- Get visual selection marks
       local bufnr = vim.api.nvim_get_current_buf()
@@ -558,7 +412,7 @@ let
       insert_text_into_prompt(text)
     end
 
-    -- Function to send current file path to agent prompt
+    -- Function to send current file path to the agent prompt buffer
     local function send_filepath_to_agent()
       -- - %:p - Full absolute path (current behavior)
       -- - %:. - Path relative to current working directory
@@ -575,41 +429,8 @@ let
       insert_text_into_prompt(filepath)
     end
 
-    -- Function to interrupt current agent command
-    local function interrupt_agent()
-      local agent = get_current_agent()
-      local agent_buf = find_agent_buffer()
-      if not agent_buf then
-        print(agent.name .. " terminal not found")
-        return
-      end
-
-      local job_id = vim.api.nvim_buf_get_var(agent_buf, "terminal_job_id")
-      if job_id then
-        vim.fn.chansend(job_id, "\x03")
-        print("Sent interrupt signal to " .. agent.name)
-      end
-    end
-
-    -- Function to send newline to agent
-    local function send_newline_to_agent()
-      local agent = get_current_agent()
-      local agent_buf = find_agent_buffer()
-      if not agent_buf then
-        print(agent.name .. " terminal not found")
-        return
-      end
-
-      local job_id = vim.api.nvim_buf_get_var(agent_buf, "terminal_job_id")
-      if job_id then
-        vim.fn.chansend(job_id, "\n")
-      end
-    end
-
-    -- Function to open floating prompt window for agent
+    -- Function to open floating prompt window for agents
     open_agent_prompt = function(initial_text)
-      local agent = get_current_agent()
-
       -- Check if prompt window is already visible
       local existing_win, existing_buf = find_agent_prompt()
       if existing_win then
@@ -669,7 +490,7 @@ let
           col = col,
           style = "minimal",
           border = "rounded",
-          title = " " .. agent.name .. " Prompt ",
+          title = " AI Agent Prompt ",
           title_pos = "center",
         }
 
@@ -767,8 +588,10 @@ let
       end
     end
 
-    -- Function to setup agent mode layout
-    local function setup_agent_mode()
+    -- Function to setup agent mode layout for a specific agent
+    local function setup_agent_mode(agent_id)
+      local agent = get_agent(agent_id)
+
       -- Save the current window
       local original_win = vim.api.nvim_get_current_win()
 
@@ -788,17 +611,10 @@ let
       local terminal_height = math.floor(win_height * 0.75)
 
       -- Open agent terminal in the right window
-      local agent = get_current_agent()
-      local agent_buf = find_agent_buffer()
+      local agent_buf = find_agent_buffer(agent)
 
       if not agent_buf then
-        -- Create new agent terminal
-        local buf = vim.api.nvim_create_buf(true, false)
-        vim.api.nvim_win_set_buf(right_win, buf)
-        vim.fn.termopen(agent.command)
-        vim.api.nvim_buf_set_var(buf, agent.marker, true)
-        vim.api.nvim_buf_set_var(buf, "agent_name", agent.name)
-        register_agent_notification_handler(buf, agent.name)
+        create_agent_terminal(agent)
       else
         -- Use existing agent terminal
         vim.api.nvim_win_set_buf(right_win, agent_buf)
@@ -838,7 +654,7 @@ let
       -- Return focus to original window
       vim.api.nvim_set_current_win(original_win)
 
-      print("Agent mode layout activated")
+      print(agent.name .. " mode layout activated")
     end
 
     -- Register agent prompt completion disable check
@@ -846,9 +662,6 @@ let
       local ok, is_agent_prompt = pcall(vim.api.nvim_buf_get_var, 0, "is_agent_prompt")
       return ok and is_agent_prompt
     end, "AI Agent prompt window")
-
-    -- Initialize agent configuration on startup
-    init_agent_config()
 
     -- Function to clear the agent prompt buffer
     local function clear_agent_prompt()
@@ -861,48 +674,59 @@ let
       end
     end
 
-    -- Wrapper function to escape terminal mode and open agent terminal
-    local function escape_terminal_and_open_agent()
+    -- Wrapper function to escape terminal mode and open an agent terminal
+    local function escape_terminal_and_open_agent(agent_id)
       vim.cmd("stopinsert")
       vim.schedule(function()
-        open_agent_terminal()
+        open_agent_terminal(agent_id)
       end)
     end
 
-    -- Register dashboard action (shows current agent)
-    register_dashboard_action("a", "AI Agent", ":lua open_agent_terminal()<CR>")
+    -- Register dashboard actions
+    register_dashboard_action("a", "OpenCode", ":lua open_agent_terminal('opencode')<CR>")
+    register_dashboard_action("c", "Claude Code", ":lua open_agent_terminal('claude')<CR>")
 
-    -- Keyboard shortcuts for AI agent terminal
-    keymapd("<leader>aa", "Open/Switch to AI agent terminal", open_agent_terminal)
-    keymapd("<leader>am", "Setup AI agent mode layout", setup_agent_mode)
+    -- Keyboard shortcuts: terminals
+    keymapd("<leader>aa", "Open/Switch to OpenCode terminal", function() open_agent_terminal("opencode") end)
+    keymapd("<leader>ac", "Open/Switch to Claude Code terminal", function() open_agent_terminal("claude") end)
+    keymapd("<leader>ava", "Open OpenCode terminal (vertical split)", function() open_agent_terminal_vertical("opencode") end)
+    keymapd("<leader>avc", "Open Claude Code terminal (vertical split)", function() open_agent_terminal_vertical("claude") end)
+    keymapd("<leader>aha", "Hide OpenCode terminal", function() hide_agent_terminal("opencode") end)
+    keymapd("<leader>ahc", "Hide Claude Code terminal", function() hide_agent_terminal("claude") end)
+    keymapd("<leader>ara", "Restart OpenCode in terminal", function() restart_agent_terminal("opencode") end)
+    keymapd("<leader>arc", "Restart Claude Code in terminal", function() restart_agent_terminal("claude") end)
+    keymapd("<leader>aea", "Exit OpenCode terminal", function() exit_agent("opencode") end)
+    keymapd("<leader>aec", "Exit Claude Code terminal", function() exit_agent("claude") end)
+    keymapd("<leader>aia", "Interrupt OpenCode command (Ctrl-C)", function() interrupt_agent("opencode") end)
+    keymapd("<leader>aic", "Interrupt Claude Code command (Ctrl-C)", function() interrupt_agent("claude") end)
+    keymapd("<leader>ana", "Send newline to OpenCode", function() send_newline_to_agent("opencode") end)
+    keymapd("<leader>anc", "Send newline to Claude Code", function() send_newline_to_agent("claude") end)
+    keymapd("<leader>ama", "Setup OpenCode mode layout", function() setup_agent_mode("opencode") end)
+    keymapd("<leader>amc", "Setup Claude Code mode layout", function() setup_agent_mode("claude") end)
+
+    -- Keyboard shortcuts: shared prompt buffer
     keymapd("<leader>app", "Open AI agent prompt window", open_agent_prompt)
     keymapd("<leader>aph", "Hide AI agent prompt window", hide_agent_prompt)
     keymapd("<leader>apf", "Toggle AI agent prompt floating mode", toggle_agent_prompt_float)
     keymapd("<leader>apc", "Clear AI agent prompt buffer", clear_agent_prompt)
     ikeymapd("<C-p>", "Open AI agent prompt window", open_agent_prompt)
     tkeymapd("<C-p>", "Open AI agent prompt window", open_agent_prompt)
-    keymapd("<leader>ar", "Restart AI agent in terminal", restart_agent_terminal)
-    keymapd("<leader>av", "Open AI agent terminal (vertical split)", open_agent_terminal_vertical)
-    keymapd("<leader>ah", "Hide AI agent terminal", hide_agent_terminal)
-    keymapd("<leader>ae", "Exit AI agent terminal", exit_agent)
+    keymapd("<leader>af", "Send current file path to AI agent prompt", send_filepath_to_agent)
     vim.keymap.set("x", "<leader>as", function()
       -- Store a reference to the function to be called after exiting visual mode
       vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", false)
       vim.schedule(function()
         send_selection_to_agent()
       end)
-    end, { silent = true, noremap = true, desc = "Send selection to AI agent" })
-    keymapd("<leader>af", "Send current file path to AI agent", send_filepath_to_agent)
-    keymapd("<leader>ai", "Interrupt AI agent command (Ctrl-C)", interrupt_agent)
-    keymapd("<leader>an", "Send newline to AI agent", send_newline_to_agent)
-    keymapd("<leader>ax", "Select AI agent", show_agent_picker)
-    keymapd("<C-w>a", "Navigate to Agent", open_agent_terminal)
-    tkeymapd("<C-w>a", "Navigate to Agent from terminal", escape_terminal_and_open_agent)
+    end, { silent = true, noremap = true, desc = "Send selection to AI agent prompt" })
+
+    -- Keyboard shortcuts: navigation
+    keymapd("<C-w>aa", "Navigate to OpenCode", function() open_agent_terminal("opencode") end)
+    keymapd("<C-w>ac", "Navigate to Claude Code", function() open_agent_terminal("claude") end)
+    tkeymapd("<C-w>aa", "Navigate to OpenCode from terminal", function() escape_terminal_and_open_agent("opencode") end)
+    tkeymapd("<C-w>ac", "Navigate to Claude Code from terminal", function() escape_terminal_and_open_agent("claude") end)
   '';
 in
 {
   inherit name lua;
-
-  # Dynamically include all agent packages
-  packages = builtins.filter (p: p != null) (map (agent: agent.package) agents);
 }
