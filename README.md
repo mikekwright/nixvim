@@ -56,7 +56,7 @@ any of these packages directly using Nix:
 - **full**: Everything in complete, plus Haskell and bundled AI binaries
   - Adds the Haskell language server and toolchain
   - Includes wrapped claude-code and opencode packages so no system install is needed
-  - The wrappers still prefer a system-installed binary when one is found
+  - The AI agent terminals always run these bundled versions, ignoring any system install
 
 - **minimal**: Lightweight configuration with just essential tools
   - No LSP servers or AI features

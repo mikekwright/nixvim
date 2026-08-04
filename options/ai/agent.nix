@@ -33,6 +33,14 @@ let
       return AI_AGENTS[agent_id]
     end
 
+    -- Resolve the command for an agent: bundled binaries (ai.binaries, full
+    -- mode only) publish absolute paths via vim.g.ai_agent_commands; without
+    -- them we fall back to the plain command found on PATH
+    local function get_agent_command(agent)
+      local bundled = vim.g.ai_agent_commands or {}
+      return bundled[agent.id] or agent.command
+    end
+
     -- Helper function to find an agent's terminal buffer
     local function find_agent_buffer(agent)
       for _, buf in ipairs(vim.api.nvim_list_bufs()) do
@@ -50,7 +58,7 @@ let
     local function create_agent_terminal(agent)
       local buf = vim.api.nvim_create_buf(true, false)
       vim.api.nvim_set_current_buf(buf)
-      vim.fn.termopen(agent.command)
+      vim.fn.termopen(get_agent_command(agent))
       pcall(vim.api.nvim_buf_set_name, buf, agent.buffer_name)
       vim.api.nvim_buf_set_var(buf, agent.marker, true)
       vim.api.nvim_buf_set_var(buf, "agent_name", agent.name)
@@ -153,7 +161,7 @@ let
       if job_id then
         vim.fn.chansend(job_id, "\x03")
         vim.defer_fn(function()
-          vim.fn.chansend(job_id, agent.command .. "\n")
+          vim.fn.chansend(job_id, get_agent_command(agent) .. "\n")
         end, 100)
       end
 
