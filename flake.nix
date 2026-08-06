@@ -11,12 +11,12 @@
     # Track: 
     #   master - https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/op/opencode/package.nix
     #   unstable - https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/op/opencode/package.nix
-    opencode.url = "github:nixos/nixpkgs/9d590febde3a5eae8a2fbb70a45f5391bde62214";
+    opencode.url = "github:nixos/nixpkgs/ea08daa3f3d7b4e727308278f7bc489a6cd888a5";
 
     # Track:
     #   master - https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/cl/claude-code/package.nix
     #   unstable - https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/cl/claude-code/package.nix 
-    claude-code.url = "github:nixos/nixpkgs/0207bfa1f135caa7135303b34dcf64f739f390f7";
+    claude-code.url = "github:nixos/nixpkgs/2f388e38b124530c4eac5e1766885c8391d84d82";
   };
 
   outputs = {
