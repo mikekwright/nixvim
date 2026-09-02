@@ -18,7 +18,6 @@ lib.makeIncludes {
     "lsp.zig"
 
     "tools"
-    "tools.agent-notifications"
     "tools.bookmarks"
     "tools.bqf"
     "tools.coverage"

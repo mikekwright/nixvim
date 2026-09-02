@@ -61,8 +61,6 @@ let
       vim.fn.termopen(get_agent_command(agent))
       pcall(vim.api.nvim_buf_set_name, buf, agent.buffer_name)
       vim.api.nvim_buf_set_var(buf, agent.marker, true)
-      vim.api.nvim_buf_set_var(buf, "agent_name", agent.name)
-      register_agent_notification_handler(buf, agent.name)
       return buf
     end
 
