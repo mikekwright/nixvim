@@ -26,7 +26,6 @@ lib.makeIncludes {
     "ai.copilot"
 
     "tools"
-    "tools.agent-notifications"
     "tools.bookmarks"
     "tools.bqf"
     "tools.coverage"

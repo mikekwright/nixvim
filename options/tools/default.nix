@@ -55,7 +55,6 @@ in
   imports = [
     ./noice.nix
     ./snacks.nix
-    ./agent-notifications.nix
 
     ./bqf.nix
     ./coverage.nix
