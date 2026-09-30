@@ -24,6 +24,14 @@ let
                 or {}
             end,
           },
+          {
+            function()
+              return _G.nix_env and _G.nix_env.statusline() or ""
+            end,
+            color = function()
+              return _G.nix_env and (_G.nix_env.statusline_color() or {}) or {}
+            end,
+          },
           'encoding',
           'fileformat',
           'filetype',

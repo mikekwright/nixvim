@@ -113,10 +113,20 @@ in {
         };
       };
 
+      # Tool packages are appended (not prepended) to PATH so that project
+      #   environments such as `nix develop` shells keep priority for common
+      #   binaries (python, node, etc). NVIM_TOOLS_PATH is exported separately
+      #   so the in-editor nix-develop integration can rebuild PATH after
+      #   injecting a dev shell environment.
+      toolsPath = pkgs.lib.makeBinPath ([ neovimPackage ] ++ modulePackages);
+
       neowrapper = pkgs.writeShellApplication {
         name = "nvim";
-        runtimeInputs = [ neovimPackage ] ++ modulePackages;
+        runtimeInputs = [];
         text = /*shell*/ ''
+          export NVIM_TOOLS_PATH='${toolsPath}'
+          export PATH="$PATH:$NVIM_TOOLS_PATH"
+
           set +u
           if [[ -n $NVIM_DEBUG ]]; then
             echo 'LUA CONFIG FILE: ${luaFile}'

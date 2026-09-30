@@ -26,6 +26,9 @@
     # Terminal management for shared terminal buffer
     ./terminal.nix
 
+    # Detection and activation of nix dev environments (flake.nix / shell.nix)
+    ./nix-develop.nix
+
     # The greeter is always an important addition to any good neovim setup
     ./greeter.nix
 

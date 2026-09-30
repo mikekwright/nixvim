@@ -7,6 +7,8 @@
     */
     ''
       require('copilot').setup({
+        copilot_node_command = '${pkgs.nodejs_22}/bin/node',
+
         panel = {
           enabled = false,  -- disable copilot panel by default
           auto_refresh = true,
