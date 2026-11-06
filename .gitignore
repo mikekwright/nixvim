@@ -6,3 +6,4 @@ target/
 **/*.local.*
 .zig-cache
 *.dump
+.DS_Store

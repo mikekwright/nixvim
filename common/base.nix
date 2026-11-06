@@ -65,6 +65,20 @@ let
     -- Disable all swap files
     vim.opt.swapfile = false;
 
+    -- Over SSH (e.g. the Lima nix-vm) copy to the host clipboard with OSC 52; paste stays on
+    -- the unnamed register since terminals and multiplexers rarely answer OSC 52 reads.
+    if vim.env.SSH_TTY then
+      local osc52 = require("vim.ui.clipboard.osc52")
+      local function paste_from_unnamed_register()
+        return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
+      end
+      vim.g.clipboard = {
+        name = "osc52-copy-only",
+        copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
+        paste = { ["+"] = paste_from_unnamed_register, ["*"] = paste_from_unnamed_register },
+      }
+    end
+
     -- Option that lets copy and paste work with system without special clipboard named "+
     vim.api.nvim_set_option("clipboard", "unnamedplus")
 
