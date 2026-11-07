@@ -3,8 +3,8 @@
 let
   name = "ai.tui-refresh";
 
-  # Recover a garbled in-Neovim TUI (Claude Code, OpenCode, or any other
-  # terminal UI) without restarting the job and losing the session.
+  # Recover a garbled in-Neovim TUI (Claude Code, Cursor, Codex, OpenCode,
+  # Grok Build, or any other terminal UI) without restarting the job.
   #
   # `,cr` is <leader>cr because mapleader / maplocalleader are both comma.
   lua = /*lua*/ ''
@@ -24,14 +24,35 @@ let
       return ok and buftype == "terminal"
     end
 
-    -- Agent terminals (Claude Code, OpenCode, and future AI:grok / AI:cursor
-    -- style buffers) are marked with is_*_terminal vars and/or an "AI:" name.
+    -- Agent terminals are marked with is_*_terminal vars and/or an "AI:" name.
+    -- Prefer the live agent table from ai.agent (claude/cursor/codex/opencode/grok)
+    -- so newly shown agents are picked up automatically.
+    local function agent_markers()
+      local markers = {
+        "is_claude_terminal",
+        "is_cursor_terminal",
+        "is_codex_terminal",
+        "is_opencode_terminal",
+        "is_grok_terminal",
+      }
+      local agents = _G.nixvim_ai_agents
+      if type(agents) == "table" then
+        markers = {}
+        for _, agent in pairs(agents) do
+          if type(agent) == "table" and type(agent.marker) == "string" then
+            markers[#markers + 1] = agent.marker
+          end
+        end
+      end
+      return markers
+    end
+
     local function is_agent_terminal_buf(buf)
       if not is_terminal_buf(buf) then
         return false
       end
 
-      for _, marker in ipairs({ "is_opencode_terminal", "is_claude_terminal" }) do
+      for _, marker in ipairs(agent_markers()) do
         local ok, is_agent = pcall(vim.api.nvim_buf_get_var, buf, marker)
         if ok and is_agent then
           return true
@@ -241,15 +262,15 @@ let
 
     pcall(function()
       require("which-key").add({
-        { "<leader>c", group = "Clear/UI", mode = { "n", "t" } },
+        { "<leader>c", group = "Clear", mode = { "n", "t" } },
       })
     end)
 
     keymapd("<leader>cr", "Refresh TUI / terminal display", refresh_tui)
     tkeymapd("<leader>cr", "Refresh TUI / terminal display", refresh_tui)
     -- Extra terminal-mode mapping: comma is leader, so ,cr waits on timeoutlen
-    -- after every comma typed into the TUI. <C-w>r matches the existing
-    -- terminal <C-w>* maps and does not steal commas.
+    -- after every comma typed into the TUI. <C-w>r does not steal commas and
+    -- does not clash with <C-w>a<suffix> agent navigation.
     tkeymapd("<C-w>r", "Refresh TUI / terminal display", refresh_tui)
   '';
 in

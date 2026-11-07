@@ -40,7 +40,7 @@ This is a **declarative Neovim configuration system** built entirely with Nix Fl
 │   │   ├── dap.nix          # Debugging (DAP protocol)
 │   │   └── neotest.nix      # Testing framework integration
 │   ├── ai/                  # AI agent and completion features
-│   │   ├── agent.nix        # AI agent system (OpenCode and Claude Code terminals)
+│   │   ├── agent.nix        # AI agent system (Claude, Cursor, Codex, OpenCode, Grok)
 │   │   ├── tui-refresh.nix  # `,cr` / :TuiRefresh to repaint garbled in-Neovim TUIs
 │   │   ├── copilot.nix      # GitHub Copilot integration
 │   │   ├── avante.nix       # Avante AI plugin
@@ -169,7 +169,7 @@ These are in `/common/` and are loaded in every Neovim configuration:
 - **Key Groups Defined**:
   - `<leader>a` - AI tools
   - `<leader>b` - Buffer commands
-  - `<leader>c` - Clear/UI (`cs` search highlights; `cr` TUI refresh in AI flavors)
+  - `<leader>c` - Clear (`cs` search highlights; `cr` TUI refresh in AI flavors)
   - `<leader>d` - Debug
   - `<leader>e` - Explorer/file tree
   - `<leader>f` - Find
@@ -275,8 +275,9 @@ These are conditionally included based on package configuration.
 
 - `tui-refresh.nix` - Recover garbled in-Neovim TUIs without restarting the job
   - `,cr` (`<leader>cr`) and `:TuiRefresh` in normal and terminal mode
-  - Extra terminal-mode map: `<C-w>r` (avoids comma `timeoutlen` delay in the TUI)
+  - Extra terminal-mode map: `<C-w>r` (avoids comma `timeoutlen`; does not clash with `<C-w>a<suffix>`)
   - Redraws Neovim (`:redraw!` / `:mode` / Noice dismiss) and bounces `jobresize` + Ctrl-L
+  - Discovers every agent terminal (claude, cursor, codex, opencode, grok) via `_G.nixvim_ai_agents`, `is_*_terminal`, or `AI:` names
   - Targets the current terminal, or a visible/last-used AI TUI from a code buffer
   - `VimResized` / `WinResized` autocmd forwards size to visible terminal jobs
   - Enabled in `complete` / `full` and the `ai` flavor (not `minimal` or `python`)

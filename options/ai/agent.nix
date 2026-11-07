@@ -66,6 +66,9 @@ let
     }
 
     local AI_AGENT_ORDER = { "claude", "cursor", "codex", "opencode", "grok" }
+    -- Shared with ai.tui-refresh so ,cr / :TuiRefresh can find every agent
+    -- terminal this module shows, without hardcoding the list twice.
+    _G.nixvim_ai_agents = AI_AGENTS
 
     local function get_agent(agent_id)
       return AI_AGENTS[agent_id]

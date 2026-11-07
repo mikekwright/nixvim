@@ -90,7 +90,7 @@ complete = [
 ```
 <leader>a - AI tools
 <leader>b - Buffer commands
-<leader>c - Clear/UI (`cs` search; `cr` TUI refresh when AI terminals are enabled)
+<leader>c - Clear (`cs` search; `cr` TUI refresh when AI terminals are enabled)
 <leader>d - Debug
 <leader>e - Explorer/file tree
 <leader>f - Find
