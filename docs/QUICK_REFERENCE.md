@@ -90,6 +90,7 @@ complete = [
 ```
 <leader>a - AI tools
 <leader>b - Buffer commands
+<leader>c - Clear/UI (`cs` search; `cr` TUI refresh when AI terminals are enabled)
 <leader>d - Debug
 <leader>e - Explorer/file tree
 <leader>f - Find
@@ -123,6 +124,10 @@ ikeymapd("<leader>x", "Desc", function() end)        -- Insert mode
 
 ### From `funcs.nix`
 - `find_window_for_buffer(buf)` - Find window with buffer
+
+### TUI refresh (`complete` / `full` / `ai`)
+- `,cr` (`<leader>cr`) and `:TuiRefresh` — redraw Neovim and repaint the TUI job without restarting it
+- `<C-w>r` in terminal mode — same refresh; avoids waiting on comma (`timeoutlen`) while typing in the TUI
 
 ## Notification System (Noice)
 

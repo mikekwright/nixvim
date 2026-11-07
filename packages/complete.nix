@@ -30,6 +30,7 @@ lib.makeIncludes {
 
     "ai"
     "ai.agent"
+    "ai.tui-refresh"
     "ai.copilot"
     "ai.opencode"
   ];

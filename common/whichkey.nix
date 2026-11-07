@@ -34,7 +34,7 @@ let
       { "<leader>q", group = "Quit", desc = "Quit commands" },
       --   k -- Comment
       { "<leader>k", group = "Comment", desc = "Comment commands" },
-      --   c -- Clear
+      --   c -- Clear (search highlights; TUI refresh is <leader>cr when ai.tui-refresh is loaded)
       { "<leader>c", group = "Clear", desc = "Clear commands" },
 
       --   a -- AI

@@ -749,7 +749,9 @@ let
     })
 
     -- Register dashboard actions and per-agent keymaps; the dashboard key
-    -- mirrors the <leader>a<key> suffix so both stay in sync
+    -- mirrors the <leader>a<key> suffix so both stay in sync.
+    -- Restarting drops the conversation. To repaint a garbled TUI without
+    -- killing the job, use <leader>cr / :TuiRefresh (see ai.tui-refresh).
     for_each_agent(function(agent_id, agent)
       register_dashboard_action("a" .. agent.key, agent.name, ":lua open_agent_terminal('" .. agent_id .. "')<CR>", "AI")
 
