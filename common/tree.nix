@@ -95,7 +95,7 @@ let
       vim.keymap.set('n', '<2-RightMouse>', api.tree.change_root_to_node, opts('CD'))
 
 
-      vim.keymap.set("n", "s", api.node.open.vertical, {})
+      vim.keymap.set("n", "s", api.node.open.vertical, opts('Open: Vertical Split'))
 
     end
 
@@ -176,7 +176,7 @@ let
     local tree_view = require('nvim-tree.view')
 
     keymapd("<leader>ee", "Toggle nvim tree", ":NvimTreeToggle<CR>")
-    keymapd("<leader>ea", "Toggle hidding dotfiles", tree_api.tree.toggle_enable_filters)
+    keymapd("<leader>ea", "Toggle hiding dotfiles", tree_api.tree.toggle_enable_filters)
     keymapd("<leader>eh", "Open nvim-tree help", ":help nvim-tree-api<CR>")
     keymapd("<leader>ef", "Show current file in the tree", function()
       if tree_view.is_visible() then

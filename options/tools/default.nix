@@ -51,10 +51,10 @@ let
     local commentApi = require('Comment.api')
     local commentVvar = vim.api.nvim_get_vvar
 
-    nkeymap("<leader>kc", commentApi.comment.linewise.current)
-    nkeymap("<leader>ku", commentApi.uncomment.linewise.current)
-    vim.keymap.set("v", "<leader>kc", '<Plug>(comment_toggle_linewise_visual)', { silent = true, noremap = true })
-    vim.keymap.set("v", "<leader>ku", '<Plug>(comment_toggle_linewise_visual)', { silent = true, noremap = true })
+    nkeymapd("<leader>kc", "Comment current line", commentApi.comment.linewise.current)
+    nkeymapd("<leader>ku", "Uncomment current line", commentApi.uncomment.linewise.current)
+    vkeymapd("<leader>kc", "Toggle comment on selection", '<Plug>(comment_toggle_linewise_visual)')
+    vkeymapd("<leader>ku", "Toggle comment on selection", '<Plug>(comment_toggle_linewise_visual)')
   '';
 in
 {

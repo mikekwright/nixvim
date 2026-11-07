@@ -24,8 +24,6 @@ let
       { "<leader>lm", group = "Markdown", desc = "Markdown tools" },
       --   d -- Debug
       { "<leader>d", group = "Debug", desc = "Debug commands" },
-      --   r -- Run
-      { "<leader>r", group = "Run", desc = "Run commands" },
       --   t -- Terminal
       { "<leader>t", group = "Terminal", desc = "Terminal commands" },
       --   b -- Buffers
@@ -36,6 +34,8 @@ let
       { "<leader>q", group = "Quit", desc = "Quit commands" },
       --   k -- Comment
       { "<leader>k", group = "Comment", desc = "Comment commands" },
+      --   c -- Clear
+      { "<leader>c", group = "Clear", desc = "Clear commands" },
 
       --   a -- AI
       { "<leader>a", group = "AI", desc = "AI Tools" },
@@ -59,7 +59,7 @@ let
       { "<leader>le", group = "LSP: Tool Enabling", desc = "Toggle LSP Tooling" },
     })
 
-  keymapd("<leader>?", "Show all keys from whick-hey", function()
+  keymapd("<leader>?", "Show all which-key mappings", function()
     require("which-key").show({ global = true })
   end)
   '';

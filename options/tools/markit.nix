@@ -7,10 +7,6 @@ let
   name = "tools.markit";
 
   lua = /*lua*/ ''
-    wk.add({
-      { "<leader>eb", group = "Bookmarks", desc = "Manage bookmarks" },
-    })
-
     local markit = require('markit')
 
     local bm = require('bookmarks')
@@ -122,7 +118,7 @@ let
         })
       end
 
-      keymapd("<leader>ml", "Debug", bookmarks_picker)
+      keymapd("<leader>ml", "Bookmark picker", bookmarks_picker)
     end
   '';
 in

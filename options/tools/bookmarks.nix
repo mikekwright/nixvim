@@ -4,10 +4,6 @@ let
   name = "tools.bookmarks";
 
   lua = /*lua*/ ''
-    wk.add({
-      { "<leader>eb", group = "Bookmarks", desc = "Manage bookmarks" },
-    })
-
     local bm = require('bookmarks')
     bm.setup({
       save_file = vim.fn.expand "$HOME/.bookmarks", -- bookmarks save file path

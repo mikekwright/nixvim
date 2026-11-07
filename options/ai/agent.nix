@@ -3,34 +3,78 @@
 let
   name = "ai.agent";
 
-  # Two fixed AI agents: opencode (default) and claude-code.
+  # Five fixed AI agents, each addressed by a single key suffix under <leader>a:
+  #   a = claude-code, c = cursor, x = codex, o = opencode, b = grok-build
   # The binaries live in ai.binaries (full mode only) or come from system installs.
   lua = /*lua*/ ''
     -- AI Agent Configuration Module
-    -- Hosts two AI agent terminals (OpenCode and Claude Code), each in its own
-    -- uniquely named buffer, plus a shared prompt buffer for larger contexts.
+    -- Hosts one terminal per AI agent (Claude Code, Cursor, Codex, OpenCode and
+    -- Grok Build), each in its own uniquely named buffer, plus a shared prompt
+    -- buffer for larger contexts.
 
     local AI_AGENTS = {
-      opencode = {
-        id = "opencode",
-        name = "OpenCode",
-        command = "opencode",
-        marker = "is_opencode_terminal",
-        buffer_name = "AI:opencode",
-        init_wait_ms = 10000,
-      },
       claude = {
         id = "claude",
+        key = "a",
         name = "Claude Code",
         command = "claude",
         marker = "is_claude_terminal",
         buffer_name = "AI:claude-code",
+        exit_command = "/exit",
+        init_wait_ms = 5000,
+      },
+      cursor = {
+        id = "cursor",
+        key = "c",
+        name = "Cursor",
+        command = "cursor-agent",
+        marker = "is_cursor_terminal",
+        buffer_name = "AI:cursor",
+        exit_command = "/quit",
+        init_wait_ms = 5000,
+      },
+      codex = {
+        id = "codex",
+        key = "x",
+        name = "Codex",
+        command = "codex",
+        marker = "is_codex_terminal",
+        buffer_name = "AI:codex",
+        exit_command = "/quit",
+        init_wait_ms = 5000,
+      },
+      opencode = {
+        id = "opencode",
+        key = "o",
+        name = "OpenCode",
+        command = "opencode",
+        marker = "is_opencode_terminal",
+        buffer_name = "AI:opencode",
+        exit_command = "/exit",
+        init_wait_ms = 10000,
+      },
+      grok = {
+        id = "grok",
+        key = "b",
+        name = "Grok Build",
+        command = "grok",
+        marker = "is_grok_terminal",
+        buffer_name = "AI:grok-build",
+        exit_command = "/exit",
         init_wait_ms = 5000,
       },
     }
 
+    local AI_AGENT_ORDER = { "claude", "cursor", "codex", "opencode", "grok" }
+
     local function get_agent(agent_id)
       return AI_AGENTS[agent_id]
+    end
+
+    local function for_each_agent(fn)
+      for _, agent_id in ipairs(AI_AGENT_ORDER) do
+        fn(agent_id, AI_AGENTS[agent_id])
+      end
     end
 
     -- Resolve the command for an agent: bundled binaries (ai.binaries, full
@@ -218,7 +262,7 @@ let
 
       local job_id = vim.api.nvim_buf_get_var(agent_buf, "terminal_job_id")
       if job_id then
-        vim.fn.chansend(job_id, "/exit\n")
+        vim.fn.chansend(job_id, agent.exit_command .. "\n")
       end
     end
 
@@ -305,22 +349,27 @@ let
         end)
       end
 
-      local function buf_keymap(mode, key, callback)
+      local function buf_keymap(mode, key, desc, callback)
         pcall(vim.api.nvim_buf_del_keymap, buf, mode, key)
         vim.api.nvim_buf_set_keymap(buf, mode, key, "", {
           callback = callback,
+          desc = desc,
           noremap = true,
           silent = true,
         })
       end
 
-      buf_keymap("i", "<C-x>", close_prompt)
-      buf_keymap("n", "<leader>ax", close_prompt)
+      wk.add({
+        { "<leader>as", group = "Agent: Submit prompt", desc = "Submit the prompt buffer to an AI agent", buffer = buf },
+      })
 
-      buf_keymap("i", "<C-s>a", function() submit_to_agent("opencode") end)
-      buf_keymap("i", "<C-s>c", function() submit_to_agent("claude") end)
-      buf_keymap("n", "<leader>asa", function() submit_to_agent("opencode") end)
-      buf_keymap("n", "<leader>asc", function() submit_to_agent("claude") end)
+      buf_keymap("i", "<C-x>", "Close AI agent prompt window", close_prompt)
+      buf_keymap("n", "<leader>ax", "Close AI agent prompt window", close_prompt)
+
+      for_each_agent(function(agent_id, agent)
+        buf_keymap("i", "<C-s>" .. agent.key, "Submit prompt to " .. agent.name, function() submit_to_agent(agent_id) end)
+        buf_keymap("n", "<leader>as" .. agent.key, "Submit prompt to " .. agent.name, function() submit_to_agent(agent_id) end)
+      end)
     end
 
     -- Helper function to find agent prompt buffer (even if hidden)
@@ -688,27 +737,34 @@ let
       end)
     end
 
-    -- Register dashboard actions
-    register_dashboard_action("a", "OpenCode", ":lua open_agent_terminal('opencode')<CR>")
-    register_dashboard_action("c", "Claude Code", ":lua open_agent_terminal('claude')<CR>")
+    wk.add({
+      { "<leader>av", group = "Agent: Vertical split", desc = "Open an AI agent terminal in a vertical split" },
+      { "<leader>ah", group = "Agent: Hide", desc = "Hide an AI agent terminal" },
+      { "<leader>ar", group = "Agent: Restart", desc = "Restart an AI agent in its terminal" },
+      { "<leader>ae", group = "Agent: Exit", desc = "Exit an AI agent terminal" },
+      { "<leader>ai", group = "Agent: Interrupt", desc = "Interrupt an AI agent command (Ctrl-C)" },
+      { "<leader>an", group = "Agent: Newline", desc = "Send a newline to an AI agent" },
+      { "<leader>am", group = "Agent: Mode layout", desc = "Set up an AI agent mode layout" },
+      { "<C-w>a", group = "AI agents", desc = "Navigate to an AI agent terminal", mode = { "n", "t" } },
+    })
 
-    -- Keyboard shortcuts: terminals
-    keymapd("<leader>aa", "Open/Switch to OpenCode terminal", function() open_agent_terminal("opencode") end)
-    keymapd("<leader>ac", "Open/Switch to Claude Code terminal", function() open_agent_terminal("claude") end)
-    keymapd("<leader>ava", "Open OpenCode terminal (vertical split)", function() open_agent_terminal_vertical("opencode") end)
-    keymapd("<leader>avc", "Open Claude Code terminal (vertical split)", function() open_agent_terminal_vertical("claude") end)
-    keymapd("<leader>aha", "Hide OpenCode terminal", function() hide_agent_terminal("opencode") end)
-    keymapd("<leader>ahc", "Hide Claude Code terminal", function() hide_agent_terminal("claude") end)
-    keymapd("<leader>ara", "Restart OpenCode in terminal", function() restart_agent_terminal("opencode") end)
-    keymapd("<leader>arc", "Restart Claude Code in terminal", function() restart_agent_terminal("claude") end)
-    keymapd("<leader>aea", "Exit OpenCode terminal", function() exit_agent("opencode") end)
-    keymapd("<leader>aec", "Exit Claude Code terminal", function() exit_agent("claude") end)
-    keymapd("<leader>aia", "Interrupt OpenCode command (Ctrl-C)", function() interrupt_agent("opencode") end)
-    keymapd("<leader>aic", "Interrupt Claude Code command (Ctrl-C)", function() interrupt_agent("claude") end)
-    keymapd("<leader>ana", "Send newline to OpenCode", function() send_newline_to_agent("opencode") end)
-    keymapd("<leader>anc", "Send newline to Claude Code", function() send_newline_to_agent("claude") end)
-    keymapd("<leader>ama", "Setup OpenCode mode layout", function() setup_agent_mode("opencode") end)
-    keymapd("<leader>amc", "Setup Claude Code mode layout", function() setup_agent_mode("claude") end)
+    -- Register dashboard actions and per-agent keymaps; the dashboard key
+    -- mirrors the <leader>a<key> suffix so both stay in sync
+    for_each_agent(function(agent_id, agent)
+      register_dashboard_action("a" .. agent.key, agent.name, ":lua open_agent_terminal('" .. agent_id .. "')<CR>", "AI")
+
+      keymapd("<leader>a" .. agent.key, "Open/Switch to " .. agent.name .. " terminal", function() open_agent_terminal(agent_id) end)
+      keymapd("<leader>av" .. agent.key, "Open " .. agent.name .. " terminal (vertical split)", function() open_agent_terminal_vertical(agent_id) end)
+      keymapd("<leader>ah" .. agent.key, "Hide " .. agent.name .. " terminal", function() hide_agent_terminal(agent_id) end)
+      keymapd("<leader>ar" .. agent.key, "Restart " .. agent.name .. " in terminal", function() restart_agent_terminal(agent_id) end)
+      keymapd("<leader>ae" .. agent.key, "Exit " .. agent.name .. " terminal", function() exit_agent(agent_id) end)
+      keymapd("<leader>ai" .. agent.key, "Interrupt " .. agent.name .. " command (Ctrl-C)", function() interrupt_agent(agent_id) end)
+      keymapd("<leader>an" .. agent.key, "Send newline to " .. agent.name, function() send_newline_to_agent(agent_id) end)
+      keymapd("<leader>am" .. agent.key, "Setup " .. agent.name .. " mode layout", function() setup_agent_mode(agent_id) end)
+
+      keymapd("<C-w>a" .. agent.key, "Navigate to " .. agent.name, function() open_agent_terminal(agent_id) end)
+      tkeymapd("<C-w>a" .. agent.key, "Navigate to " .. agent.name .. " from terminal", function() escape_terminal_and_open_agent(agent_id) end)
+    end)
 
     -- Keyboard shortcuts: shared prompt buffer
     keymapd("<leader>app", "Open AI agent prompt window", open_agent_prompt)
@@ -726,11 +782,6 @@ let
       end)
     end, { silent = true, noremap = true, desc = "Send selection to AI agent prompt" })
 
-    -- Keyboard shortcuts: navigation
-    keymapd("<C-w>aa", "Navigate to OpenCode", function() open_agent_terminal("opencode") end)
-    keymapd("<C-w>ac", "Navigate to Claude Code", function() open_agent_terminal("claude") end)
-    tkeymapd("<C-w>aa", "Navigate to OpenCode from terminal", function() escape_terminal_and_open_agent("opencode") end)
-    tkeymapd("<C-w>ac", "Navigate to Claude Code from terminal", function() escape_terminal_and_open_agent("claude") end)
   '';
 in
 {

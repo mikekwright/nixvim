@@ -3,8 +3,7 @@
 let
   diffview-lua = /*lua*/ ''
     wk.add({
-      { "<leader>g", group = "Explore git", desc = "Tools for working with git" },
-      { "<leader>gs", group = "Git staging", desc = "Git diff tools" },
+      { "<leader>gs", group = "Git staging", desc = "Stage, reset and preview hunks" },
     })
 
     keymapd("<leader>gd", "Open git diff view", ":DiffviewOpen<CR>")

@@ -3,19 +3,19 @@
 let
   keysLua = /*lua*/ ''
     -- Easily toggle between relative number showing
-    nkeymap("<leader>r", function()
+    nkeymapd("<leader>r", "Toggle relative line numbers", function()
       vim.wo.relativenumber = not vim.wo.relativenumber
     end)
 
-    tkeymap("<C-w>h", "<C-\\><C-n><C-w>h")
-    tkeymap("<C-w>j", "<C-\\><C-n><C-w>j")
-    tkeymap("<C-w>k", "<C-\\><C-n><C-w>k")
-    tkeymap("<C-w>l", "<C-\\><C-n><C-w>l")
-    tkeymap("<C-w>n", "<C-\\><C-n>:bnext<CR>")
-    tkeymap("<C-w>p", "<C-\\><C-n>:bprevious<CR>")
-    tkeymap("<C-t>", "<C-\\><C-n>")
-    keymap("<C-w>n", ":bnext<CR>")
-    keymap("<C-w>p", ":bprevious<CR>")
+    tkeymapd("<C-w>h", "Terminal: Focus window left", "<C-\\><C-n><C-w>h")
+    tkeymapd("<C-w>j", "Terminal: Focus window below", "<C-\\><C-n><C-w>j")
+    tkeymapd("<C-w>k", "Terminal: Focus window above", "<C-\\><C-n><C-w>k")
+    tkeymapd("<C-w>l", "Terminal: Focus window right", "<C-\\><C-n><C-w>l")
+    tkeymapd("<C-w>n", "Terminal: Next buffer", "<C-\\><C-n>:bnext<CR>")
+    tkeymapd("<C-w>p", "Terminal: Previous buffer", "<C-\\><C-n>:bprevious<CR>")
+    tkeymapd("<C-t>", "Terminal: Leave insert mode", "<C-\\><C-n>")
+    keymapd("<C-w>n", "Next buffer", ":bnext<CR>")
+    keymapd("<C-w>p", "Previous buffer", ":bprevious<CR>")
 
     keymapd("<leader>cs", "Clear search highlights", ":nohlsearch<CR>")
 

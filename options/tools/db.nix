@@ -10,12 +10,12 @@ let
 
     -- If there are more keys to support look at the plugin documentation
     --   https://github.com/kristijanhusak/vim-dadbod-ui/blob/master/doc/dadbod-ui.txt#L382
-    nkeymap("<leader>edd", ":DBUIToggle<CR>")
-    nkeymap("<leader>ede", "<Plug>(DBUI_ExecuteQuery)")
-    nkeymap("<leader>edc", "<Plug>(DBUI_ToggleResultLayout)")
-    nkeymap("<leader>edq", "<Plug>(DBUI_Quit)")
-    nkeymap("<leader>eds", "<Plug>(DBUI_SaveQuery)")
-    nkeymap("<leader>edr", "<Plug>(DBUI_Redraw)")
+    nkeymapd("<leader>edd", "Database: Toggle UI", ":DBUIToggle<CR>")
+    nkeymapd("<leader>ede", "Database: Execute query", "<Plug>(DBUI_ExecuteQuery)")
+    nkeymapd("<leader>edc", "Database: Toggle result layout", "<Plug>(DBUI_ToggleResultLayout)")
+    nkeymapd("<leader>edq", "Database: Quit UI", "<Plug>(DBUI_Quit)")
+    nkeymapd("<leader>eds", "Database: Save query", "<Plug>(DBUI_SaveQuery)")
+    nkeymapd("<leader>edr", "Database: Redraw UI", "<Plug>(DBUI_Redraw)")
   '';
 in
 {

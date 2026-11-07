@@ -310,10 +310,10 @@
 
   keymaps = /*lua*/ ''
     keymapd('<leader>ff', 'Fuzzy Find Files', function() snacks.picker.files({ layout = "ivy" }) end)
-    keymapd('<leader>fh', 'Help: Telescope', function() snacks.picker.help() end)
+    keymapd('<leader>fh', 'Fuzzy search help tags', function() snacks.picker.help() end)
     keymapd('<C-p>', 'Fuzzy Find Files <Ctrl version>', function() snacks.picker.files() end)
     keymapd('<leader>fg', 'Fuzzy grep', function() snacks.picker.grep() end)
     keymapd('<leader>fb', 'Fuzzy search buffers', function() snacks.picker.buffers({ layout = "ivy" }) end)
-    keymapd('<leader>ft', 'Fuzzy search on help tags', function() snacks.picker.lsp_config() end)
+    keymapd('<leader>ft', 'Fuzzy search LSP configs', function() snacks.picker.lsp_config() end)
   '';
 }

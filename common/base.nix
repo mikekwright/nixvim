@@ -92,21 +92,15 @@ let
     -- Option that lets copy and paste work with system without special clipboard named "+
     vim.api.nvim_set_option("clipboard", "unnamedplus")
 
-    function keymap(key, action)
-      vim.keymap.set("n", key, action, { silent = true, noremap = false })
-    end
     function keymapd(key, desc, action)
       vim.keymap.set("n", key, action, { silent = true, noremap = false, desc = desc })
     end
 
-    function nkeymap(key, action)
-      vim.keymap.set("n", key, action, { silent = true, noremap = true })
+    function nkeymapd(key, desc, action)
+      vim.keymap.set("n", key, action, { silent = true, noremap = true, desc = desc })
     end
 
     -- Terminal Keys
-    function tkeymap(key, action)
-      vim.keymap.set("t", key, action, { silent = true, noremap = true })
-    end
     function tkeymapd(key, desc, action)
       vim.keymap.set("t", key, action, { silent = true, noremap = true, desc = desc })
     end
@@ -131,7 +125,7 @@ let
       end
     end
 
-    nkeymap("<leader>qd", function()
+    nkeymapd("<leader>qd", "Toggle custom debug printing", function()
       run_in_debug = not run_in_debug
       print("Custom debugging is now: " .. tostring(run_in_debug))
     end)

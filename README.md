@@ -51,11 +51,11 @@ any of these packages directly using Nix:
   - Language servers for Rust, Python, Go, TypeScript, Nix, Kotlin, Zig, and D (Haskell lives in full — its toolchain adds ~9 GiB)
   - Complete AI integration (agent system, Copilot, OpenCode)
   - All development tools (debugging, testing, database, coverage)
-  - Uses the system-installed claude and opencode binaries rather than bundling them
+  - Uses the system-installed agent CLIs (claude, cursor-agent, codex, opencode, grok) rather than bundling them
 
 - **full**: Everything in complete, plus Haskell and bundled AI binaries
   - Adds the Haskell language server and toolchain
-  - Includes wrapped claude-code and opencode packages so no system install is needed
+  - Includes wrapped claude-code, cursor-cli, codex, opencode and grok-build packages so no system install is needed
   - The AI agent terminals always run these bundled versions, ignoring any system install
 
 - **minimal**: Lightweight configuration with just essential tools
@@ -286,14 +286,25 @@ fuzzy search and preview capabilities.
 
 ## AI Agent
 
-This configuration includes comprehensive AI agent integration, allowing you to interact with two AI assistants directly
-from Neovim: OpenCode and Claude Code. All AI agent keymaps are organized under `<leader>a` and are discoverable through
-which-key.
+This configuration includes comprehensive AI agent integration, allowing you to interact with five AI assistants directly
+from Neovim: Claude Code, Cursor, Codex, OpenCode and Grok Build. All AI agent keymaps are organized under `<leader>a`
+and are discoverable through which-key.
 
-Each agent runs in its own uniquely named persistent terminal buffer (`AI:opencode` and `AI:claude-code`). Keymaps that
-target a specific agent follow a suffix convention: `a` for OpenCode and `c` for Claude Code (for example `<leader>aha`
-hides the OpenCode terminal while `<leader>ahc` hides the Claude Code terminal). `<leader>aa` opens the OpenCode terminal
-and `<leader>ac` opens the Claude Code one.
+Each agent runs in its own uniquely named persistent terminal buffer and is addressed by a single key suffix:
+
+| Key | Agent       | CLI            | Buffer            |
+|-----|-------------|----------------|-------------------|
+| `a` | Claude Code | `claude`       | `AI:claude-code`  |
+| `c` | Cursor      | `cursor-agent` | `AI:cursor`       |
+| `x` | Codex       | `codex`        | `AI:codex`        |
+| `o` | OpenCode    | `opencode`     | `AI:opencode`     |
+| `b` | Grok Build  | `grok`         | `AI:grok-build`   |
+
+Keymaps that target a specific agent append that suffix to the command prefix (for example `<leader>aha` hides the
+Claude Code terminal while `<leader>aho` hides the OpenCode terminal). `<leader>a` followed by the suffix opens or
+switches to that agent's terminal, so `<leader>aa` opens Claude Code and `<leader>ax` opens Codex. The greeter lists
+every agent in an `AI` section at the bottom of the dashboard using the same `a` + suffix combination (`aa`, `ac`, `ax`,
+`ao`, `ab`).
 
 ### Agent Terminal
 
@@ -309,9 +320,10 @@ agent, send interrupts, or exit the agent entirely through dedicated commands.
 
 ### Prompt Window
 
-The prompt window is a single composable workspace shared by both agents for crafting larger-context messages. On
-submission you pick the destination: `<leader>asa` sends the content to OpenCode while `<leader>asc` sends it to Claude
-Code (`<C-s>a` / `<C-s>c` in insert mode). It operates in two modes:
+The prompt window is a single composable workspace shared by all agents for crafting larger-context messages. On
+submission you pick the destination with the agent suffix: `<leader>as` followed by the suffix in normal mode, or
+`<C-s>` followed by the suffix in insert mode (for example `<leader>asa` / `<C-s>a` sends to Claude Code while
+`<leader>aso` / `<C-s>o` sends to OpenCode). It operates in two modes:
 
 **Floating Mode**: Opens as a centered floating window (80% of screen size) with a rounded border, perfect for quick
 interactions without disrupting your layout.
@@ -331,8 +343,9 @@ combining code selections, file paths, and your own text.
 
 ### Agent Mode Layout
 
-Agent mode creates a specialized three-panel layout optimized for AI-assisted development. It is opened per agent:
-`<leader>ama` builds the layout around OpenCode and `<leader>amc` builds it around Claude Code.
+Agent mode creates a specialized three-panel layout optimized for AI-assisted development. It is opened per agent
+with `<leader>am` followed by the agent suffix: `<leader>ama` builds the layout around Claude Code and `<leader>amo`
+builds it around OpenCode.
 
 **Layout Structure**:
 - Left side (75% width): Your main working buffer for editing code

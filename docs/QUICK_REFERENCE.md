@@ -12,7 +12,7 @@ A **reproducible Neovim configuration system** built with Nix Flakes that genera
 | `lib/` | Module infrastructure | Loading, merging, option filtering |
 | `common/` | Always-loaded features | Base settings, keymaps, UI, terminal |
 | `options/lsp/` | Language servers | One file per language (rust, python, etc) |
-| `options/ai/` | AI integration | Copilot, agents (opencode + claude), avante |
+| `options/ai/` | AI integration | Copilot, agents (claude, cursor, codex, opencode, grok), avante |
 | `options/tools/` | Development tools | Snacks, noice, mini, debugging, etc |
 | `packages/` | Config variants | complete, minimal, python, ai |
 
@@ -106,10 +106,9 @@ complete = [
 ### Keymap Helpers (in base.nix, available everywhere)
 
 ```lua
-keymap("<leader>x", ":Command<CR>")                    -- Basic
-keymapd("<leader>x", "Description", ":Command<CR>")   -- With which-key desc
-nkeymap("<leader>x", function() end)                  -- Normal mode, noremap
-tkeymap("<C-x>", "<action>")                          -- Terminal mode
+keymapd("<leader>x", "Description", ":Command<CR>")   -- Normal mode, with which-key desc
+nkeymapd("<leader>x", "Desc", function() end)        -- Normal mode, noremap
+tkeymapd("<C-x>", "Desc", "<action>")                -- Terminal mode
 xkeymapd("<leader>x", "Desc", function() end)        -- Visual mode
 vkeymapd("<leader>x", "Desc", function() end)        -- V-mode
 ikeymapd("<leader>x", "Desc", function() end)        -- Insert mode
@@ -274,8 +273,8 @@ packages/minimal.nix         <- "Minimal" variant definition
 2. **Plugin not found** → `pkgs.vimPlugins.plugin-name` doesn't exist
    - Fix: Check nixpkgs for correct name, or build custom plugin
 
-3. **Keymap not in which-key** → Used `keymap()` instead of `keymapd()`
-   - Fix: Use `keymapd()` and always provide description
+3. **Keymap not in which-key** → Missing description
+   - Fix: Every helper takes a description (`keymapd`, `nkeymapd`, `tkeymapd`, ...); always provide one
 
 4. **Lua error on startup** → Syntax error in Lua code
    - Fix: Check with `NVIM_DEBUG=1` to see full generated file

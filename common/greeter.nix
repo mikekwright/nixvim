@@ -2,15 +2,25 @@
 
 let
   greeterLua = /*lua*/ ''
-    -- Initialize global table for custom greeter buttons
+    -- Initialize global tables for custom greeter buttons; actions registered
+    -- with a section name are rendered in their own titled group below the
+    -- main buttons
     _G.alpha_custom_buttons = _G.alpha_custom_buttons or {}
+    _G.alpha_custom_sections = _G.alpha_custom_sections or {}
 
-    function register_dashboard_action(key, title, action)
-      table.insert(_G.alpha_custom_buttons, {
+    function register_dashboard_action(key, title, action, section)
+      local button = {
         key = key,
         title = '  ' .. title,
         action = action
-      })
+      }
+
+      if section then
+        _G.alpha_custom_sections[section] = _G.alpha_custom_sections[section] or {}
+        table.insert(_G.alpha_custom_sections[section], button)
+      else
+        table.insert(_G.alpha_custom_buttons, button)
+      end
     end
 
     -- Register default dashboard actions
@@ -33,18 +43,39 @@ let
       "╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝",
     }
 
-    -- Sort actions by key before building buttons list
-    table.sort(_G.alpha_custom_buttons, function(a, b)
-      return a.key < b.key
-    end)
+    -- Sort actions by key and build the buttons list for a set of actions
+    local function build_buttons(actions)
+      table.sort(actions, function(a, b)
+        return a.key < b.key
+      end)
 
-    -- Build buttons list from all registered actions
-    local buttons = {}
-    for _, custom_btn in ipairs(_G.alpha_custom_buttons) do
-      local btn = dashboard.button(custom_btn.key, custom_btn.title, custom_btn.action)
-      table.insert(buttons, btn)
+      local buttons = {}
+      for _, custom_btn in ipairs(actions) do
+        local btn = dashboard.button(custom_btn.key, custom_btn.title, custom_btn.action)
+        table.insert(buttons, btn)
+      end
+      return buttons
     end
-    dashboard.section.buttons.val = buttons
+
+    dashboard.section.buttons.val = build_buttons(_G.alpha_custom_buttons)
+
+    -- Append each named section (sorted by name) below the main buttons
+    local section_names = vim.tbl_keys(_G.alpha_custom_sections)
+    table.sort(section_names)
+    for _, section_name in ipairs(section_names) do
+      table.insert(dashboard.config.layout, { type = "padding", val = 1 })
+      table.insert(dashboard.config.layout, {
+        type = "text",
+        val = section_name,
+        opts = { hl = "Type", position = "center" },
+      })
+      table.insert(dashboard.config.layout, { type = "padding", val = 1 })
+      table.insert(dashboard.config.layout, {
+        type = "group",
+        val = build_buttons(_G.alpha_custom_sections[section_name]),
+        opts = { spacing = 1 },
+      })
+    end
 
     require('alpha').setup(dashboard.config)
     vim.cmd([[autocmd FileType alpha setlocal nofoldenable]])

@@ -158,7 +158,7 @@ These are in `/common/` and are loaded in every Neovim configuration:
 - **Purpose**: Core setup and global utilities
 - **Key Exports**:
   - Global variables: `vim.g.mapleader = ','`
-  - Helper functions: `keymap()`, `keymapd()`, `nkeymap()`, `tkeymap()`, `xkeymapd()`, `vkeymapd()`, `ikeymapd()`
+  - Helper functions: `keymapd()`, `nkeymapd()`, `tkeymapd()`, `xkeymapd()`, `vkeymapd()`, `ikeymapd()` (every keymap carries a which-key description)
   - Editor options: line numbers, tabs (2 spaces), encoding, search behavior
   - Debug utilities: `dd()`, `bt()` functions using snacks
 
@@ -265,8 +265,9 @@ These are conditionally included based on package configuration.
 
 **Files**:
 - `agent.nix` - Main AI agent system
-  - Supports: OpenCode and Claude Code
-  - Persistent, uniquely named terminal buffer per agent (`AI:opencode`, `AI:claude-code`)
+  - Supports: Claude Code (`a`), Cursor (`c`), Codex (`x`), OpenCode (`o`) and Grok Build (`b`)
+  - Persistent, uniquely named terminal buffer per agent (`AI:claude-code`, `AI:cursor`, `AI:codex`, `AI:opencode`, `AI:grok-build`)
+  - Dashboard entries in a dedicated `AI` section of the greeter
   - Shared prompt window for composing messages, submitted to a specific agent
   - Agent mode layout (3-panel specialized view) per agent
   
@@ -280,7 +281,8 @@ These are conditionally included based on package configuration.
 - `opencode.nix` - OpenCode integration
   - Latest Nixpkgs integration for OpenCode
 
-- `agents/opencode-agent.nix` - Specific OpenCode configuration
+- `binaries.nix` - Bundled agent wrappers (full mode only)
+- `agents/*-agent.nix` - Per-agent wrapper packages (claude, cursor, codex, opencode, grok)
 
 ### Development Tools
 
@@ -368,15 +370,13 @@ Collection of mini plugins:
 Defined in `common/base.nix`, all modules can use these:
 
 ```lua
--- Normal mode with silent, noremap
-function keymap(key, action)
-function keymapd(key, desc, action)  -- With description for which-key
+-- Normal mode (remappable, so <Plug> actions work), with description for which-key
+function keymapd(key, desc, action)
 
 -- Normal mode with noremap=true
-function nkeymap(key, action)
+function nkeymapd(key, desc, action)
 
 -- Terminal mode
-function tkeymap(key, action)
 function tkeymapd(key, desc, action)
 
 -- Visual/select mode
@@ -699,7 +699,7 @@ end
 
 ```lua
 -- From base.nix global helpers
-keymap("<leader>custom", ":YourCommand<CR>")
+keymapd("<leader>custom", "Description", ":YourCommand<CR>")
 keymapd("<leader>custom", "Description", function() end)
 
 -- From funcs.nix

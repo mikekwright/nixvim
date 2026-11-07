@@ -30,7 +30,6 @@
   keymaps = /*lua*/ ''
 
     wk.add({
-      { "<leader>ec", group = "Explore Code", desc = "Code specific commands for exploring" },
       { "<leader>ecd", group = "Code Dim", desc = "Adjust code by dimming surrounding areas" },
     })
     -- Dim keyboard shortcuts

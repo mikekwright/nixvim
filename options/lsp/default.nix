@@ -279,7 +279,7 @@ let
       local trouble = require('trouble')
       trouble.setup()
 
-      keymapd("<leader>lt", "touble float", function()
+      keymapd("<leader>lt", "Diagnostics: Show float for cursor", function()
         vim.diagnostic.open_float({ scope = "cursor", focusable = false })
       end)
       keymapd("<leader>lT", "Trouble: Toggle Diagnostics", function()
