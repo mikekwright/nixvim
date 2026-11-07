@@ -41,6 +41,9 @@ let
     vim.opt.shiftwidth = 2;
     vim.opt.showmode = true;
 
+    -- Leave the mouse to the terminal so Ghostty's Cmd+click on URLs keeps working
+    vim.opt.mouse = "";
+
     -- This option should disable the tab name that shows at the top (when value is 0)
     vim.opt.showtabline = 1;
 
@@ -77,6 +80,13 @@ let
         copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
         paste = { ["+"] = paste_from_unnamed_register, ["*"] = paste_from_unnamed_register },
       }
+
+      -- gx / :Open have no browser to hand off to over SSH, so copy the target instead
+      vim.ui.open = function(path)
+        vim.fn.setreg("+", path)
+        vim.notify("Copied to clipboard: " .. path)
+        return nil, nil
+      end
     end
 
     -- Option that lets copy and paste work with system without special clipboard named "+

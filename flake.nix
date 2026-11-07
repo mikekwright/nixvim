@@ -2,8 +2,8 @@
   description = "A neovim flake, mostly around lua";
 
   inputs = {
-    # Neovim version 0.12.4
-    nixpkgs.url = "github:nixos/nixpkgs/f6776b4d899bca9dc8f99ee9b2c6c12d778f9233";
+    # Neovim version 0.12.6
+    nixpkgs.url = "github:nixos/nixpkgs/1d060086d60cb76a40cf37109f979d88a5bd6396";
 
     # Flake parts for 2026-08-01
     flake-parts.url = "github:hercules-ci/flake-parts/427bf4bd9435fdf21321c8cc628c24efc14c0f7a";
