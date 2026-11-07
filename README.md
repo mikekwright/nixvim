@@ -343,6 +343,7 @@ The prompt window supports:
 - Markdown syntax highlighting for better readability
 - Sending visual selections wrapped in code blocks
 - Inserting file paths at the cursor position
+- Receiving review-explain steps (when that launcher runs and this window is already open)
 - Persistent content when hidden (only cleared on submission)
 - Toggle between floating and split modes on the fly
 
@@ -425,9 +426,12 @@ Keymaps under the existing `<leader>a` AI group: `<leader>axs` start, `<leader>a
 `<leader>axb` pick backend.
 
 The CLI prints one JSON object on stdout (`version`, `ok`, `session`, `ticket`, `warnings`, `step`, `done`, `error`).
-Nixvim stores `session`, renders `step.body` plus any `warnings` in a scratch markdown buffer, and ignores unknown
-fields. `ok=true` with `ticket.source = "none"` is a warning, not a failure. `ok=false` shows `error.message`. Missing
-or unparseable JSON is a launcher error and surfaces stdout/stderr.
+Nixvim stores `session`, renders `step.body` plus any `warnings` in a scratch markdown buffer, **and** inserts that
+prepared prompt into the shared AI prompt window from `ai.agent` when that window is already open (submit with
+`<leader>as` + agent suffix, e.g. `<leader>aso` OpenCode / `<leader>asc` Claude). If the prompt module is not loaded,
+the window is not open, or the insert helper is missing, the scratch buffer still updates and the insert is skipped
+(one info notify). Unknown JSON fields are ignored. `ok=true` with `ticket.source = "none"` is a warning, not a
+failure. `ok=false` shows `error.message`. Missing or unparseable JSON is a launcher error and surfaces stdout/stderr.
 
 ## References
 

@@ -28,6 +28,11 @@ let
     -- CLI session ids are buffer-local (vim.b.review_explain_session). Switching
     -- backends clears every stored session id so continue/ask cannot reuse
     -- another agent's session; run :NixReviewExplain to start again.
+    --
+    -- Successful steps always update the scratch markdown buffer. When
+    -- ai.agent's shared prompt window is already open, the same text is
+    -- inserted via insert_text_into_prompt(..., { create = false }). If the
+    -- helper or window is missing, the insert is skipped (one notify).
 
     local backends = {
       -- Edit these entries to match wrappers bundled outside this flake.
@@ -286,6 +291,33 @@ let
       end
     end
 
+    local function notify_prompt_skip()
+      if vim.g.review_explain_prompt_skip_notified then
+        return
+      end
+      vim.g.review_explain_prompt_skip_notified = true
+      vim.notify(
+        "review-explain: shared AI prompt window is not open; step is in the scratch buffer. Open it with <leader>app to also receive steps (submit with <leader>as + agent suffix).",
+        vim.log.levels.INFO
+      )
+    end
+
+    -- Reuse ai.agent's shared prompt insert path. Never open/create the
+    -- prompt window from here: if the module is not loaded, the window is
+    -- not visible, or the helper is missing, skip and keep the scratch view.
+    local function insert_step_into_prompt(text)
+      if type(insert_text_into_prompt) ~= "function" then
+        notify_prompt_skip()
+        return false
+      end
+      local ok, inserted = pcall(insert_text_into_prompt, text, { create = false })
+      if ok and inserted then
+        return true
+      end
+      notify_prompt_skip()
+      return false
+    end
+
     local function render_response(response, source_buf, backend_name)
       local lines = {}
       local warnings = response.warnings
@@ -330,6 +362,7 @@ let
         vim.api.nvim_buf_set_var(scratch, BACKEND_VAR, backend_name)
       end
 
+      insert_step_into_prompt(table.concat(lines, "\n"))
       show_scratch(scratch)
     end
 
