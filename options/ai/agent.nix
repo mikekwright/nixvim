@@ -402,22 +402,33 @@ let
       return nil, nil
     end
 
-    -- Helper function to insert text into prompt window at cursor
-    local function insert_text_into_prompt(text)
-      local prompt_win, prompt_buf = find_agent_prompt()
+    -- Insert text into the shared prompt window at the cursor.
+    -- Global so other modules (review-explain) can reuse this path instead of
+    -- opening a parallel UI. opts.create (default true) opens the prompt if
+    -- it is not visible; pass { create = false } to skip when the window is
+    -- not already open. Returns true if text was inserted.
+    function insert_text_into_prompt(text, opts)
+      opts = opts or {}
+      local create = opts.create ~= false
+      local prompt_win = find_agent_prompt()
 
       -- Split text into lines for proper insertion
-      local lines = vim.split(text, "\n", { plain = true })
+      local lines = vim.split(text or "", "\n", { plain = true })
 
-      -- If prompt window doesn't exist, create it with text
+      -- If prompt window doesn't exist, create it with text (unless skipped)
       if not prompt_win then
+        if not create then
+          return false
+        end
         open_agent_prompt(text)
-      else
-        -- Focus the existing prompt window and insert text
-        vim.api.nvim_set_current_win(prompt_win)
-        -- Insert text at cursor (nvim_put expects array of lines)
-        vim.api.nvim_put(lines, "c", true, true)
+        return true
       end
+
+      -- Focus the existing prompt window and insert text
+      vim.api.nvim_set_current_win(prompt_win)
+      -- Insert text at cursor (nvim_put expects array of lines)
+      vim.api.nvim_put(lines, "c", true, true)
+      return true
     end
 
     -- Function to send selected text to the agent prompt buffer

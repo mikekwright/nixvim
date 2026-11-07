@@ -17,5 +17,6 @@ in
     ./claude.nix
     ./copilot.nix
     ./opencode.nix
+    ./review-explain.nix
   ];
 }

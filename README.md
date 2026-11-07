@@ -49,7 +49,7 @@ any of these packages directly using Nix:
 
 - **complete** (default): Full-featured configuration with most LSP servers, AI agents, and development tools
   - Language servers for Rust, Python, Go, TypeScript, Nix, Kotlin, Zig, and D (Haskell lives in full — its toolchain adds ~9 GiB)
-  - Complete AI integration (agent system, Copilot, OpenCode)
+  - Complete AI integration (agent system, Copilot, OpenCode, review-explain launcher)
   - All development tools (debugging, testing, database, coverage)
   - Uses the system-installed agent CLIs (claude, cursor-agent, codex, opencode, grok) rather than bundling them
 
@@ -343,6 +343,7 @@ The prompt window supports:
 - Markdown syntax highlighting for better readability
 - Sending visual selections wrapped in code blocks
 - Inserting file paths at the cursor position
+- Receiving review-explain steps (when that launcher runs and this window is already open)
 - Persistent content when hidden (only cleared on submission)
 - Toggle between floating and split modes on the fly
 
@@ -366,6 +367,71 @@ submission while remaining visible for your next prompt.
 
 The agent mode layout reuses existing agent terminal and prompt buffers if they exist, preserving your conversation
 history and any drafted prompt text.
+
+### Review Explain
+
+`ai.review-explain` is a thin Neovim launcher for an **external** `review-explain` CLI. This flake does not build that
+CLI, compute git diffs, scrape Jira/GitHub, or call a model. The binary is bundled by whatever environment you are in
+(Grok Build, Claude Code, Cursor, or a generic install) and is resolved at runtime.
+
+Enabled in the **complete** (hence **full**) and **ai** packages. Not enabled in **minimal** or **python**.
+
+**Commands**:
+
+| Command | CLI invocation |
+| --- | --- |
+| `:NixReviewExplain` | `start` with current git branch vs `main` |
+| `:NixReviewExplain {head}` | `start` with `{head}` vs `main` |
+| `:NixReviewExplain {base} {head}` | `start` with those refs |
+| `:NixReviewExplain {base} {head} {ticket}` | same, plus `--ticket {ticket}` |
+| `:NixReviewContinue` | `continue --session <id>` using the **buffer-local** session id |
+| `:NixReviewAsk {question}` | `ask --session <id>` with the question on stdin (so it can be multi-line) |
+| `:NixReviewExplainBackend [name]` | select the backend for this Neovim session, or print the current one |
+
+`--repo` is the git root of the current buffer (cwd if that lookup fails). Neovim always passes `--format json`.
+
+Invocation shape (`backend.args` are **prepended** before the subcommand):
+
+```
+{bin} [...backend.args] start --repo <path> --base <ref> --head <ref> [--ticket <id>] --format json
+{bin} [...backend.args] continue --session <id> --format json
+{bin} [...backend.args] ask --session <id> --format json   # question on stdin
+```
+
+**Backends**: model/backend selection is a small Lua table in `options/ai/review-explain.nix`, not a single hardcoded
+binary. Named entries today:
+
+- `grok-build` → `review-explain-grok`
+- `claude-code` → `review-explain-claude`
+- `cursor` → `review-explain-cursor`
+- `default` → no preset `bin` (generic fallback)
+
+On a **fresh Neovim session** the selected backend is `default`. `:NixReviewExplainBackend` stores the choice in `vim.g`
+(session-global, not buffer-local). With no argument it notifies the current backend and lists available names.
+
+Binary resolution for the selected backend:
+
+1. `backends[name].bin` if set
+2. `$REVIEW_EXPLAIN_BIN` if set
+3. `review-explain`
+
+If the preferred name is missing from PATH, the same fallback is tried so setting only `REVIEW_EXPLAIN_BIN` still works
+when the named wrappers are not installed. If nothing is executable, Neovim shows an error naming the **backend**, the
+**resolved binary**, and `REVIEW_EXPLAIN_BIN`.
+
+The CLI session id is **buffer-local**. Switching backends **clears stored session ids** across buffers so continue/ask
+cannot silently reuse another agent's session; start again with `:NixReviewExplain`.
+
+Keymaps under the existing `<leader>a` AI group: `<leader>axs` start, `<leader>axc` continue, `<leader>axa` ask,
+`<leader>axb` pick backend.
+
+The CLI prints one JSON object on stdout (`version`, `ok`, `session`, `ticket`, `warnings`, `step`, `done`, `error`).
+Nixvim stores `session`, renders `step.body` plus any `warnings` in a scratch markdown buffer, **and** inserts that
+prepared prompt into the shared AI prompt window from `ai.agent` when that window is already open (submit with
+`<leader>as` + agent suffix, e.g. `<leader>aso` OpenCode / `<leader>asc` Claude). If the prompt module is not loaded,
+the window is not open, or the insert helper is missing, the scratch buffer still updates and the insert is skipped
+(one info notify). Unknown JSON fields are ignored. `ok=true` with `ticket.source = "none"` is a warning, not a
+failure. `ok=false` shows `error.message`. Missing or unparseable JSON is a launcher error and surfaces stdout/stderr.
 
 ## References
 

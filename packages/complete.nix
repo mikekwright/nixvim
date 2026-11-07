@@ -33,5 +33,6 @@ lib.makeIncludes {
     "ai.tui-refresh"
     "ai.copilot"
     "ai.opencode"
+    "ai.review-explain"
   ];
 }
