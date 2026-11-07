@@ -21,6 +21,7 @@ lib.makeIncludes {
 
   complete = [
     "ai"
+    "ai.tui-refresh"
     # "ai.claude"
     "ai.copilot-cli"
     "ai.copilot"

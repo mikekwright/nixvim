@@ -318,6 +318,14 @@ various modes:
 The terminal buffer is persistent and can be hidden or shown without losing your conversation history. You can restart the
 agent, send interrupts, or exit the agent entirely through dedicated commands.
 
+If a TUI inside a Neovim terminal starts rendering incorrectly (leftover cmdline/error overlays such as `Error: Exit code
+128`, overlapping lines, or a missed resize), press `,cr` (`<leader>cr`, since leader is comma) or run `:TuiRefresh`. That
+fully redraws Neovim and asks the terminal job to repaint (SIGWINCH via `jobresize`, then Ctrl-L) **without restarting the
+process**, so Claude Code / Cursor / Codex / OpenCode / Grok conversations are kept. It works in normal mode and terminal
+mode. If you are focused on a code buffer, it refreshes the visible AI/TUI panel (or the last-used agent terminal) instead
+of doing nothing. In terminal mode `<C-w>r` is the same refresh and does not wait on comma (`timeoutlen`) the way `,cr`
+does while typing in the TUI. It does not clash with `<C-w>a` + agent-suffix navigation.
+
 ### Prompt Window
 
 The prompt window is a single composable workspace shared by all agents for crafting larger-context messages. On
