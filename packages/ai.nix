@@ -25,6 +25,7 @@ lib.makeIncludes {
     # "ai.claude"
     "ai.copilot-cli"
     "ai.copilot"
+    "ai.review-explain"
 
     "tools"
     "tools.bookmarks"

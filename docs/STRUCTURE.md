@@ -45,6 +45,7 @@ This is a **declarative Neovim configuration system** built entirely with Nix Fl
 │   │   ├── copilot.nix      # GitHub Copilot integration
 │   │   ├── avante.nix       # Avante AI plugin
 │   │   ├── opencode.nix     # OpenCode AI integration
+│   │   ├── review-explain.nix # External review-explain CLI launcher
 │   │   ├── agents/          # Individual agent configurations
 │   │   └── default.nix
 │   ├── tools/               # Development utilities and enhancements
@@ -291,6 +292,12 @@ These are conditionally included based on package configuration.
   
 - `opencode.nix` - OpenCode integration
   - Latest Nixpkgs integration for OpenCode
+
+- `review-explain.nix` - Thin launcher for an external review-explain CLI
+  - Backend registry (`grok-build`, `claude-code`, `cursor`, `default`)
+  - Commands: `:NixReviewExplain`, `:NixReviewContinue`, `:NixReviewAsk`, `:NixReviewExplainBackend`
+  - Renders each step in a scratch buffer and, when the shared AI prompt window is open, inserts it there too
+  - Does not build the CLI or call models; the selected backend binary owns that
 
 - `binaries.nix` - Bundled agent wrappers (full mode only)
 - `agents/*-agent.nix` - Per-agent wrapper packages (claude, cursor, codex, opencode, grok)

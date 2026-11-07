@@ -12,7 +12,7 @@ A **reproducible Neovim configuration system** built with Nix Flakes that genera
 | `lib/` | Module infrastructure | Loading, merging, option filtering |
 | `common/` | Always-loaded features | Base settings, keymaps, UI, terminal |
 | `options/lsp/` | Language servers | One file per language (rust, python, etc) |
-| `options/ai/` | AI integration | Copilot, agents (claude, cursor, codex, opencode, grok), avante |
+| `options/ai/` | AI integration | Copilot, agents (claude, cursor, codex, opencode, grok), avante, review-explain |
 | `options/tools/` | Development tools | Snacks, noice, mini, debugging, etc |
 | `packages/` | Config variants | complete, minimal, python, ai |
 
