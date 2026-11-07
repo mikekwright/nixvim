@@ -294,15 +294,15 @@ Each agent runs in its own uniquely named persistent terminal buffer and is addr
 
 | Key | Agent       | CLI            | Buffer            |
 |-----|-------------|----------------|-------------------|
-| `a` | Claude Code | `claude`       | `AI:claude-code`  |
-| `c` | Cursor      | `cursor-agent` | `AI:cursor`       |
+| `c` | Claude Code | `claude`       | `AI:claude-code`  |
+| `a` | Cursor      | `cursor-agent` | `AI:cursor`       |
 | `x` | Codex       | `codex`        | `AI:codex`        |
 | `o` | OpenCode    | `opencode`     | `AI:opencode`     |
 | `b` | Grok Build  | `grok`         | `AI:grok-build`   |
 
-Keymaps that target a specific agent append that suffix to the command prefix (for example `<leader>aha` hides the
+Keymaps that target a specific agent append that suffix to the command prefix (for example `<leader>ahc` hides the
 Claude Code terminal while `<leader>aho` hides the OpenCode terminal). `<leader>a` followed by the suffix opens or
-switches to that agent's terminal, so `<leader>aa` opens Claude Code and `<leader>ax` opens Codex. The greeter lists
+switches to that agent's terminal, so `<leader>ac` opens Claude Code and `<leader>ax` opens Codex. The greeter lists
 every agent in an `AI` section at the bottom of the dashboard using the same `a` + suffix combination (`aa`, `ac`, `ax`,
 `ao`, `ab`).
 
@@ -330,7 +330,7 @@ does while typing in the TUI. It does not clash with `<C-w>a` + agent-suffix nav
 
 The prompt window is a single composable workspace shared by all agents for crafting larger-context messages. On
 submission you pick the destination with the agent suffix: `<leader>as` followed by the suffix in normal mode, or
-`<C-s>` followed by the suffix in insert mode (for example `<leader>asa` / `<C-s>a` sends to Claude Code while
+`<C-s>` followed by the suffix in insert mode (for example `<leader>asc` / `<C-s>c` sends to Claude Code while
 `<leader>aso` / `<C-s>o` sends to OpenCode). It operates in two modes:
 
 **Floating Mode**: Opens as a centered floating window (80% of screen size) with a rounded border, perfect for quick
@@ -352,7 +352,7 @@ combining code selections, file paths, and your own text.
 ### Agent Mode Layout
 
 Agent mode creates a specialized three-panel layout optimized for AI-assisted development. It is opened per agent
-with `<leader>am` followed by the agent suffix: `<leader>ama` builds the layout around Claude Code and `<leader>amo`
+with `<leader>am` followed by the agent suffix: `<leader>amc` builds the layout around Claude Code and `<leader>amo`
 builds it around OpenCode.
 
 **Layout Structure**:

@@ -267,7 +267,7 @@ These are conditionally included based on package configuration.
 
 **Files**:
 - `agent.nix` - Main AI agent system
-  - Supports: Claude Code (`a`), Cursor (`c`), Codex (`x`), OpenCode (`o`) and Grok Build (`b`)
+  - Supports: Claude Code (`c`), Cursor (`a`), Codex (`x`), OpenCode (`o`) and Grok Build (`b`)
   - Persistent, uniquely named terminal buffer per agent (`AI:claude-code`, `AI:cursor`, `AI:codex`, `AI:opencode`, `AI:grok-build`)
   - Dashboard entries in a dedicated `AI` section of the greeter
   - Shared prompt window for composing messages, submitted to a specific agent

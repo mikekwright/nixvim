@@ -4,7 +4,7 @@ let
   name = "ai.agent";
 
   # Five fixed AI agents, each addressed by a single key suffix under <leader>a:
-  #   a = claude-code, c = cursor, x = codex, o = opencode, b = grok-build
+  #   c = claude-code, a = cursor, x = codex, o = opencode, b = grok-build
   # The binaries live in ai.binaries (full mode only) or come from system installs.
   lua = /*lua*/ ''
     -- AI Agent Configuration Module
@@ -15,7 +15,7 @@ let
     local AI_AGENTS = {
       claude = {
         id = "claude",
-        key = "a",
+        key = "c",
         name = "Claude Code",
         command = "claude",
         marker = "is_claude_terminal",
@@ -25,7 +25,7 @@ let
       },
       cursor = {
         id = "cursor",
-        key = "c",
+        key = "a",
         name = "Cursor",
         command = "cursor-agent",
         marker = "is_cursor_terminal",

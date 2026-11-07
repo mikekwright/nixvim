@@ -125,7 +125,7 @@ let
       pcall(function()
         require("noice").dismiss({ silent = true })
       end)
-      vim.cmd("echo ''")
+      vim.cmd("echo '''")
     end
 
     local function find_visible_tui_buf()
